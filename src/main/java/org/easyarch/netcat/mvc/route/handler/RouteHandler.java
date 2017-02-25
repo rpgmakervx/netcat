@@ -1,4 +1,4 @@
-package org.easyarch.netcat.route.handler;
+package org.easyarch.netcat.mvc.route.handler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
