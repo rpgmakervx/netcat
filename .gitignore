@@ -4,7 +4,7 @@
 
 # Log file
 *.log
-netcat.iml
+*.iml
 .idea
 # BlueJ files
 *.ctxt
