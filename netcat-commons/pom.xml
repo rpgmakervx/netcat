@@ -9,13 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>netcat-mvc</artifactId>
+    <artifactId>netcat-commons</artifactId>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.easyarch</groupId>
-            <artifactId>netcat-commons</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
+
 </project>

@@ -1,8 +1,8 @@
 package org.easyarch.netcat.mvc.route;
 
-import org.easyarch.netcat.http.protocol.HttpMethod;
+import com.blade.mvc.http.HttpMethod;
+import org.easyarch.commons.utils.StringUtils;
 import org.easyarch.netcat.mvc.route.handler.RouteHandler;
-import org.easyarch.netcat.utils.StringUtils;
 
 import java.util.Map;
 

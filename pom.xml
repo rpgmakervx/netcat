@@ -23,6 +23,7 @@
     <modules>
         <module>netcat-core</module>
         <module>netcat-mvc</module>
+        <module>netcat-commons</module>
     </modules>
 
     <dependencies>

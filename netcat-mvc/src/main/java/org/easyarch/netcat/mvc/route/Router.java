@@ -1,6 +1,6 @@
 package org.easyarch.netcat.mvc.route;
 
-import org.easyarch.netcat.http.protocol.HttpMethod;
+import com.blade.mvc.http.HttpMethod;
 import org.easyarch.netcat.mvc.route.handler.RouteHandler;
 
 /**
@@ -18,7 +18,7 @@ public class Router {
 
     private RouteHandler handler;
 
-    public Router(String path, HttpMethod httpMethod,RouteHandler handler) {
+    public Router(String path, HttpMethod httpMethod, RouteHandler handler) {
         this.path = path;
         this.httpMethod = httpMethod;
         this.handler = handler;

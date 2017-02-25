@@ -1,4 +1,4 @@
-package org.easyarch.netcat.utils;
+package org.easyarch.commons.utils;
 
 import java.util.Random;
 import java.util.UUID;
