@@ -5,6 +5,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.*;
+import org.easyarch.netcat.servlet.ServletManager;
 
 /**
  * Description :
@@ -15,6 +16,11 @@ import io.netty.handler.codec.http.*;
 
 public class HttpHandler extends ChannelInboundHandlerAdapter {
 
+    private ServletManager manager;
+
+    public HttpHandler() {
+        this.manager = new ServletManager();
+    }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {

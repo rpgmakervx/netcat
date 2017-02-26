@@ -1,5 +1,7 @@
 package org.easyarch.netcat.http.request;
 
+import io.netty.handler.codec.http.FullHttpRequest;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
 import java.io.BufferedReader;
@@ -20,6 +22,11 @@ import java.util.Map;
 
 public class Request implements HttpServletRequest {
 
+    private FullHttpRequest request;
+
+    public Request(FullHttpRequest request){
+        this.request = request;
+    }
 
     @Override
     public String getAuthType() {
