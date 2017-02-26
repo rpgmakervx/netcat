@@ -6,7 +6,6 @@
 
     <groupId>org.easyarch</groupId>
     <artifactId>netcat</artifactId>
-    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <build>
         <plugins>
@@ -20,13 +19,19 @@
             </plugin>
         </plugins>
     </build>
-    <modules>
-        <module>netcat-core</module>
-        <module>netcat-mvc</module>
-        <module>netcat-commons</module>
-    </modules>
 
     <dependencies>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.0.Beta5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.21</version>
+        </dependency>
+
         <dependency>
             <groupId>com.bladejava</groupId>
             <artifactId>blade-core</artifactId>
