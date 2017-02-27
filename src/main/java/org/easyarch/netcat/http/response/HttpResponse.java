@@ -1,8 +1,8 @@
 package org.easyarch.netcat.http.response;
 
 import io.netty.handler.codec.http.FullHttpResponse;
+import org.easyarch.netcat.http.Cookie;
 
-import javax.servlet.http.Cookie;
 import java.util.Collection;
 
 /**

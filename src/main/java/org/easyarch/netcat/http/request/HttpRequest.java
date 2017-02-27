@@ -1,10 +1,9 @@
 package org.easyarch.netcat.http.request;
 
 import io.netty.handler.codec.http.FullHttpRequest;
+import org.easyarch.netcat.http.Cookie;
 import org.easyarch.netcat.http.session.HttpSession;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -111,8 +110,8 @@ public class HttpRequest {
 
     }
 
-   
-    public void logout() throws ServletException {
+
+    public void logout(){
 
     }
 

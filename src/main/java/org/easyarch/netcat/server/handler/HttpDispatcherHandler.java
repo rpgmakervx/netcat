@@ -2,12 +2,14 @@ package org.easyarch.netcat.server.handler;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.*;
 import org.easyarch.netcat.context.ContextManager;
+import org.easyarch.netcat.http.request.HttpRequest;
+import org.easyarch.netcat.http.response.HttpResponse;
 import org.easyarch.netcat.mvc.HttpHandler;
+import org.easyarch.netcat.mvc.entity.ViewHttpHandler;
 
 
 /**
@@ -20,6 +22,8 @@ import org.easyarch.netcat.mvc.HttpHandler;
 public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
 
     private static final String NOTFOUND_MSG = "<h1 align='center'>404 Not Found</h1>";
+
+    private static final String REDIRECT = "redirect:";
 
     private ContextManager manager;
 
@@ -39,15 +43,32 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
         if (!isSuccess){
             return ;
         }
-        HttpHandler servlet = manager.getServlet(request.uri());
-        FullHttpResponse response;
-        if (servlet == null){
+        HttpHandler handler = manager.getServlet(request.uri());
+        FullHttpResponse response = new DefaultFullHttpResponse(
+                HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+        if (handler == null){
             byte[] content = NOTFOUND_MSG.getBytes();
             ByteBuf buf = Unpooled.wrappedBuffer(content,0, content.length);
-            response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_FOUND,buf);
-            ChannelFuture future = ctx.writeAndFlush(response);
+            response.copy(buf);
+            ctx.writeAndFlush(response);
             return ;
         }
+        HttpRequest req = new HttpRequest(request);
+        HttpResponse resp = new HttpResponse(response);
+        if (handler instanceof ViewHttpHandler){
+            String view = ((ViewHttpHandler) handler).handle(req,resp);
+            if (view.startsWith(REDIRECT)){
+                response.setStatus(HttpResponseStatus.FOUND);
+            }else{
+
+            }
+        }
+//        if (servlet == null){
+//            byte[] content = NOTFOUND_MSG.getBytes();
+//            ByteBuf buf = Unpooled.wrappedBuffer(content,0, content.length);
+//            ChannelFuture future = ctx.writeAndFlush(response);
+//            return ;
+//        }
 
 //        ByteBuf content = request.content();
 //        byte[] bytes = new byte[content.readableBytes()];
