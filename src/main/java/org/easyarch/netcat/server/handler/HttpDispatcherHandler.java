@@ -5,9 +5,9 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.*;
-import org.easyarch.netcat.context.ContextManager;
-import org.easyarch.netcat.http.request.HttpRequest;
-import org.easyarch.netcat.http.response.HttpResponse;
+import org.easyarch.netcat.context.HandlerContext;
+import org.easyarch.netcat.http.request.HttpHandlerRequest;
+import org.easyarch.netcat.http.response.HttpHandlerResponse;
 import org.easyarch.netcat.mvc.HttpHandler;
 import org.easyarch.netcat.mvc.entity.ViewHttpHandler;
 
@@ -25,10 +25,10 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
 
     private static final String REDIRECT = "redirect:";
 
-    private ContextManager manager;
+    private HandlerContext context;
 
     public HttpDispatcherHandler() {
-        this.manager = new ContextManager();
+        this.context = new HandlerContext();
     }
 
     @Override
@@ -43,7 +43,7 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
         if (!isSuccess){
             return ;
         }
-        HttpHandler handler = manager.getServlet(request.uri());
+        HttpHandler handler = context.getHandler(request.uri());
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         if (handler == null){
@@ -53,13 +53,15 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
             ctx.writeAndFlush(response);
             return ;
         }
-        HttpRequest req = new HttpRequest(request);
-        HttpResponse resp = new HttpResponse(response);
+        HttpHandlerRequest req = new HttpHandlerRequest(request);
+        HttpHandlerResponse resp = new HttpHandlerResponse(response);
         if (handler instanceof ViewHttpHandler){
             String view = ((ViewHttpHandler) handler).handle(req,resp);
             if (view.startsWith(REDIRECT)){
                 response.setStatus(HttpResponseStatus.FOUND);
+                ctx.writeAndFlush(response);
             }else{
+                String viewPath = context.getContextPath();
 
             }
         }

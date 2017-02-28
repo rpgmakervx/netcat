@@ -1,7 +1,7 @@
 package org.easyarch.netcat.mvc;
 
-import org.easyarch.netcat.http.request.HttpRequest;
-import org.easyarch.netcat.http.response.HttpResponse;
+import org.easyarch.netcat.http.request.HttpHandlerRequest;
+import org.easyarch.netcat.http.response.HttpHandlerResponse;
 
 /**
  * Description :
@@ -12,5 +12,5 @@ import org.easyarch.netcat.http.response.HttpResponse;
 
 public interface HttpHandler<T> {
 
-    public T handle(HttpRequest request, HttpResponse response) throws Exception;
+    public T handle(HttpHandlerRequest request, HttpHandlerResponse response) throws Exception;
 }

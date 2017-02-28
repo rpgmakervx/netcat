@@ -1,6 +1,7 @@
 package org.easyarch.netcat.http.response;
 
 import io.netty.handler.codec.http.FullHttpResponse;
+import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.Cookie;
 
 import java.util.Collection;
@@ -12,12 +13,22 @@ import java.util.Collection;
  * description:
  */
 
-public class HttpResponse {
+public class HttpHandlerResponse {
 
     private FullHttpResponse response;
 
-    public HttpResponse(FullHttpResponse response) {
+    public HandlerContext handlerContext;
+
+    public HttpHandlerResponse(FullHttpResponse response) {
         this.response = response;
+    }
+
+    public HandlerContext getHandlerContext() {
+        return handlerContext;
+    }
+
+    public void setHandlerContext(HandlerContext handlerContext) {
+        this.handlerContext = handlerContext;
     }
 
     public void addCookie(Cookie cookie) {
@@ -32,7 +43,6 @@ public class HttpResponse {
         return null;
     }
 
-    
     public String encodeUrl(String url) {
         return null;
     }

@@ -1,6 +1,7 @@
 package org.easyarch.netcat.http.request;
 
 import io.netty.handler.codec.http.FullHttpRequest;
+import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.Cookie;
 import org.easyarch.netcat.http.session.HttpSession;
 
@@ -17,12 +18,22 @@ import java.util.Map;
  * description:
  */
 
-public class HttpRequest {
+public class HttpHandlerRequest {
 
     private FullHttpRequest request;
 
-    public HttpRequest(FullHttpRequest request){
+    public HandlerContext handlerContext;
+
+    public HttpHandlerRequest(FullHttpRequest request){
         this.request = request;
+    }
+
+    public HandlerContext getHandlerContext() {
+        return handlerContext;
+    }
+
+    public void setHandlerContext(HandlerContext handlerContext) {
+        this.handlerContext = handlerContext;
     }
 
     public Cookie[] getCookies() {
