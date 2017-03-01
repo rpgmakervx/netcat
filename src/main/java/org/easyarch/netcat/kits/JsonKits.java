@@ -45,4 +45,9 @@ public class JsonKits {
         Json json = new Json(map);
         return json;
     }
+
+    public static String toString(Json json){
+        Map<String,Object> map = json.getJsonMap();
+        return toString(map);
+    }
 }

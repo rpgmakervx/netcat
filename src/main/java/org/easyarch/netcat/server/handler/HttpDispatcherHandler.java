@@ -1,5 +1,7 @@
 package org.easyarch.netcat.server.handler;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -8,7 +10,11 @@ import io.netty.handler.codec.http.*;
 import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.request.HttpHandlerRequest;
 import org.easyarch.netcat.http.response.HttpHandlerResponse;
+import org.easyarch.netcat.kits.file.FileKits;
 import org.easyarch.netcat.mvc.HttpHandler;
+import org.easyarch.netcat.mvc.JsonHttpHandler;
+import org.easyarch.netcat.mvc.StringHttpHandler;
+import org.easyarch.netcat.mvc.entity.Json;
 import org.easyarch.netcat.mvc.entity.ViewHttpHandler;
 
 
@@ -56,31 +62,39 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
         HttpHandlerRequest req = new HttpHandlerRequest(request);
         HttpHandlerResponse resp = new HttpHandlerResponse(response);
         if (handler instanceof ViewHttpHandler){
+            StringBuffer resourcePath = new StringBuffer();
             String view = ((ViewHttpHandler) handler).handle(req,resp);
             if (view.startsWith(REDIRECT)){
                 response.setStatus(HttpResponseStatus.FOUND);
                 ctx.writeAndFlush(response);
+                return;
             }else{
                 String viewPath = context.getContextPath();
-
+                resourcePath.append(view);
+                resourcePath.append(viewPath);
+                byte[] content = FileKits.read(resourcePath.toString());
+                ByteBuf buf = Unpooled.wrappedBuffer(content,0, content.length);
+                response.copy(buf);
+                ctx.writeAndFlush(response);
+                return;
             }
         }
-//        if (servlet == null){
-//            byte[] content = NOTFOUND_MSG.getBytes();
-//            ByteBuf buf = Unpooled.wrappedBuffer(content,0, content.length);
-//            ChannelFuture future = ctx.writeAndFlush(response);
-//            return ;
-//        }
-
-//        ByteBuf content = request.content();
-//        byte[] bytes = new byte[content.readableBytes()];
-//        content.writeBytes(bytes);
-//        if (isSuccess){
-//            ByteBuf byteBuf = Unpooled.wrappedBuffer(bytes, 0, bytes.length);
-//            FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1,
-//                    HttpResponseStatus.OK, byteBuf);
-//            ctx.writeAndFlush(response);
-//        }
+        if (handler instanceof JsonHttpHandler){
+            Json json = ((JsonHttpHandler) handler).handle(req,resp);
+            byte[] content = JSONObject.toJSONBytes(json.getJsonMap(),
+                    SerializerFeature.PrettyFormat);
+            ByteBuf buf = Unpooled.wrappedBuffer(content,0, content.length);
+            response.copy(buf);
+            ctx.writeAndFlush(response);
+            return;
+        }
+        if (handler instanceof StringHttpHandler){
+            byte[] content = ((StringHttpHandler) handler).handle(req,resp).getBytes("UTF-8");
+            ByteBuf buf = Unpooled.wrappedBuffer(content,0, content.length);
+            response.copy(buf);
+            ctx.writeAndFlush(response);
+            return;
+        }
     }
 
     @Override
