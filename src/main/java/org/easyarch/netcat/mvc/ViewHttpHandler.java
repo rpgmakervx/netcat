@@ -1,6 +1,7 @@
 package org.easyarch.netcat.mvc;
 
-import org.easyarch.netcat.mvc.handler.HttpHandler;
+
+import org.easyarch.netcat.mvc.route.handler.HttpHandler;
 
 /**
  * Description :

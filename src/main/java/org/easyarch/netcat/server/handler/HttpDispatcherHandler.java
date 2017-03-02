@@ -11,11 +11,12 @@ import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.request.HttpHandlerRequest;
 import org.easyarch.netcat.http.response.HttpHandlerResponse;
 import org.easyarch.netcat.kits.file.FileKits;
-import org.easyarch.netcat.mvc.handler.HttpHandler;
 import org.easyarch.netcat.mvc.JsonHttpHandler;
 import org.easyarch.netcat.mvc.StringHttpHandler;
-import org.easyarch.netcat.mvc.entity.Json;
 import org.easyarch.netcat.mvc.ViewHttpHandler;
+import org.easyarch.netcat.mvc.entity.Json;
+import org.easyarch.netcat.mvc.route.RouteWrapper;
+import org.easyarch.netcat.mvc.route.Router;
 
 
 /**
@@ -49,10 +50,11 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
         if (!isSuccess){
             return ;
         }
-        HttpHandler handler = context.getHandler(request.uri());
+        RouteWrapper routeWrapper = context.getRouter(request.uri());
+        Router router = routeWrapper.getRouter();
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-        if (handler == null){
+        if (router == null){
             byte[] content = NOTFOUND_MSG.getBytes();
             ByteBuf buf = Unpooled.wrappedBuffer(content,0, content.length);
             response.copy(buf);
@@ -61,9 +63,9 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
         }
         HttpHandlerRequest req = new HttpHandlerRequest(request);
         HttpHandlerResponse resp = new HttpHandlerResponse(response);
-        if (handler instanceof ViewHttpHandler){
+        if (router instanceof ViewHttpHandler){
             StringBuffer resourcePath = new StringBuffer();
-            String view = ((ViewHttpHandler) handler).handle(req,resp);
+            String view = ((ViewHttpHandler) router).handle(req,resp);
             if (view.startsWith(REDIRECT)){
                 response.setStatus(HttpResponseStatus.FOUND);
                 ctx.writeAndFlush(response);
@@ -80,8 +82,8 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
                 return;
             }
         }
-        if (handler instanceof JsonHttpHandler){
-            Json json = ((JsonHttpHandler) handler).handle(req,resp);
+        if (router instanceof JsonHttpHandler){
+            Json json = ((JsonHttpHandler) router).handle(req,resp);
             byte[] content = JSONObject.toJSONBytes(json.getJsonMap(),
                     SerializerFeature.PrettyFormat);
             ByteBuf buf = Unpooled.wrappedBuffer(content,0, content.length);
@@ -89,8 +91,8 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
             ctx.writeAndFlush(response);
             return;
         }
-        if (handler instanceof StringHttpHandler){
-            byte[] content = ((StringHttpHandler) handler).handle(req,resp).getBytes("UTF-8");
+        if (router instanceof StringHttpHandler){
+            byte[] content = ((StringHttpHandler) router).handle(req,resp).getBytes("UTF-8");
             ByteBuf buf = Unpooled.wrappedBuffer(content,0, content.length);
             response.copy(buf);
             ctx.writeAndFlush(response);

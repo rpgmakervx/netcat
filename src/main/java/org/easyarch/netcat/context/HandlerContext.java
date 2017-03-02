@@ -1,6 +1,7 @@
 package org.easyarch.netcat.context;
 
-import org.easyarch.netcat.mvc.handler.HttpHandler;
+
+import org.easyarch.netcat.mvc.route.RouteWrapper;
 
 import java.io.File;
 import java.util.LinkedHashMap;
@@ -15,16 +16,16 @@ import java.util.Map;
 
 public class HandlerContext {
     public static final String DEFAULT_CONTEXT = File.separator;
-    private Map<String,HttpHandler> handlers = new LinkedHashMap<>();
+    private Map<String,RouteWrapper> routers = new LinkedHashMap<>();
     public String contextPath;
     public String realPath;
 
-    public void addHandler(String url,HttpHandler handler){
-        handlers.put(url,handler);
+    public void addRouter(String path,RouteWrapper router){
+        routers.put(path,router);
     }
 
-    public HttpHandler getHandler(String url){
-        return handlers.get(url);
+    public RouteWrapper getRouter(String path){
+        return routers.get(path);
     }
 
     public String getRealPath() {
