@@ -6,6 +6,9 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import org.easyarch.netcat.context.HandlerContext;
+import org.easyarch.netcat.kits.StringKits;
+import org.easyarch.netcat.mvc.handler.HttpHandler;
 import org.easyarch.netcat.server.handler.BaseChildHandler;
 
 /**
@@ -16,6 +19,12 @@ import org.easyarch.netcat.server.handler.BaseChildHandler;
  */
 
 public class App {
+
+    private HandlerContext context;
+
+    public App(){
+        context = new HandlerContext();
+    }
 
     public void start(int port) {
         launch(port);
@@ -40,5 +49,13 @@ public class App {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
         }
+    }
+
+    public App get(String url, HttpHandler httpHandler){
+        if (StringKits.isEmpty(url)||httpHandler != null){
+            return this;
+        }
+        context.addHandler(url,httpHandler);
+        return this;
     }
 }

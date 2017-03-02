@@ -1,5 +1,7 @@
 package org.easyarch.netcat.mvc;
 
+import org.easyarch.netcat.mvc.handler.HttpHandler;
+
 /**
  * Description :
  * Created by xingtianyu on 17-2-27
@@ -7,5 +9,5 @@ package org.easyarch.netcat.mvc;
  * description:
  */
 
-public interface StringHttpHandler extends HttpHandler<String>  {
+public interface StringHttpHandler extends HttpHandler<String> {
 }

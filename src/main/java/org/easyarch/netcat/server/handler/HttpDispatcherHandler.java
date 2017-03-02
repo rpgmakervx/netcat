@@ -11,11 +11,11 @@ import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.request.HttpHandlerRequest;
 import org.easyarch.netcat.http.response.HttpHandlerResponse;
 import org.easyarch.netcat.kits.file.FileKits;
-import org.easyarch.netcat.mvc.HttpHandler;
+import org.easyarch.netcat.mvc.handler.HttpHandler;
 import org.easyarch.netcat.mvc.JsonHttpHandler;
 import org.easyarch.netcat.mvc.StringHttpHandler;
 import org.easyarch.netcat.mvc.entity.Json;
-import org.easyarch.netcat.mvc.entity.ViewHttpHandler;
+import org.easyarch.netcat.mvc.ViewHttpHandler;
 
 
 /**
@@ -70,11 +70,12 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
                 return;
             }else{
                 String viewPath = context.getContextPath();
-                resourcePath.append(view);
                 resourcePath.append(viewPath);
+                resourcePath.append(view);
                 byte[] content = FileKits.read(resourcePath.toString());
                 ByteBuf buf = Unpooled.wrappedBuffer(content,0, content.length);
                 response.copy(buf);
+
                 ctx.writeAndFlush(response);
                 return;
             }

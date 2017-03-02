@@ -1,9 +1,10 @@
 package org.easyarch.netcat.context;
 
-import org.easyarch.netcat.mvc.HttpHandler;
+import org.easyarch.netcat.mvc.handler.HttpHandler;
 
+import java.io.File;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Description :
@@ -13,7 +14,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 
 public class HandlerContext {
-    public static Map<String,HttpHandler> handlers = new ConcurrentHashMap<>();
+    public static final String DEFAULT_CONTEXT = File.separator;
+    private Map<String,HttpHandler> handlers = new LinkedHashMap<>();
+    public String contextPath;
+    public String realPath;
 
     public void addHandler(String url,HttpHandler handler){
         handlers.put(url,handler);
@@ -23,7 +27,11 @@ public class HandlerContext {
         return handlers.get(url);
     }
 
+    public String getRealPath() {
+        return realPath;
+    }
+
     public String getContextPath(){
-        return "";
+        return contextPath;
     }
 }

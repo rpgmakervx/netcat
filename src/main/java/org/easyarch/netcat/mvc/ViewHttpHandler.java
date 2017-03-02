@@ -1,6 +1,6 @@
-package org.easyarch.netcat.mvc.entity;
+package org.easyarch.netcat.mvc;
 
-import org.easyarch.netcat.mvc.HttpHandler;
+import org.easyarch.netcat.mvc.handler.HttpHandler;
 
 /**
  * Description :

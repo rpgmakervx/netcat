@@ -1,4 +1,4 @@
-package org.easyarch.netcat.mvc;
+package org.easyarch.netcat.mvc.handler;
 
 import org.easyarch.netcat.http.request.HttpHandlerRequest;
 import org.easyarch.netcat.http.response.HttpHandlerResponse;
