@@ -122,4 +122,5 @@ public class Json<V> {
     public V merge(String key, V value, BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
         return jsonMap.merge(key, value, remappingFunction);
     }
+
 }

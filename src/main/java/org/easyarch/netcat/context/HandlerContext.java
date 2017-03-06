@@ -1,11 +1,7 @@
 package org.easyarch.netcat.context;
 
 
-import org.easyarch.netcat.mvc.route.RouteWrapper;
-
 import java.io.File;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * Description :
@@ -16,16 +12,11 @@ import java.util.Map;
 
 public class HandlerContext {
     public static final String DEFAULT_CONTEXT = File.separator;
-    private Map<String,RouteWrapper> routers = new LinkedHashMap<>();
-    public String contextPath;
+    public String contextPath = File.separator;
     public String realPath;
+    public String webRoot = "/home/code4j/58daojia/技术/echarts-2.2.7/";
 
-    public void addRouter(String path,RouteWrapper router){
-        routers.put(path,router);
-    }
-
-    public RouteWrapper getRouter(String path){
-        return routers.get(path);
+    public HandlerContext(){
     }
 
     public String getRealPath() {
@@ -35,4 +26,13 @@ public class HandlerContext {
     public String getContextPath(){
         return contextPath;
     }
+
+    public String getWebRoot(){
+        return webRoot;
+    }
+
+    public void setWebRoot(String root){
+        this.webRoot = root;
+    }
+
 }

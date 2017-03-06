@@ -7,9 +7,14 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.easyarch.netcat.context.HandlerContext;
+import org.easyarch.netcat.context.RouteHolder;
 import org.easyarch.netcat.kits.StringKits;
-import org.easyarch.netcat.mvc.handler.HttpHandler;
+import org.easyarch.netcat.mvc.route.filter.Filter;
+import org.easyarch.netcat.mvc.route.handler.HttpHandler;
 import org.easyarch.netcat.server.handler.BaseChildHandler;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Description :
@@ -21,9 +26,11 @@ import org.easyarch.netcat.server.handler.BaseChildHandler;
 public class App {
 
     private HandlerContext context;
+    private RouteHolder holder;
 
     public App(){
         context = new HandlerContext();
+        holder = new RouteHolder();
     }
 
     public void start(int port) {
@@ -37,7 +44,7 @@ public class App {
         ChannelFuture f = null;
         try {
             b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
-                    .childHandler(new BaseChildHandler())
+                    .childHandler(new BaseChildHandler(context,holder))
                     .option(ChannelOption.SO_BACKLOG, 2048)
                     .option(ChannelOption.TCP_NODELAY,true);
             f = b.bind(port).sync();
@@ -51,11 +58,36 @@ public class App {
         }
     }
 
-    public App get(String url, HttpHandler httpHandler){
-        if (StringKits.isEmpty(url)||httpHandler != null){
+    public App filter(Filter filter){
+        if (filter == null){
             return this;
         }
-        context.addHandler(url,httpHandler);
+        holder.addRouter(filter.getClass().getName(),filter);
         return this;
+    }
+
+    public App get(String path, HttpHandler httpHandler){
+        if (StringKits.isEmpty(path)||httpHandler == null){
+            return this;
+        }
+        holder.addRouter(path,httpHandler);
+        return this;
+    }
+
+    public static void main(String[] args) {
+        String name1 = new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        }.getClass().getName();
+        String name2 = new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        }.getClass().getName();
+
+        System.out.println("name1:"+name1+",name2:"+name2);
     }
 }

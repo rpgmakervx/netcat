@@ -147,7 +147,7 @@ public class FileKits {
 
     public static byte[] read(String path){
         if (path == null)
-            throw new NullPointerException("path is null");
+            return null;
         return read(new File(path));
     }
     public static byte[] read(File path){
@@ -156,7 +156,7 @@ public class FileKits {
         try {
             fis = new FileInputStream(path);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            return null;
         }
         IOKits.transferTo(fis, baos);
         IOKits.closeIO(baos);
