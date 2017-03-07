@@ -1,7 +1,11 @@
 package org.easyarch.netcat.context;
 
 
+import org.easyarch.netcat.http.session.HttpSession;
+
 import java.io.File;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Description :
@@ -12,6 +16,9 @@ import java.io.File;
 
 public class HandlerContext {
     public static final String DEFAULT_CONTEXT = File.separator;
+
+    private static Map<String,HttpSession> sessionMap = new ConcurrentHashMap<>();
+
     public String contextPath = File.separator;
     public String realPath;
     public String webRoot = "/home/code4j/58daojia/技术/echarts-2.2.7/";
@@ -35,4 +42,7 @@ public class HandlerContext {
         this.webRoot = root;
     }
 
+    public HttpSession getSession(String cookieId){
+        return sessionMap.get(cookieId);
+    }
 }

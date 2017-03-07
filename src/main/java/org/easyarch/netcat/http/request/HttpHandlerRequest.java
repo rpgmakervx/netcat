@@ -1,15 +1,20 @@
 package org.easyarch.netcat.http.request;
 
+import io.netty.channel.Channel;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.cookie.Cookie;
+import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import org.easyarch.netcat.context.HandlerContext;
-import org.easyarch.netcat.http.Cookie;
 import org.easyarch.netcat.http.session.HttpSession;
+import org.easyarch.netcat.kits.StringKits;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
-import java.util.Map;
+import java.net.SocketAddress;
+import java.util.*;
 
 /**
  * Description :
@@ -22,10 +27,16 @@ public class HttpHandlerRequest {
 
     private FullHttpRequest request;
 
-    public HandlerContext handlerContext;
+    private Channel channel;
 
-    public HttpHandlerRequest(FullHttpRequest request){
+    private HandlerContext handlerContext;
+    private ServerCookieDecoder decoder;
+    private static final String QUESTION = "?";
+    private static final String NETCATID = "NETCATID";
+    public HttpHandlerRequest(FullHttpRequest request, Channel channel){
         this.request = request;
+        this.channel = channel;
+        this.decoder = ServerCookieDecoder.LAX;
     }
 
     public HandlerContext getHandlerContext() {
@@ -36,56 +47,66 @@ public class HttpHandlerRequest {
         this.handlerContext = handlerContext;
     }
 
-    public Cookie[] getCookies() {
-        return new Cookie[0];
+    public Set<Cookie> getCookies() {
+        String cookieVallue = request.headers().get(HttpHeaderNames.COOKIE);
+        Set<Cookie> cookie = decoder.decode(cookieVallue);
+        return cookie;
     }
 
-    public long getDateHeader(String name) {
-        return 0;
-    }
 
-   
     public String getHeader(String name) {
-        return null;
+        HttpHeaders headers = request.headers();
+        if (headers == null){
+            return "";
+        }
+        return headers.get(name);
     }
-   
-    public List<String> getHeaderNames() {
-        return null;
+
+    public Collection<String> getHeaderNames() {
+        HttpHeaders headers = request.headers();
+        if (headers == null){
+            return new ArrayList<>();
+        }
+        return headers.names();
     }
 
    
-    public int getIntHeader(String name) {
-        return 0;
+    public Long getDateHeader(String name) {
+        HttpHeaders headers = request.headers();
+        if (headers == null){
+            return null;
+        }
+        return headers.getTimeMillis(name);
     }
 
    
     public String getMethod() {
-        return null;
+        return request.method().name();
     }
 
-   
-    public String getPathInfo() {
-        return null;
-    }
-
-   
-    public String getPathTranslated() {
-        return null;
-    }
-
-   
     public String getContextPath() {
-        return null;
+        return handlerContext.getContextPath();
     }
 
    
     public String getQueryString() {
-        return null;
+        String url = request.uri();
+        return checkURL(url);
     }
 
-   
-    public String getRemoteUser() {
-        return null;
+    private String checkURL(String url){
+        if (StringKits.isEmpty(url)){
+            return null;
+        }
+        int index = url.lastIndexOf(QUESTION);
+        if (index == -1){
+            return null;
+        }
+        return url.substring(url.lastIndexOf(QUESTION) + 1,url.length());
+    }
+
+    public SocketAddress getRemoteAddress() {
+        return channel.remoteAddress();
     }
 
     public String getRequestedSessionId() {
@@ -94,27 +115,17 @@ public class HttpHandlerRequest {
 
    
     public String getRequestURI() {
-        return null;
+        return request.uri();
     }
 
-   
-    public StringBuffer getRequestURL() {
-        return null;
-    }
-
-   
-    public String getServletPath() {
-        return null;
-    }
-
-   
-    public HttpSession getSession(boolean create) {
-        return null;
-    }
-
-   
     public HttpSession getSession() {
-        return null;
+        String sessionId = "";
+        for(Cookie cookie:getCookies()){
+            if (NETCATID.equals(cookie.name())){
+                sessionId = cookie.value();
+            }
+        }
+        return handlerContext.getSession(sessionId);
     }
 
     public void login(String username, String password) {
@@ -251,4 +262,9 @@ public class HttpHandlerRequest {
         return 0;
     }
 
+    public static void main(String[] args) {
+        String url = "http://www.localhost.com/ask";
+        String queryString = url.substring(url.lastIndexOf(QUESTION) + 1,url.length());
+        System.out.println(url.lastIndexOf(QUESTION));
+    }
 }

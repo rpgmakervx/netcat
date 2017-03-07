@@ -1,4 +1,4 @@
-package org.easyarch.netcat.mvc.route;
+package org.easyarch.netcat.mvc.action;
 
 /**
  * Created by xingtianyu on 17-3-2
@@ -6,6 +6,6 @@ package org.easyarch.netcat.mvc.route;
  * description:
  */
 
-public interface Router {
+public interface Action {
 
 }

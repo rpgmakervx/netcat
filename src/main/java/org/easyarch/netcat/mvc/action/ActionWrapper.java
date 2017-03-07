@@ -1,6 +1,6 @@
-package org.easyarch.netcat.mvc.route;
+package org.easyarch.netcat.mvc.action;
 
-import org.easyarch.netcat.mvc.route.filter.Filter;
+import org.easyarch.netcat.mvc.action.filter.Filter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,41 +11,41 @@ import java.util.List;
  * description:
  */
 
-public class RouteWrapper {
+public class ActionWrapper {
 
-    private Router self;
+    private Action self;
 
     private int index;
 
-    private RouteType type;
+    private ActionType type;
 
-    private RouteWrapper pre;
+    private ActionWrapper pre;
 
-    public RouteWrapper(Router router){
-        this.self = router;
-        this.type = RouteType.getType(router);
+    public ActionWrapper(Action action){
+        this.self = action;
+        this.type = ActionType.getType(action);
         this.index = 0;
         this.pre = null;
     }
-    public RouteWrapper(Router router,int index){
-        this.self = router;
-        this.type = RouteType.getType(router);
+    public ActionWrapper(Action action, int index){
+        this.self = action;
+        this.type = ActionType.getType(action);
         this.index = index;
         this.pre = null;
     }
 
-    public RouteWrapper(Router self, int index, RouteType type) {
+    public ActionWrapper(Action self, int index, ActionType type) {
         this.self = self;
         this.index = index;
         this.type = type;
         this.pre = null;
     }
 
-    public Router getRouter() {
+    public Action getRouter() {
         return self;
     }
 
-    public void setRouter(Router self) {
+    public void setRouter(Action self) {
         this.self = self;
     }
 
@@ -57,29 +57,29 @@ public class RouteWrapper {
         this.index = index;
     }
 
-    public RouteType getType() {
+    public ActionType getType() {
         return type;
     }
 
-    public void setType(RouteType type) {
+    public void setType(ActionType type) {
         this.type = type;
     }
 
-    public RouteWrapper getPreRouter() {
+    public ActionWrapper getPreRouter() {
         return pre;
     }
 
-    public void setPreRouter(RouteWrapper wrapper) {
+    public void setPreRouter(ActionWrapper wrapper) {
         this.pre = wrapper;
     }
 
     public List<Filter> getFilters(){
         List<Filter> filter = new ArrayList<>();
-        RouteWrapper wrapper = this;
+        ActionWrapper wrapper = this;
         while (wrapper != null){
-            RouteType type = wrapper.getType();
+            ActionType type = wrapper.getType();
             System.out.println("type:"+type);
-            if (type == RouteType.FILTER){
+            if (type == ActionType.FILTER){
                 System.out.println("get filter");
                 filter.add((Filter) wrapper.getRouter());
             }

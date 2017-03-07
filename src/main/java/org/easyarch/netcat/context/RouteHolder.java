@@ -1,8 +1,8 @@
 package org.easyarch.netcat.context;
 
-import org.easyarch.netcat.mvc.route.RouteWrapper;
-import org.easyarch.netcat.mvc.route.Router;
-import org.easyarch.netcat.mvc.route.filter.Filter;
+import org.easyarch.netcat.mvc.action.ActionWrapper;
+import org.easyarch.netcat.mvc.action.Action;
+import org.easyarch.netcat.mvc.action.filter.Filter;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -20,10 +20,10 @@ public class RouteHolder {
     /**
      * handler写path; filter写类全名
      */
-    private static Map<String, RouteWrapper> routers = new LinkedHashMap<>();
+    private static Map<String, ActionWrapper> routers = new LinkedHashMap<>();
 
-    public Router getRouter(String path) {
-        RouteWrapper wrapper = routers.get(path);
+    public Action getRouter(String path) {
+        ActionWrapper wrapper = routers.get(path);
         if (wrapper == null) {
             return null;
         }
@@ -31,18 +31,18 @@ public class RouteHolder {
     }
 
     public List<Filter> getFilters(String path) {
-        RouteWrapper wrapper = routers.get(path);
+        ActionWrapper wrapper = routers.get(path);
         if (wrapper == null) {
             return new ArrayList<>();
         }
         return wrapper.getFilters();
     }
 
-    public void addRouter(String path, Router router) {
+    public void addRouter(String path, Action action) {
         int currentIndex = routers.size();
-        RouteWrapper wrapper = new RouteWrapper(router, currentIndex);
+        ActionWrapper wrapper = new ActionWrapper(action, currentIndex);
         int index = 0;
-        for (RouteWrapper rw:routers.values()){
+        for (ActionWrapper rw:routers.values()){
             if (index == currentIndex - 1){
                 System.out.println("add pre wrapper:"+rw.getType());
                 wrapper.setPreRouter(rw);

@@ -2,7 +2,7 @@ package org.easyarch.netcat.mvc;
 
 
 import org.easyarch.netcat.mvc.entity.Json;
-import org.easyarch.netcat.mvc.route.handler.HttpHandler;
+import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 
 /**
  * Description :

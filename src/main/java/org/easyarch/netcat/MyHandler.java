@@ -13,9 +13,8 @@ import org.easyarch.netcat.mvc.entity.Json;
 
 public class MyHandler implements JsonHttpHandler {
     @Override
-    public Json handle(HttpHandlerRequest request, HttpHandlerResponse response) throws Exception {
+    public void handle(HttpHandlerRequest request, HttpHandlerResponse response) throws Exception {
         Json json = new Json();
         json.put("message","hello world");
-        return json;
     }
 }

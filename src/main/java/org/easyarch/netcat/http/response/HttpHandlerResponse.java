@@ -2,7 +2,7 @@ package org.easyarch.netcat.http.response;
 
 import io.netty.handler.codec.http.FullHttpResponse;
 import org.easyarch.netcat.context.HandlerContext;
-import org.easyarch.netcat.http.Cookie;
+import org.easyarch.netcat.http.HttpCookie;
 
 import java.util.Collection;
 
@@ -31,7 +31,7 @@ public class HttpHandlerResponse {
         this.handlerContext = handlerContext;
     }
 
-    public void addCookie(Cookie cookie) {
+    public void addCookie(HttpCookie httpCookie) {
 
     }
 
