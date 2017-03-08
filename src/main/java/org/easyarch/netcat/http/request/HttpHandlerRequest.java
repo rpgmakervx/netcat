@@ -10,12 +10,13 @@ import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.session.HttpSession;
 import org.easyarch.netcat.kits.StringKits;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketAddress;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -35,7 +36,8 @@ public class HttpHandlerRequest {
     private Map<String,Object> attributes = new ConcurrentHashMap<>();
 
     private String charset;
-
+    private ParamParser paramParser;
+    private Map<String,String> params ;
     private ServerCookieDecoder decoder;
     private static final String QUESTION = "?";
     private static final String NETCATID = "NETCATID";
@@ -45,6 +47,8 @@ public class HttpHandlerRequest {
         this.channel = channel;
         this.decoder = ServerCookieDecoder.LAX;
         this.charset = "UTF-8";
+        this.paramParser = new ParamParser(request);
+        this.params = paramParser.parse();
     }
 
     public HandlerContext getHandlerContext() {
@@ -185,99 +189,40 @@ public class HttpHandlerRequest {
 
 
     public String getParameter(String name) {
-
-        return null;
+        return this.params.get(name);
     }
 
    
-    public List<String> getParameterNames() {
-        return null;
+    public Collection<String> getParameterNames() {
+        return this.params.keySet();
     }
 
    
-    public String[] getParameterValues(String name) {
-        return new String[0];
+    public Collection<String> getParameterValues(String name) {
+        return this.params.values();
     }
 
    
-    public Map<String, String[]> getParameterMap() {
-        return null;
+    public Map<String, String> getParameterMap() {
+        return this.params;
     }
 
    
     public String getProtocol() {
-        return null;
+        return request.protocolVersion().text();
     }
 
-   
-    public String getScheme() {
-        return null;
-    }
-
-   
-    public String getServerName() {
-        return null;
-    }
-
-   
-    public int getServerPort() {
-        return 0;
-    }
-
-   
-    public BufferedReader getReader() throws IOException {
-        return null;
-    }
-
-   
     public String getRemoteAddr() {
-        return null;
+        return channel.remoteAddress().toString();
     }
 
    
-    public String getRemoteHost() {
-        return null;
-    }
-
-   
-    public void setAttribute(String name, Object o) {
-
+    public void setAttribute(String name, Object object) {
+        attributes.put(name,object);
     }
 
     public void removeAttribute(String name) {
-
+        attributes.remove(name);
     }
 
-    public boolean isSecure() {
-        return false;
-    }
-
-    public String getRealPath(String path) {
-        return null;
-    }
-
-    public int getRemotePort() {
-        return 0;
-    }
-
-   
-    public String getLocalName() {
-        return null;
-    }
-
-   
-    public String getLocalAddr() {
-        return null;
-    }
-
-   
-    public int getLocalPort() {
-        return 0;
-    }
-
-    public static void main(String[] args) {
-        String url = "http://www.localhost.com/ask";
-        String queryString = url.substring(url.lastIndexOf(QUESTION) + 1,url.length());
-        System.out.println(url.lastIndexOf(QUESTION));
-    }
 }
