@@ -45,4 +45,8 @@ public class HandlerContext {
     public HttpSession getSession(String cookieId){
         return sessionMap.get(cookieId);
     }
+
+    public void setSession(String cookieId,HttpSession session){
+        sessionMap.put(cookieId,session);
+    }
 }

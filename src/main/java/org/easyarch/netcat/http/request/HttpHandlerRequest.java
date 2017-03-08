@@ -14,7 +14,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketAddress;
+import java.nio.charset.Charset;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Description :
@@ -26,17 +28,23 @@ import java.util.*;
 public class HttpHandlerRequest {
 
     private FullHttpRequest request;
-
+    private HttpHeaders headers;
     private Channel channel;
 
     private HandlerContext handlerContext;
+    private Map<String,Object> attributes = new ConcurrentHashMap<>();
+
+    private String charset;
+
     private ServerCookieDecoder decoder;
     private static final String QUESTION = "?";
     private static final String NETCATID = "NETCATID";
     public HttpHandlerRequest(FullHttpRequest request, Channel channel){
         this.request = request;
+        this.headers = request.headers();
         this.channel = channel;
         this.decoder = ServerCookieDecoder.LAX;
+        this.charset = "UTF-8";
     }
 
     public HandlerContext getHandlerContext() {
@@ -48,35 +56,33 @@ public class HttpHandlerRequest {
     }
 
     public Set<Cookie> getCookies() {
-        String cookieVallue = request.headers().get(HttpHeaderNames.COOKIE);
+        String cookieVallue = this.headers.get(HttpHeaderNames.COOKIE);
         Set<Cookie> cookie = decoder.decode(cookieVallue);
         return cookie;
     }
 
 
     public String getHeader(String name) {
-        HttpHeaders headers = request.headers();
-        if (headers == null){
+        if (this.headers == null){
             return "";
         }
-        return headers.get(name);
+        String header = headers.get(name);
+        return encode(header);
     }
 
     public Collection<String> getHeaderNames() {
-        HttpHeaders headers = request.headers();
-        if (headers == null){
+        if (this.headers == null){
             return new ArrayList<>();
         }
-        return headers.names();
+        return this.headers.names();
     }
 
    
     public Long getDateHeader(String name) {
-        HttpHeaders headers = request.headers();
-        if (headers == null){
+        if (this.headers == null){
             return null;
         }
-        return headers.getTimeMillis(name);
+        return this.headers.getTimeMillis(name);
     }
 
    
@@ -102,9 +108,21 @@ public class HttpHandlerRequest {
         if (index == -1){
             return null;
         }
-        return url.substring(url.lastIndexOf(QUESTION) + 1,url.length());
+        String queryString = url.substring(url.lastIndexOf(QUESTION) + 1,url.length());
+        return encode(queryString);
     }
 
+    private String encode(String content){
+        if (StringKits.isEmpty(content)){
+            return null;
+        }
+        try {
+            return new String(content.getBytes(),charset);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return content;
+        }
+    }
     public SocketAddress getRemoteAddress() {
         return channel.remoteAddress();
     }
@@ -128,51 +146,46 @@ public class HttpHandlerRequest {
         return handlerContext.getSession(sessionId);
     }
 
-    public void login(String username, String password) {
-
-    }
-
-
-    public void logout(){
-
-    }
-
     public Object getAttribute(String name) {
-        return null;
+        return attributes.get(name);
     }
 
    
-    public List<String> getAttributeNames() {
-        return null;
+    public Collection<String> getAttributeNames() {
+        return attributes.keySet();
     }
 
    
     public String getCharacterEncoding() {
-        return null;
+        return this.charset;
     }
 
    
     public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
-
+        this.charset = Charset.forName(env).name();
     }
 
    
     public int getContentLength() {
-        return 0;
+        String length = getHeader(HttpHeaderNames.CONTENT_LENGTH.toString());
+        if (StringKits.isEmpty(length)) {
+            return 0;
+        }
+        return Integer.parseInt(length);
     }
 
-   
-    public long getContentLengthLong() {
-        return 0;
-    }
 
-   
     public String getContentType() {
-        return null;
+        String length = this.headers.get(HttpHeaderNames.CONTENT_TYPE);
+        if (StringKits.isEmpty(length)){
+            return null;
+        }
+        return length;
     }
 
 
     public String getParameter(String name) {
+
         return null;
     }
 
