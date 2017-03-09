@@ -1,7 +1,7 @@
 package org.easyarch.netcat.mvc.action.handler;
 
-import org.easyarch.netcat.http.request.HttpHandlerRequest;
-import org.easyarch.netcat.http.response.HttpHandlerResponse;
+import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
+import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
 import org.easyarch.netcat.mvc.action.Action;
 
 /**

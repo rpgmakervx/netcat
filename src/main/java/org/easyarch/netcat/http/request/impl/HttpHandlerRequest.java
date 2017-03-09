@@ -1,4 +1,4 @@
-package org.easyarch.netcat.http.request;
+package org.easyarch.netcat.http.request.impl;
 
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -7,17 +7,18 @@ import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import org.easyarch.netcat.context.HandlerContext;
+import org.easyarch.netcat.http.request.HandlerRequest;
+import org.easyarch.netcat.http.request.ParamParser;
 import org.easyarch.netcat.http.session.HttpSession;
 import org.easyarch.netcat.kits.StringKits;
 
 import java.io.UnsupportedEncodingException;
 import java.net.SocketAddress;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static org.easyarch.netcat.http.Const.NETCATID;
 
 /**
  * Description :
@@ -26,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * description:
  */
 
-public class HttpHandlerRequest {
+public class HttpHandlerRequest implements HandlerRequest {
 
     private FullHttpRequest request;
     private HttpHeaders headers;
@@ -40,7 +41,7 @@ public class HttpHandlerRequest {
     private Map<String,String> params ;
     private ServerCookieDecoder decoder;
     private static final String QUESTION = "?";
-    private static final String NETCATID = "NETCATID";
+
     public HttpHandlerRequest(FullHttpRequest request, Channel channel){
         this.request = request;
         this.headers = request.headers();
@@ -189,7 +190,8 @@ public class HttpHandlerRequest {
 
 
     public String getParameter(String name) {
-        return this.params.get(name);
+        String value = this.params.get(name);
+        return encode(value);
     }
 
    
@@ -199,7 +201,11 @@ public class HttpHandlerRequest {
 
    
     public Collection<String> getParameterValues(String name) {
-        return this.params.values();
+        List<String> values = new ArrayList<>();
+        for (String val:this.params.values()){
+            values.add(encode(val));
+        }
+        return values;
     }
 
    

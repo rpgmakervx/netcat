@@ -9,11 +9,12 @@ import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.context.RouteHolder;
 import org.easyarch.netcat.http.protocol.HttpHeaderName;
 import org.easyarch.netcat.http.protocol.HttpHeaderValue;
-import org.easyarch.netcat.http.request.HttpHandlerRequest;
-import org.easyarch.netcat.http.response.HttpHandlerResponse;
+import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
+import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
 import org.easyarch.netcat.kits.file.FileKits;
 import org.easyarch.netcat.mvc.action.Action;
 import org.easyarch.netcat.mvc.action.filter.Filter;
+import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
         FullHttpRequest request = (FullHttpRequest) msg;
         boolean isSuccess = request.decoderResult().isSuccess();
         String uri = request.uri();
-        String viewPath = context.getWebRoot();
+        String viewPath = context.getWebView();
         if (!isSuccess) {
             ctx.close();
             return;
@@ -73,7 +74,7 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         HttpHandlerRequest req = new HttpHandlerRequest(request,ctx.channel());
-        HttpHandlerResponse resp = new HttpHandlerResponse(response);
+        HttpHandlerResponse resp = new HttpHandlerResponse(response,ctx.channel());
         if (filters == null || filters.isEmpty() && action == null) {
             byte[] content = NOTFOUND_MSG.getBytes();
             ByteBuf buf = Unpooled.wrappedBuffer(content, 0, content.length);
@@ -84,16 +85,18 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
             ctx.writeAndFlush(response);
             return;
         }
-        if (!filters.isEmpty()) {
-            for (Filter filter : filters) {
-                boolean interrupt = filter.before(req, resp);
-            }
-        }
-        if (!filters.isEmpty()) {
-            for (Filter filter : filters) {
-                filter.after(req, resp);
-            }
-        }
+//        if (!filters.isEmpty()) {
+//            for (Filter filter : filters) {
+//                boolean interrupt = filter.before(req, resp);
+//            }
+//        }
+//        if (!filters.isEmpty()) {
+//            for (Filter filter : filters) {
+//                filter.after(req, resp);
+//            }
+//        }
+        HttpHandler handler = (HttpHandler)action;
+        handler.handle(req,resp);
     }
 
     @Override
