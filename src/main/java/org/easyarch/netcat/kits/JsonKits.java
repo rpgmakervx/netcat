@@ -2,6 +2,8 @@ package org.easyarch.netcat.kits;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.easyarch.netcat.mvc.entity.Json;
 
 import java.util.HashMap;
@@ -49,5 +51,13 @@ public class JsonKits {
     public static String toString(Json json){
         Map<String,Object> map = json.getJsonMap();
         return toString(map);
+    }
+
+    public static<T> byte[] serialize(T bean){
+        return JSONObject.toJSONBytes(bean, SerializerFeature.PrettyFormat);
+    }
+
+    public static<T> T deserialize(byte[] json,Class<T> cls){
+        return (T) JSONObject.parse(json, Feature.OrderedField);
     }
 }

@@ -11,7 +11,7 @@ import org.easyarch.netcat.mvc.action.Action;
  * description:
  */
 
-public interface HttpHandler<T> extends Action {
+public interface HttpHandler extends Action {
 
     public void handle(HttpHandlerRequest request, HttpHandlerResponse response) throws Exception;
 }

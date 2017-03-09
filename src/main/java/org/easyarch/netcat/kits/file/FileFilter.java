@@ -11,5 +11,30 @@ import java.io.File;
 
 public interface FileFilter {
 
+    String TXT = ".txt";
+    String JSON= ".json";
+    String HTML = ".html";
+    String CSS = ".css";
+    String JS = ".js";
+
+    String PNG = ".png";
+    String JPG = ".jpg";
+    String JPEG = ".jpeg";
+    String GIF = ".gif";
+
+    String EOT = ".eot";
+    String TTF = ".ttf";
+    String WOFF = ".woff";
+    String SVG = ".svg";
+
+    String DOCX = ".docx";
+    String DOC = ".doc";
+    String XLSX = ".xlsx";
+    String XLS = ".xls";
+    String PDF = ".pdf";
+    
+    String IMAGEPATTERN = "[png|jpg|jpeg|gif]";
+
+
     public boolean accept(File file);
 }

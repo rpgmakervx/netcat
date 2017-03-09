@@ -31,13 +31,13 @@ public class FileKits {
      */
     public static final long ONE_GB = ONE_KB * ONE_MB;
 
-    private static boolean exists(String path) {
+    public static boolean exists(String path) {
         if (path == null)
             return false;
         return exists(new File(path));
     }
 
-    private static boolean exists(File file) {
+    public static boolean exists(File file) {
         return file == null ? false : file.exists();
     }
 

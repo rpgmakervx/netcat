@@ -7,14 +7,13 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.*;
 import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.context.RouteHolder;
-import org.easyarch.netcat.http.protocol.HttpHeaderName;
-import org.easyarch.netcat.http.protocol.HttpHeaderValue;
 import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
 import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
-import org.easyarch.netcat.kits.file.FileKits;
 import org.easyarch.netcat.mvc.action.Action;
 import org.easyarch.netcat.mvc.action.filter.Filter;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
+import org.easyarch.netcat.mvc.action.handler.impl.DefaultHttpHandler;
+import org.easyarch.netcat.mvc.action.handler.impl.NotFoundHandler;
 
 import java.util.List;
 
@@ -35,9 +34,13 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
     private HandlerContext context;
     private RouteHolder holder;
 
+    private HttpHandler defaultHttpHandler;
+    private HttpHandler notFoundHttpHandler;
     public HttpDispatcherHandler(HandlerContext context, RouteHolder holder) {
         this.context = context;
         this.holder = holder;
+        this.defaultHttpHandler = new DefaultHttpHandler();
+        this.notFoundHttpHandler = new NotFoundHandler();
     }
 
     @Override
@@ -55,34 +58,18 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
             ctx.close();
             return;
         }
-        StringBuffer resourcePath = new StringBuffer();
-        resourcePath.append(viewPath);
-        resourcePath.append(uri);
-        byte[] file = FileKits.read(resourcePath.toString());
-        if (file != null) {
-            ByteBuf buf = Unpooled.wrappedBuffer(file, 0, file.length);
-            FullHttpResponse copyResponse = new DefaultFullHttpResponse(
-                    HttpVersion.HTTP_1_1, HttpResponseStatus.OK, buf);
-            HttpHeaders headers = copyResponse.headers();
-            headers.set(HttpHeaderName.CONTENT_LENGTH, file.length);
-            ctx.writeAndFlush(copyResponse);
-            return;
-        }
-        List<Filter> filters = holder.getFilters(uri);
-        Action action = holder.getRouter(uri);
-        System.out.println("filters:" + filters);
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-        HttpHandlerRequest req = new HttpHandlerRequest(request,ctx.channel());
-        HttpHandlerResponse resp = new HttpHandlerResponse(response,ctx.channel());
+        HttpHandlerRequest req = new HttpHandlerRequest(request,context,ctx.channel());
+        HttpHandlerResponse resp = new HttpHandlerResponse(response,context,ctx.channel());
+
+        defaultHttpHandler.handle(req,resp);
+
+        List<Filter> filters = holder.getFilters(uri);
+        Action action = holder.getRouter(uri);
+        System.out.println("filters:" + filters+" action:"+action);
         if (filters == null || filters.isEmpty() && action == null) {
-            byte[] content = NOTFOUND_MSG.getBytes();
-            ByteBuf buf = Unpooled.wrappedBuffer(content, 0, content.length);
-            HttpHeaders headers = response.headers();
-            headers.set(HttpHeaderName.CONTENT_TYPE, HttpHeaderValue.TEXT_HTML);
-            headers.set(HttpHeaderName.CONTENT_LENGTH, content.length);
-            response = response.copy(buf);
-            ctx.writeAndFlush(response);
+            notFoundHttpHandler.handle(req,resp);
             return;
         }
 //        if (!filters.isEmpty()) {

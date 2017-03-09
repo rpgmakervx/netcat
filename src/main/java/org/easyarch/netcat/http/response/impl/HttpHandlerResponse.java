@@ -13,12 +13,14 @@ import org.easyarch.netcat.kits.ByteUtil;
 import org.easyarch.netcat.kits.JsonKits;
 import org.easyarch.netcat.kits.StringKits;
 import org.easyarch.netcat.kits.file.FileKits;
+import org.easyarch.netcat.mvc.entity.Json;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Map;
 
 import static org.easyarch.netcat.http.Const.NETCATID;
+import static org.easyarch.netcat.http.Const.POINT;
 
 /**
  * Description :
@@ -34,21 +36,22 @@ public class HttpHandlerResponse implements HandlerResponse {
     private HttpHeaders headers;
     private String charset;
 
-    public HandlerContext handlerContext;
+    public HandlerContext context;
 
-    public HttpHandlerResponse(FullHttpResponse response, Channel channel) {
+    public HttpHandlerResponse(FullHttpResponse response,HandlerContext context, Channel channel) {
+        this.context = context;
         this.response = response;
         this.headers = this.response.headers();
         this.charset = "UTF-8";
         this.channel = channel;
     }
 
-    public HandlerContext getHandlerContext() {
-        return handlerContext;
+    public HandlerContext getContext() {
+        return context;
     }
 
-    public void setHandlerContext(HandlerContext handlerContext) {
-        this.handlerContext = handlerContext;
+    public void setContext(HandlerContext context) {
+        this.context = context;
     }
 
     public void addCookie(Cookie cookie) {
@@ -123,8 +126,22 @@ public class HttpHandlerResponse implements HandlerResponse {
         }
     }
 
-    public void write(byte[] content, String headerValue) {
-        setHeader(HttpHeaderNames.CONTENT_TYPE.toString(), headerValue);
+    public void write(byte[] content, String contentType,int statusCode) {
+        setHeader(HttpHeaderNames.CONTENT_TYPE.toString(), contentType);
+        setHeader(HttpHeaderNames.CONTENT_LENGTH.toString(), String.valueOf(content.length));
+        response = response.copy(ByteUtil.toByteBuf(content));
+        response.setStatus(HttpResponseStatus.valueOf(statusCode));
+        channel.writeAndFlush(response);
+    }
+    public void write(byte[] content, String contentType) {
+        setHeader(HttpHeaderNames.CONTENT_TYPE.toString(), contentType);
+        setHeader(HttpHeaderNames.CONTENT_LENGTH.toString(), String.valueOf(content.length));
+        response = response.copy(ByteUtil.toByteBuf(content));
+        channel.writeAndFlush(response);
+    }
+
+    @Override
+    public void write(byte[] content) {
         setHeader(HttpHeaderNames.CONTENT_LENGTH.toString(), String.valueOf(content.length));
         response = response.copy(ByteUtil.toByteBuf(content));
         channel.writeAndFlush(response);
@@ -134,25 +151,48 @@ public class HttpHandlerResponse implements HandlerResponse {
         write(content.getBytes(), HttpHeaderValue.TEXT_PLAIN);
     }
 
+    @Override
+    public void json(byte[] json) {
+        write(json,HttpHeaderValue.APPLICATION_JSON);
+    }
+
     public void json(String json) {
         write(json.getBytes(), HttpHeaderValue.APPLICATION_JSON);
     }
     public void json(Map<String,Object> json) {
         json(JsonKits.toString(json));
     }
+    @Override
+    public void json(Json json) {
+        json(json.getJsonMap());
+    }
 
-    public void html(String view) {
+    public void html(String view,int statusCode) {
         StringBuffer pathBuffer = new StringBuffer();
-        pathBuffer.append(handlerContext.getWebView())
-                .append(view)
-                .append(handlerContext.getViewPrefix())
-                .append(handlerContext.getViewSuffix());
+        pathBuffer.append(context.getWebView())
+                .append(context.getViewPrefix())
+                .append(view).append(POINT)
+                .append(context.getViewSuffix());
+        System.out.println("html path:"+pathBuffer);
         try {
             byte[] content = FileKits.read(pathBuffer.toString());
-            write(content,HttpHeaderValue.TEXT_HTML);
+            write(content,HttpHeaderValue.TEXT_HTML,statusCode);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void html(String view){
+        html(view,HttpResponseStatus.OK.code());
+    }
+    @Override
+    public void notFound(String view) {
+        html(view,HttpResponseStatus.NOT_FOUND.code());
+    }
+
+    @Override
+    public void serverError(String view) {
+        html(view,HttpResponseStatus.INTERNAL_SERVER_ERROR.code());
     }
 
     public void image(byte[] bytes){
@@ -164,7 +204,7 @@ public class HttpHandlerResponse implements HandlerResponse {
         setHeader(HttpHeaderNames.LOCATION.toString(),url);
     }
 
-    public void download(byte[] bytes,String filename,String headerValue){
+    public void download(byte[] bytes,String filename,String contentType){
         String fn = filename;
         try {
             fn = new String(filename.getBytes("GB2312"),"ISO8859-1");
@@ -172,7 +212,7 @@ public class HttpHandlerResponse implements HandlerResponse {
             e.printStackTrace();
         }
         setHeader(HttpHeaderNames.CONTENT_DISPOSITION.toString(),HttpHeaderValue.ATTACHMENT + fn);
-        write(bytes,headerValue.toString());
+        write(bytes,contentType.toString());
     }
 
 }

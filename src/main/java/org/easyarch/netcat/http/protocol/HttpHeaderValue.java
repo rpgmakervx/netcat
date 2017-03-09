@@ -14,10 +14,16 @@ public class HttpHeaderValue {
     public static final String JS = "application/javascript;charset=UTF-8";
     public static final String CSS = "text/css;charset=UTF-8";
     public static final String SVG = "image/svg+xml;charset=UTF-8";
+    public static final String WOFF = "application/x-font-woff;charset=UTF-8";
+    public static final String TTF_EOT = "application/octet-stream;charset=UTF-8";
+    public static final String ZIP = "application/zip;charset=UTF-8";
+    public static final String MP3 = "audio/mpeg;charset=UTF-8";
+    public static final String MP4 = "video/mp4;charset=UTF-8";
 
     public static final String IMAGE = "image/png";
     public static final String PDF = "application/pdf";
     public static final String DOC = "application/msword";
+    public static final String XLS = "application/vnd.ms-excel";
 
     public static final String ATTACHMENT = "attachment;filename=";
 

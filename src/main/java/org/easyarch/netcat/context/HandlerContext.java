@@ -18,28 +18,27 @@ public class HandlerContext {
     public static final String DEFAULT_CONTEXT = File.separator;
     public static final String DEFAULT_SUFFIX = "html";
 
+    public static final String DEFAULT_RESOURCE = HandlerContext.class.getResource("/").getPath();
+
     private static Map<String,HttpSession> sessionMap = new ConcurrentHashMap<>();
 
     public String contextPath = File.separator;
-    public String realPath;
+
+    public String notFoundPage = "notfound.html";
     /**
      * web资源路径
      */
-    public String webView = "/home/code4j/58daojia/技术/echarts-2.2.7/";
+    public String webView = DEFAULT_RESOURCE;
     /**
      * 视图资源路径前缀
      */
-    public String viewPrefix;
+    public String viewPrefix = "";
     /**
      * 视图资源文件后缀（默认html）
      */
     public String viewSuffix = DEFAULT_SUFFIX;
 
     public HandlerContext(){
-    }
-
-    public String getRealPath() {
-        return realPath;
     }
 
     public String getContextPath(){
@@ -56,10 +55,6 @@ public class HandlerContext {
 
     public void setContextPath(String contextPath) {
         this.contextPath = contextPath;
-    }
-
-    public void setRealPath(String realPath) {
-        this.realPath = realPath;
     }
 
     public String getViewPrefix() {
@@ -85,4 +80,13 @@ public class HandlerContext {
     public void setSession(String cookieId,HttpSession session){
         sessionMap.put(cookieId,session);
     }
+
+    public String getNotFoundPage() {
+        return notFoundPage;
+    }
+
+    public void setNotFoundPage(String notFoundPage) {
+        this.notFoundPage = notFoundPage;
+    }
+
 }

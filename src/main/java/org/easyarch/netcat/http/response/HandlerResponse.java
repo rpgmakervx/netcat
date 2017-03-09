@@ -2,6 +2,7 @@ package org.easyarch.netcat.http.response;
 
 import io.netty.handler.codec.http.cookie.Cookie;
 import org.easyarch.netcat.context.HandlerContext;
+import org.easyarch.netcat.mvc.entity.Json;
 
 import java.util.Collection;
 import java.util.Map;
@@ -15,9 +16,9 @@ import java.util.Map;
 public interface HandlerResponse {
 
 
-    public HandlerContext getHandlerContext();
+    public HandlerContext getContext();
 
-    public void setHandlerContext(HandlerContext handlerContext);
+    public void setContext(HandlerContext context);
 
     public void addCookie(Cookie cookie);
 
@@ -48,15 +49,26 @@ public interface HandlerResponse {
 
     public void setContentType(String type) ;
 
+    public void write(byte[] content, String headerValue,int statusCode);
+
     public void write(byte[] content, String headerValue);
+    public void write(byte[] content);
 
     public void text(String content);
+
+    public void json(byte[] json);
 
     public void json(String json);
 
     public void json(Map<String,Object> json);
 
+    public void json(Json json);
+
     public void html(String view);
+
+    public void notFound(String view);
+
+    public void serverError(String view);
 
     public void image(byte[] bytes);
 

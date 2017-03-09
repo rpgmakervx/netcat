@@ -33,7 +33,7 @@ public class HttpHandlerRequest implements HandlerRequest {
     private HttpHeaders headers;
     private Channel channel;
 
-    private HandlerContext handlerContext;
+    private HandlerContext context;
     private Map<String,Object> attributes = new ConcurrentHashMap<>();
 
     private String charset;
@@ -42,7 +42,8 @@ public class HttpHandlerRequest implements HandlerRequest {
     private ServerCookieDecoder decoder;
     private static final String QUESTION = "?";
 
-    public HttpHandlerRequest(FullHttpRequest request, Channel channel){
+    public HttpHandlerRequest(FullHttpRequest request,HandlerContext context, Channel channel){
+        this.context = context;
         this.request = request;
         this.headers = request.headers();
         this.channel = channel;
@@ -52,12 +53,12 @@ public class HttpHandlerRequest implements HandlerRequest {
         this.params = paramParser.parse();
     }
 
-    public HandlerContext getHandlerContext() {
-        return handlerContext;
+    public HandlerContext getContext() {
+        return context;
     }
 
-    public void setHandlerContext(HandlerContext handlerContext) {
-        this.handlerContext = handlerContext;
+    public void setContext(HandlerContext context) {
+        this.context = context;
     }
 
     public Set<Cookie> getCookies() {
@@ -96,7 +97,7 @@ public class HttpHandlerRequest implements HandlerRequest {
     }
 
     public String getContextPath() {
-        return handlerContext.getContextPath();
+        return context.getContextPath();
     }
 
    
@@ -148,7 +149,7 @@ public class HttpHandlerRequest implements HandlerRequest {
                 sessionId = cookie.value();
             }
         }
-        return handlerContext.getSession(sessionId);
+        return context.getSession(sessionId);
     }
 
     public Object getAttribute(String name) {
