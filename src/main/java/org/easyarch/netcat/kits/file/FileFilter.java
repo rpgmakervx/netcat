@@ -33,7 +33,9 @@ public interface FileFilter {
     String XLS = ".xls";
     String PDF = ".pdf";
     
-    String IMAGEPATTERN = "[png|jpg|jpeg|gif]";
+    String IMAGEPATTERN = "(.png|.jpg|.jpeg|.gif)";
+
+    String CACHEPATTERN = "(.html|.css|.js|.png|.jpg|.jpeg|.gif|.eot|.ttf|.woff|.svg|)";
 
 
     public boolean accept(File file);

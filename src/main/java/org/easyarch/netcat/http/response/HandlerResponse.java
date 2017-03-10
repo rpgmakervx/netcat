@@ -25,6 +25,7 @@ public interface HandlerResponse {
     public void setDateHeader(String name, long date);
 
     public void setHeader(String name, String value);
+    public void addHeader(String name, String value);
 
     public void setStatus(int code) ;
 
@@ -53,6 +54,7 @@ public interface HandlerResponse {
 
     public void write(byte[] content, String headerValue);
     public void write(byte[] content);
+    public void write();
 
     public void text(String content);
 

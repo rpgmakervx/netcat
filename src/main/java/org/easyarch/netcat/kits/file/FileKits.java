@@ -4,6 +4,8 @@ package org.easyarch.netcat.kits.file;/**
  *  下午7:42
  */
 
+import org.easyarch.netcat.kits.HashKits;
+
 import java.io.*;
 import java.io.FileFilter;
 import java.util.ArrayList;
@@ -258,6 +260,10 @@ public class FileKits {
         return listDirectoryRecursive(new File(path));
     }
 
+    public static Date getLastModifyTime(String path){
+        File file = new File(path);
+        return new Date(file.lastModified());
+    }
 
     public static boolean isFileNewer(File file, long timeMillis) {
         if (file == null) {
@@ -319,6 +325,14 @@ public class FileKits {
 
     public static List<File> filter(String path,FileFilter filter){
         return filter(new File(path),filter);
+    }
+
+    public static String md5(String path){
+        return HashKits.md5(read(path));
+    }
+
+    public static String md5(File file){
+        return md5(file.getPath());
     }
 
     public static String byteCountToDisplaySize(long size) {

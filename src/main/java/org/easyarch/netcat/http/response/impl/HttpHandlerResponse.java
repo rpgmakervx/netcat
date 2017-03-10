@@ -7,6 +7,7 @@ import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.cookie.Cookie;
 import org.easyarch.netcat.context.HandlerContext;
+import org.easyarch.netcat.http.protocol.HttpHeaderName;
 import org.easyarch.netcat.http.protocol.HttpHeaderValue;
 import org.easyarch.netcat.http.response.HandlerResponse;
 import org.easyarch.netcat.kits.ByteUtil;
@@ -59,11 +60,16 @@ public class HttpHandlerResponse implements HandlerResponse {
     }
 
     public void setDateHeader(String name, long date) {
-        this.headers.add(name, date);
+        this.headers.set(name, date);
     }
 
     public void setHeader(String name, String value) {
-        this.headers.set(name, value);
+        this.response.headers().set(name, value);
+    }
+
+    @Override
+    public void addHeader(String name, String value) {
+        this.headers.add(name,value);
     }
 
     public void setStatus(int code) {
@@ -127,25 +133,32 @@ public class HttpHandlerResponse implements HandlerResponse {
     }
 
     public void write(byte[] content, String contentType,int statusCode) {
-        setHeader(HttpHeaderNames.CONTENT_TYPE.toString(), contentType);
-        setHeader(HttpHeaderNames.CONTENT_LENGTH.toString(), String.valueOf(content.length));
+        setHeader(HttpHeaderName.CONTENT_TYPE ,contentType);
+        setHeader(HttpHeaderName.CONTENT_LENGTH, String.valueOf(content.length));
         response = response.copy(ByteUtil.toByteBuf(content));
         response.setStatus(HttpResponseStatus.valueOf(statusCode));
         channel.writeAndFlush(response);
     }
+
     public void write(byte[] content, String contentType) {
-        setHeader(HttpHeaderNames.CONTENT_TYPE.toString(), contentType);
-        setHeader(HttpHeaderNames.CONTENT_LENGTH.toString(), String.valueOf(content.length));
+        setHeader(HttpHeaderName.CONTENT_TYPE, contentType);
+        setHeader(HttpHeaderName.CONTENT_LENGTH, String.valueOf(content.length));
         response = response.copy(ByteUtil.toByteBuf(content));
         channel.writeAndFlush(response);
     }
 
     @Override
     public void write(byte[] content) {
-        setHeader(HttpHeaderNames.CONTENT_LENGTH.toString(), String.valueOf(content.length));
+        setHeader(HttpHeaderName.CONTENT_LENGTH, String.valueOf(content.length));
         response = response.copy(ByteUtil.toByteBuf(content));
         channel.writeAndFlush(response);
     }
+
+    @Override
+    public void write() {
+        channel.writeAndFlush(response);
+    }
+
 
     public void text(String content) {
         write(content.getBytes(), HttpHeaderValue.TEXT_PLAIN);
@@ -173,7 +186,6 @@ public class HttpHandlerResponse implements HandlerResponse {
                 .append(context.getViewPrefix())
                 .append(view).append(POINT)
                 .append(context.getViewSuffix());
-        System.out.println("html path:"+pathBuffer);
         try {
             byte[] content = FileKits.read(pathBuffer.toString());
             write(content,HttpHeaderValue.TEXT_HTML,statusCode);
@@ -202,6 +214,7 @@ public class HttpHandlerResponse implements HandlerResponse {
     public void redirect(String url){
         response.setStatus(HttpResponseStatus.FOUND);
         setHeader(HttpHeaderNames.LOCATION.toString(),url);
+        write();
     }
 
     public void download(byte[] bytes,String filename,String contentType){

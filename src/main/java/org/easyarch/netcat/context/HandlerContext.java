@@ -18,6 +18,11 @@ public class HandlerContext {
     public static final String DEFAULT_CONTEXT = File.separator;
     public static final String DEFAULT_SUFFIX = "html";
 
+    public int maxAge = 3600;
+
+    public boolean negoCache = false;
+    public boolean strongCache = true;
+
     public static final String DEFAULT_RESOURCE = HandlerContext.class.getResource("/").getPath();
 
     private static Map<String,HttpSession> sessionMap = new ConcurrentHashMap<>();
@@ -89,4 +94,27 @@ public class HandlerContext {
         this.notFoundPage = notFoundPage;
     }
 
+    public int getMaxAge(){
+        return maxAge;
+    }
+
+    public void setMaxAge(int maxAge){
+        this.maxAge = maxAge;
+    }
+
+    public boolean isNegoCache() {
+        return negoCache;
+    }
+
+    public void setNegoCache(boolean negoCache) {
+        this.negoCache = negoCache;
+    }
+
+    public boolean isStrongCache() {
+        return strongCache;
+    }
+
+    public void setStrongCache(boolean strongCache) {
+        this.strongCache = strongCache;
+    }
 }

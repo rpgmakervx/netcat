@@ -1,9 +1,12 @@
 package org.easyarch.netcat.mvc.action.handler.impl;
 
 import org.easyarch.netcat.context.HandlerContext;
+import org.easyarch.netcat.http.protocol.HttpHeaderName;
 import org.easyarch.netcat.http.protocol.HttpHeaderValue;
+import org.easyarch.netcat.http.protocol.HttpStatus;
 import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
 import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
+import org.easyarch.netcat.kits.TimeKits;
 import org.easyarch.netcat.kits.file.FileKits;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 
@@ -15,7 +18,7 @@ import static org.easyarch.netcat.kits.file.FileFilter.*;
 /**
  * Created by xingtianyu on 17-3-9
  * 下午3:53
- * description:
+ * description:处理静态资源，以及强缓存和协商缓存
  */
 
 public class DefaultHttpHandler implements HttpHandler {
@@ -25,36 +28,29 @@ public class DefaultHttpHandler implements HttpHandler {
         HandlerContext context = request.getContext();
         String webView = context.getWebView();
         String uri = request.getRequestURI();
-        Pattern pattern = Pattern.compile(IMAGEPATTERN);
+        Pattern cachedPattern = Pattern.compile(CACHEPATTERN);
 
         StringBuffer resourcePath = new StringBuffer();
         resourcePath.append(webView).append(uri);
-
-        String suffix = uri.substring(uri.lastIndexOf(".") + 1, uri.length());
         int point = uri.lastIndexOf(".");
         if (point == -1){
             return ;
         }
+        String suffix = uri.substring(point, uri.length());
         String filename = uri.substring(uri.lastIndexOf(File.separator),point);
         if (!FileKits.exists(resourcePath.toString())){
             return ;
         }
-        if (suffix.endsWith(HTML)){
-            response.html(resourcePath.toString());
-        }else if (suffix.endsWith(CSS)){
-            response.write(FileKits.read(resourcePath.toString()),HttpHeaderValue.CSS);
-        }else if (suffix.endsWith(JS)){
-            response.write(FileKits.read(resourcePath.toString()),HttpHeaderValue.JS);
-        }else if (suffix.endsWith(JSON)){
-            response.json(FileKits.read(resourcePath.toString()));
-        }else if (pattern.matcher(suffix).matches()){
-            response.image(FileKits.read(resourcePath.toString()));
-        }else if (suffix.endsWith(EOT)||suffix.endsWith(TTF)){
-            response.write(FileKits.read(resourcePath.toString()),HttpHeaderValue.TTF_EOT);
-        }else if (suffix.endsWith(WOFF)){
-            response.write(FileKits.read(resourcePath.toString()),HttpHeaderValue.WOFF);
-        }else if (suffix.endsWith(SVG)){
-            response.write(FileKits.read(resourcePath.toString()),HttpHeaderValue.SVG);
+
+        if (cachedPattern.matcher(suffix).matches()){
+            checkStrongCache(request,response);
+            boolean cached = checkNagoCache(request,response,suffix,resourcePath.toString());
+            if (cached){
+                response.write();
+                return;
+            }
+            response.write(FileKits.read(resourcePath.toString())
+                    ,HttpHeaderValue.getContentType(suffix));
         }else if (suffix.endsWith(DOCX)||suffix.endsWith(DOC)){
             response.download(FileKits.read(resourcePath.toString()),filename,HttpHeaderValue.DOC);
         }else if (suffix.endsWith(XLS)||suffix.endsWith(XLSX)){
@@ -62,7 +58,40 @@ public class DefaultHttpHandler implements HttpHandler {
         }else if (suffix.endsWith(PDF)){
             response.download(FileKits.read(resourcePath.toString()),filename,HttpHeaderValue.PDF);
         }else{
+            System.out.println("go to default");
             response.write(FileKits.read(resourcePath.toString()));
         }
+    }
+
+    private void checkStrongCache(HttpHandlerRequest request, HttpHandlerResponse response){
+        if (!request.getContext().isStrongCache()){
+            return ;
+        }
+        response.setHeader(HttpHeaderName.CACHE_CONTROL,
+                HttpHeaderValue.MAXAGE+String.valueOf(request.getContext().getMaxAge()));
+    }
+
+    private boolean checkNagoCache(HttpHandlerRequest request, HttpHandlerResponse response,String type,String resourcePath){
+        if (!request.getContext().isNegoCache()){
+            return false;
+        }
+        String ifNoneMatch = request.getHeader(HttpHeaderName.IF_NONE_MATCH);
+        String etag = FileKits.md5(resourcePath);
+        String lastModify = TimeKits.getGMTTime(FileKits.getLastModifyTime(resourcePath));
+        String lastModifySince = request.getHeader(HttpHeaderName.IF_MODIFIED_SINCE);
+        if (etag.equals(ifNoneMatch)){
+            if (lastModify.equals(lastModifySince)){
+                response.setStatus(HttpStatus.NOT_MODIFIED);
+                return true;
+            }
+        }
+        response.setHeader(HttpHeaderName.LAST_MODIFIED,lastModify);
+        response.setHeader(HttpHeaderName.ETAG,etag);
+        return false;
+    }
+
+    public static void main(String[] args) {
+        Pattern pattern = Pattern.compile("(.png|.jpg|.jpeg|.gif)");
+        System.out.println(pattern.matcher(".jpg").matches());
     }
 }
