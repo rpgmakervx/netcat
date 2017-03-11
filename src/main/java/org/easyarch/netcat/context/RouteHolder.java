@@ -27,7 +27,7 @@ public class RouteHolder {
         if (wrapper == null) {
             return null;
         }
-        return wrapper.getRouter();
+        return wrapper.getAction();
     }
 
     public List<Filter> getFilters(String path) {
@@ -45,7 +45,7 @@ public class RouteHolder {
         for (ActionWrapper rw:routers.values()){
             if (index == currentIndex - 1){
                 System.out.println("add pre wrapper:"+rw.getType());
-                wrapper.setPreRouter(rw);
+                wrapper.setPreAction(rw);
                 break;
             }
             index++;

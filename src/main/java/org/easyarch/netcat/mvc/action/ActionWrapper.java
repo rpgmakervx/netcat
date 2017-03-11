@@ -3,6 +3,7 @@ package org.easyarch.netcat.mvc.action;
 import org.easyarch.netcat.mvc.action.filter.Filter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,11 +42,11 @@ public class ActionWrapper {
         this.pre = null;
     }
 
-    public Action getRouter() {
+    public Action getAction() {
         return self;
     }
 
-    public void setRouter(Action self) {
+    public void setAction(Action self) {
         this.self = self;
     }
 
@@ -65,26 +66,34 @@ public class ActionWrapper {
         this.type = type;
     }
 
-    public ActionWrapper getPreRouter() {
+    public ActionWrapper getPreAction() {
         return pre;
     }
 
-    public void setPreRouter(ActionWrapper wrapper) {
+    public void setPreAction(ActionWrapper wrapper) {
         this.pre = wrapper;
     }
 
     public List<Filter> getFilters(){
         List<Filter> filter = new ArrayList<>();
         ActionWrapper wrapper = this;
+        boolean continuly = true;
         while (wrapper != null){
             ActionType type = wrapper.getType();
+            Action action = wrapper.getAction();
             System.out.println("type:"+type);
-            if (type == ActionType.FILTER){
+            if (type == ActionType.FILTER&&continuly){
                 System.out.println("get filter");
-                filter.add((Filter) wrapper.getRouter());
+                filter.add((Filter) action);
+                ActionWrapper preWrapper = wrapper.getPreAction();
+                if (preWrapper.getType() != ActionType.FILTER
+                        ||preWrapper == null){
+                    continuly = false;
+                }
             }
-            wrapper = wrapper.getPreRouter();
+            wrapper = wrapper.getPreAction();
         }
+        Collections.reverse(filter);
         return filter;
     }
 }

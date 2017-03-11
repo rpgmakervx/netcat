@@ -22,6 +22,21 @@ public class Json<V> {
     public Json(){
 
     }
+    public Json(Object ... datas){
+        init(datas);
+    }
+
+    private void init(Object ... datas){
+        int index = 0;
+        Object tmp = null;
+        for (Object data:datas){
+            if (index%2 == 1){
+                jsonMap.put(String.valueOf(tmp), (V) data);
+            }
+            tmp = data;
+            index++;
+        }
+    }
 
     public Json(Map<String,V> map){
         this.jsonMap = map;

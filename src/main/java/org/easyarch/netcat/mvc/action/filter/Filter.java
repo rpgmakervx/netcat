@@ -13,5 +13,5 @@ import org.easyarch.netcat.mvc.action.Action;
 public interface Filter extends Action {
 
     boolean before(HttpHandlerRequest request, HttpHandlerResponse response);
-    boolean after(HttpHandlerRequest request, HttpHandlerResponse response);
+    void after(HttpHandlerRequest request, HttpHandlerResponse response);
 }

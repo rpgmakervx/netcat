@@ -53,7 +53,6 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
         FullHttpRequest request = (FullHttpRequest) msg;
         boolean isSuccess = request.decoderResult().isSuccess();
         String uri = request.uri();
-        String viewPath = context.getWebView();
         if (!isSuccess) {
             ctx.close();
             return;
@@ -72,18 +71,21 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
             notFoundHttpHandler.handle(req,resp);
             return;
         }
-//        if (!filters.isEmpty()) {
-//            for (Filter filter : filters) {
-//                boolean interrupt = filter.before(req, resp);
-//            }
-//        }
-//        if (!filters.isEmpty()) {
-//            for (Filter filter : filters) {
-//                filter.after(req, resp);
-//            }
-//        }
+        if (!filters.isEmpty()) {
+            for (Filter filter : filters) {
+                boolean firehandler = filter.before(req, resp);
+                if (!firehandler){
+                    return;
+                }
+            }
+        }
         HttpHandler handler = (HttpHandler)action;
         handler.handle(req,resp);
+        if (!filters.isEmpty()) {
+            for (Filter filter : filters) {
+                filter.after(req, resp);
+            }
+        }
     }
 
     @Override
@@ -91,64 +93,17 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
         cause.printStackTrace();
         StringBuffer buffer = new StringBuffer();
         buffer.append("<h1>500 Server Error</h1>");
-        buffer.append("<p>" + cause.toString() + "</p>");
+        StringBuffer errorBuffer = new StringBuffer();
+        errorBuffer.append(cause.toString() );
+        StackTraceElement[] elements = cause.getStackTrace();
+        for (StackTraceElement e: elements){
+            errorBuffer.append("<br/><span style='margin-left:50px'>at  ").append(e).append("</span>");
+        }
+        buffer.append("<p>" + errorBuffer.toString() + "</p>");
         byte[] content = buffer.toString().getBytes();
         ByteBuf buf = Unpooled.wrappedBuffer(content, 0, content.length);
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.OK, buf);
         ctx.writeAndFlush(response);
     }
-    /**
-     * if (action instanceof ViewHttpHandler){
-     String view = ((ViewHttpHandler) action).handle(req,resp);
-     System.out.println("viewhandler:"+ view);
-     if (view.startsWith(REDIRECT)){
-     FullHttpResponse copyResponse = new DefaultFullHttpResponse(
-     HttpVersion.HTTP_1_1, HttpResponseStatus.FOUND);
-     ctx.writeAndFlush(copyResponse);
-     }else{
-     StringBuffer buffer = new StringBuffer();
-     buffer.append(viewPath);
-     buffer.append(view);
-     byte[] content = FileKits.read(buffer.toString());
-     System.out.println("path:"+buffer.toString());
-     System.out.println("file content:"+content.length);
-     ByteBuf buf = Unpooled.wrappedBuffer(content,0, content.length);
-     FullHttpResponse copyResponse = new DefaultFullHttpResponse(
-     HttpVersion.HTTP_1_1, HttpResponseStatus.OK,buf);
-     HttpHeaders headers = copyResponse.headers();
-     headers.set(HttpHeaderName.CONTENT_TYPE, HttpHeaderValue.TEXT_HTML);
-     headers.set(HttpHeaderName.CONTENT_LENGTH,content.length);
-     ctx.writeAndFlush(copyResponse);
-     }
-     }else if (action instanceof JsonHttpHandler){
-     Json json = ((JsonHttpHandler) action).handle(req,resp);
-     byte[] content = JSONObject.toJSONBytes(json.getJsonMap(),
-     SerializerFeature.PrettyFormat);
-     ByteBuf buf = Unpooled.wrappedBuffer(content,0, content.length);
-     FullHttpResponse copyResponse = new DefaultFullHttpResponse(
-     HttpVersion.HTTP_1_1, HttpResponseStatus.OK,buf);
-     HttpHeaders headers = copyResponse.headers();
-     headers.set(HttpHeaderName.CONTENT_TYPE, HttpHeaderValue.APPLICATION_JSON);
-     headers.set(HttpHeaderName.CONTENT_LENGTH,content.length);
-     ctx.writeAndFlush(copyResponse);
-     }else if (action instanceof StringHttpHandler){
-     byte[] content = ((StringHttpHandler) action).handle(req,resp).getBytes("UTF-8");
-     ByteBuf buf = Unpooled.wrappedBuffer(content,0, content.length);
-     FullHttpResponse copyResponse = new DefaultFullHttpResponse(
-     HttpVersion.HTTP_1_1, HttpResponseStatus.OK,buf);
-     HttpHeaders headers = copyResponse.headers();
-     headers.set(HttpHeaderName.CONTENT_TYPE, HttpHeaderValue.TEXT_PLAIN);
-     headers.set(HttpHeaderName.CONTENT_LENGTH,content.length);
-     ctx.writeAndFlush(copyResponse);
-     }else if (action instanceof ByteHttpHandler){
-     byte[] content = ((ByteHttpHandler) action).handle(req,resp);
-     ByteBuf buf = Unpooled.wrappedBuffer(content,0, content.length);
-     FullHttpResponse copyResponse = new DefaultFullHttpResponse(
-     HttpVersion.HTTP_1_1, HttpResponseStatus.OK,buf);
-     HttpHeaders headers = copyResponse.headers();
-     headers.set(HttpHeaderName.CONTENT_LENGTH,content.length);
-     ctx.writeAndFlush(copyResponse);
-     }
-     */
 }
