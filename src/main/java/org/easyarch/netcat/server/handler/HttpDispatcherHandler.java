@@ -52,7 +52,6 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         FullHttpRequest request = (FullHttpRequest) msg;
         boolean isSuccess = request.decoderResult().isSuccess();
-        String uri = request.uri();
         if (!isSuccess) {
             ctx.close();
             return;
@@ -64,17 +63,16 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
 
         defaultHttpHandler.handle(req,resp);
 
-        List<Filter> filters = holder.getFilters(uri);
-        Action action = holder.getRouter(uri);
-        System.out.println("filters:" + filters+" action:"+action);
+        List<Filter> filters = holder.getFilters(req.getRequestURI());
+        Action action = holder.getRouter(req.getRequestURI());
+//        System.out.println("filters:" + filters+" action:"+action);
         if (filters == null || filters.isEmpty() && action == null) {
             notFoundHttpHandler.handle(req,resp);
             return;
         }
         if (!filters.isEmpty()) {
             for (Filter filter : filters) {
-                boolean firehandler = filter.before(req, resp);
-                if (!firehandler){
+                if (!filter.before(req, resp)){
                     return;
                 }
             }

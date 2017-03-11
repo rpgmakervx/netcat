@@ -139,7 +139,12 @@ public class HttpHandlerRequest implements HandlerRequest {
 
    
     public String getRequestURI() {
-        return request.uri();
+        String fullURI = request.uri();
+        int point = fullURI.lastIndexOf(QUESTION);
+        if (point != -1){
+            return fullURI.substring(0,point);
+        }
+        return fullURI;
     }
 
     public HttpSession getSession() {

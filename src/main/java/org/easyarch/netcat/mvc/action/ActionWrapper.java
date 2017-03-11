@@ -81,11 +81,10 @@ public class ActionWrapper {
         while (wrapper != null){
             ActionType type = wrapper.getType();
             Action action = wrapper.getAction();
-            System.out.println("type:"+type);
             if (type == ActionType.FILTER&&continuly){
-                System.out.println("get filter");
                 filter.add((Filter) action);
                 ActionWrapper preWrapper = wrapper.getPreAction();
+                //下一个action如果不是过滤器的话就结束过滤器遍历
                 if (preWrapper.getType() != ActionType.FILTER
                         ||preWrapper == null){
                     continuly = false;
