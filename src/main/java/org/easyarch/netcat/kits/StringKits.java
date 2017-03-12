@@ -128,6 +128,14 @@ public class StringKits {
         return plugin.concat(src);
     }
 
+    public static String subString(final String src,final String subber){
+        String result = src;
+        if (src.contains(subber)){
+            result = src.replaceAll(subber,"");
+        }
+        return result;
+    }
+
     /**
      * 用指定的标识符将字符串居中
      *

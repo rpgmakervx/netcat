@@ -2,6 +2,7 @@ package org.easyarch.netcat.mvc.action.handler.impl;
 
 import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.protocol.HttpHeaderValue;
+import org.easyarch.netcat.http.protocol.HttpStatus;
 import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
 import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
 import org.easyarch.netcat.kits.file.FileKits;
@@ -27,6 +28,6 @@ public class NotFoundHandler implements HttpHandler {
             resourcePath = new StringBuffer();
             resourcePath.append(DEFAULT_RESOURCE).append(context.getNotFoundPage());
         }
-        response.write(FileKits.read(resourcePath.toString()), HttpHeaderValue.TEXT_HTML);
+        response.write(FileKits.read(resourcePath.toString()), HttpHeaderValue.TEXT_HTML, HttpStatus.NOT_FOUND);
     }
 }

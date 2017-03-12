@@ -21,10 +21,10 @@ public class Main {
         }).get("/index", (request, response) -> {
             response.json(new Json("username",request.getParameter("username")
                     ,"code",request.getParameter("code")));
-        }).get("/image", (request, response) -> {
+        }).get("/image/{id}", (request, response) -> {
             byte[] image = FileKits.read("/home/code4j/picture/04.jpeg");
             response.image(image);
-        }).get("/page", (request, response) -> {
+        }).get("/get/{id}", (request, response) -> {
             response.html("index-v1");
         }).get("/text", (request, response) -> {
             response.text("<h3>hello world</h3>");

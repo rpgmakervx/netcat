@@ -3,11 +3,9 @@ package org.easyarch.netcat.context;
 import org.easyarch.netcat.mvc.action.ActionWrapper;
 import org.easyarch.netcat.mvc.action.Action;
 import org.easyarch.netcat.mvc.action.filter.Filter;
+import org.easyarch.netcat.mvc.router.Router;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by xingtianyu on 17-3-3
@@ -15,34 +13,37 @@ import java.util.Map;
  * description:
  */
 
-public class RouteHolder {
+public class ActionHolder {
 
     /**
      * handler写path; filter写类全名
      */
+    private static Map<Router, ActionWrapper> actions = new LinkedHashMap<>();
     private static Map<String, ActionWrapper> routers = new LinkedHashMap<>();
 
-    public Action getRouter(String path) {
-        ActionWrapper wrapper = routers.get(path);
+    public Action getAction(Router router) {
+        System.out.println("get ActionRouter:"+router);
+        ActionWrapper wrapper = actions.get(router);
+        System.out.println("get Action:"+wrapper);
         if (wrapper == null) {
             return null;
         }
         return wrapper.getAction();
     }
 
-    public List<Filter> getFilters(String path) {
-        ActionWrapper wrapper = routers.get(path);
+    public List<Filter> getFilters(Router router) {
+        ActionWrapper wrapper = actions.get(router);
         if (wrapper == null) {
             return new ArrayList<>();
         }
         return wrapper.getFilters();
     }
 
-    public void addRouter(String path, Action action) {
-        int currentIndex = routers.size();
+    public void addAction(Router router, Action action) {
+        int currentIndex = actions.size();
         ActionWrapper wrapper = new ActionWrapper(action, currentIndex);
         int index = 0;
-        for (ActionWrapper rw:routers.values()){
+        for (ActionWrapper rw: actions.values()){
             if (index == currentIndex - 1){
                 System.out.println("add pre wrapper:"+rw.getType());
                 wrapper.setPreAction(rw);
@@ -50,8 +51,7 @@ public class RouteHolder {
             }
             index++;
         }
-        System.out.println("add router:" + wrapper.getType());
-        routers.put(path, wrapper);
+        actions.put(router, wrapper);
     }
 
 }

@@ -5,7 +5,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.*;
 import org.easyarch.netcat.context.HandlerContext;
-import org.easyarch.netcat.context.RouteHolder;
+import org.easyarch.netcat.context.ActionHolder;
 
 /**
  * Description :
@@ -17,9 +17,9 @@ import org.easyarch.netcat.context.RouteHolder;
 public class BaseChildHandler extends ChannelInitializer<SocketChannel> {
 
     private HandlerContext context;
-    private RouteHolder holder;
+    private ActionHolder holder;
 
-    public BaseChildHandler(HandlerContext context,RouteHolder holder) {
+    public BaseChildHandler(HandlerContext context,ActionHolder holder) {
         this.context = context;
         this.holder = holder;
     }

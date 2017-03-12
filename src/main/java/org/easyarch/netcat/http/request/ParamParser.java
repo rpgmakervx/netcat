@@ -42,7 +42,7 @@ public class ParamParser {
         if (HttpMethod.GET == method) {
             // 是GET请求
             QueryStringDecoder decoder = new QueryStringDecoder(fullReq.uri());
-            System.out.println("query string param:"+decoder.parameters());
+//            System.out.println("query string param:"+decoder.parameters());
             decoder.parameters().entrySet().forEach( entry -> {
                 // entry.getValue()是一个List, 只取第一个元素
                 parmMap.put(entry.getKey(), entry.getValue().get(0));

@@ -181,6 +181,7 @@ public class HttpHandlerResponse implements HandlerResponse {
     }
 
     public void html(String view,int statusCode) {
+
         StringBuffer pathBuffer = new StringBuffer();
         pathBuffer.append(context.getWebView())
                 .append(context.getViewPrefix())

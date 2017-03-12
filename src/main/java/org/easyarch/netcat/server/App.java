@@ -6,11 +6,12 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import org.easyarch.netcat.context.ActionHolder;
 import org.easyarch.netcat.context.HandlerContext;
-import org.easyarch.netcat.context.RouteHolder;
 import org.easyarch.netcat.kits.StringKits;
 import org.easyarch.netcat.mvc.action.filter.Filter;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
+import org.easyarch.netcat.mvc.router.Router;
 import org.easyarch.netcat.server.handler.BaseChildHandler;
 
 import java.awt.event.ActionEvent;
@@ -26,11 +27,11 @@ import java.awt.event.ActionListener;
 public class App {
 
     private HandlerContext context;
-    private RouteHolder holder;
+    private ActionHolder holder;
 
     public App(){
         context = new HandlerContext();
-        holder = new RouteHolder();
+        holder = new ActionHolder();
     }
 
     public void start(int port) {
@@ -62,7 +63,7 @@ public class App {
         if (filter == null){
             return this;
         }
-        holder.addRouter(filter.getClass().getName(),filter);
+        holder.addAction(null,filter);
         return this;
     }
 
@@ -70,7 +71,7 @@ public class App {
         if (StringKits.isEmpty(path)||httpHandler == null){
             return this;
         }
-        holder.addRouter(path,httpHandler);
+        holder.addAction(new Router(path),httpHandler);
         return this;
     }
 

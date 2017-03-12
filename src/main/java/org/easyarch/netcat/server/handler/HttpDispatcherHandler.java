@@ -6,7 +6,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.*;
 import org.easyarch.netcat.context.HandlerContext;
-import org.easyarch.netcat.context.RouteHolder;
+import org.easyarch.netcat.context.ActionHolder;
 import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
 import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
 import org.easyarch.netcat.mvc.action.Action;
@@ -14,6 +14,7 @@ import org.easyarch.netcat.mvc.action.filter.Filter;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 import org.easyarch.netcat.mvc.action.handler.impl.DefaultHttpHandler;
 import org.easyarch.netcat.mvc.action.handler.impl.NotFoundHandler;
+import org.easyarch.netcat.mvc.router.Router;
 
 import java.util.List;
 
@@ -32,11 +33,11 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
     private static final String REDIRECT = "redirect:";
 
     private HandlerContext context;
-    private RouteHolder holder;
+    private ActionHolder holder;
 
     private HttpHandler defaultHttpHandler;
     private HttpHandler notFoundHttpHandler;
-    public HttpDispatcherHandler(HandlerContext context, RouteHolder holder) {
+    public HttpDispatcherHandler(HandlerContext context, ActionHolder holder) {
         this.context = context;
         this.holder = holder;
         this.defaultHttpHandler = new DefaultHttpHandler();
@@ -60,11 +61,12 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
                 HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         HttpHandlerRequest req = new HttpHandlerRequest(request,context,ctx.channel());
         HttpHandlerResponse resp = new HttpHandlerResponse(response,context,ctx.channel());
-
+        Router router = new Router(req.getRequestURI());
+        System.out.println("visit router:"+router);
         defaultHttpHandler.handle(req,resp);
 
-        List<Filter> filters = holder.getFilters(req.getRequestURI());
-        Action action = holder.getRouter(req.getRequestURI());
+        List<Filter> filters = holder.getFilters(router);
+        Action action = holder.getAction(router);
 //        System.out.println("filters:" + filters+" action:"+action);
         if (filters == null || filters.isEmpty() && action == null) {
             notFoundHttpHandler.handle(req,resp);
