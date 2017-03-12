@@ -25,6 +25,7 @@ public class Main {
             byte[] image = FileKits.read("/home/code4j/picture/04.jpeg");
             response.image(image);
         }).get("/get/{id}", (request, response) -> {
+            System.out.println("request:"+request.getParameter("id"));
             response.html("index-v1");
         }).get("/text", (request, response) -> {
             response.text("<h3>hello world</h3>");

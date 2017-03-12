@@ -35,7 +35,7 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
     private HandlerContext context;
     private ActionHolder holder;
 
-    private HttpHandler defaultHttpHandler;
+    private DefaultHttpHandler defaultHttpHandler;
     private HttpHandler notFoundHttpHandler;
     public HttpDispatcherHandler(HandlerContext context, ActionHolder holder) {
         this.context = context;
@@ -59,15 +59,16 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
         }
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-        HttpHandlerRequest req = new HttpHandlerRequest(request,context,ctx.channel());
-        HttpHandlerResponse resp = new HttpHandlerResponse(response,context,ctx.channel());
-        Router router = new Router(req.getRequestURI());
-        System.out.println("visit router:"+router);
-        defaultHttpHandler.handle(req,resp);
 
+        Router router = new Router(request.uri());
         List<Filter> filters = holder.getFilters(router);
         Action action = holder.getAction(router);
-//        System.out.println("filters:" + filters+" action:"+action);
+        HttpHandlerRequest req = new HttpHandlerRequest(request,router,context,ctx.channel());
+        HttpHandlerResponse resp = new HttpHandlerResponse(response,context,ctx.channel());
+        defaultHttpHandler.handle(req,resp);
+        if (defaultHttpHandler.isInterrupt()){
+            return;
+        }
         if (filters == null || filters.isEmpty() && action == null) {
             notFoundHttpHandler.handle(req,resp);
             return;

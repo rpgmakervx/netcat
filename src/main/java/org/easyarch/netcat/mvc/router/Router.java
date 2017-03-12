@@ -16,6 +16,7 @@ import java.util.Map;
 public class Router {
 
     private static final String SEPARATOR = "/";
+    private static final String QUESTION = "?";
 
     private static final String LEFT = "{";
     private static final String RIGHT = "}";
@@ -26,6 +27,8 @@ public class Router {
 
     private Map<Integer,String> parameterizeUrl;
 
+    private Map<String,String> pathParams;
+
     private boolean parameterize;
 
     private int level;
@@ -35,14 +38,28 @@ public class Router {
      * @param router
      */
     public Router(String router){
-        if (router.endsWith(SEPARATOR)){
-            this.path = router.substring(0,router.length() - 1);
-        }else{
-            this.path = router;
-        }
+        this.path = checkURL(router);
         this.parameterizeUrl = new HashMap<>();
+        this.pathParams = new HashMap<>();
         this.segements = new ArrayList<>();
         parse(router);
+    }
+
+    private String checkURL(String url){
+        if (StringKits.isEmpty(url)){
+            return null;
+        }
+        String path = null;
+        if (url.endsWith(SEPARATOR)){
+            path = url.substring(0,url.length() - 1);
+        }else{
+            path = url;
+        }
+        int index = url.lastIndexOf(QUESTION);
+        if (index == -1){
+            return path;
+        }
+        return path.substring(0,index);
     }
 
     private void parse(String path){
@@ -88,6 +105,10 @@ public class Router {
 
     public void setLevel(int level) {
         this.level = level;
+    }
+
+    public Map<String,String> getPathParams(){
+        return this.pathParams;
     }
 
     public static int getLevel(String path){
@@ -138,6 +159,15 @@ public class Router {
                 //两个片段不相等，或当前片段不是参数化的,则不相等
                 if (!seg1.equals(seg2)&&(paramSeg1 == null&&paramSeg2 == null)){
                     return false;
+                }
+                if (paramSeg1 != null){
+                    String name = StringKits.strip(paramSeg1,LEFT,RIGHT);
+                    this.pathParams.put(name,seg2);
+                    router.pathParams.put(name,seg2);
+                }else if (paramSeg2 != null){
+                    String name = StringKits.strip(paramSeg2,LEFT,RIGHT);
+                    this.pathParams.put(name,seg1);
+                    router.pathParams.put(name,seg1);
                 }
             }
             return true;

@@ -23,6 +23,11 @@ import static org.easyarch.netcat.kits.file.FileFilter.*;
 
 public class DefaultHttpHandler implements HttpHandler {
 
+    /**
+     * 资源是否被默认handler捕获
+     */
+    private boolean interrupt = false;
+
     @Override
     public void handle(HttpHandlerRequest request, HttpHandlerResponse response) throws Exception {
         HandlerContext context = request.getContext();
@@ -34,14 +39,17 @@ public class DefaultHttpHandler implements HttpHandler {
         resourcePath.append(webView).append(uri);
         int point = uri.lastIndexOf(".");
         if (point == -1){
+            System.out.println("不走默认");
             return ;
         }
         String suffix = uri.substring(point, uri.length());
         String filename = uri.substring(uri.lastIndexOf(File.separator),point);
         if (!FileKits.exists(resourcePath.toString())){
+            System.out.println("不走默认");
             return ;
         }
-
+        System.out.println("走默认");
+        interrupt = true;
         if (cachedPattern.matcher(suffix).matches()){
             checkStrongCache(request,response);
             boolean cached = checkNagoCache(request,response,suffix,resourcePath.toString());
@@ -90,8 +98,7 @@ public class DefaultHttpHandler implements HttpHandler {
         return false;
     }
 
-    public static void main(String[] args) {
-        Pattern pattern = Pattern.compile("(.png|.jpg|.jpeg|.gif)");
-        System.out.println(pattern.matcher(".jpg").matches());
+    public boolean isInterrupt(){
+        return interrupt;
     }
 }

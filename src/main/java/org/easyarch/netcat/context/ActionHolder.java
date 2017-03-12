@@ -19,7 +19,6 @@ public class ActionHolder {
      * handler写path; filter写类全名
      */
     private static Map<Router, ActionWrapper> actions = new LinkedHashMap<>();
-    private static Map<String, ActionWrapper> routers = new LinkedHashMap<>();
 
     public Action getAction(Router router) {
         System.out.println("get ActionRouter:"+router);

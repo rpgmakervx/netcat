@@ -19,8 +19,6 @@ import java.util.Set;
 public interface HandlerRequest {
     public HandlerContext getContext();
 
-    public void setContext(HandlerContext context);
-
     public Set<Cookie> getCookies();
 
 
