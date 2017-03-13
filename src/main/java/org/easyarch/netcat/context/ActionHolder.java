@@ -1,11 +1,17 @@
 package org.easyarch.netcat.context;
 
-import org.easyarch.netcat.mvc.action.ActionWrapper;
+import org.easyarch.netcat.kits.StringKits;
 import org.easyarch.netcat.mvc.action.Action;
+import org.easyarch.netcat.mvc.action.ActionWrapper;
 import org.easyarch.netcat.mvc.action.filter.Filter;
 import org.easyarch.netcat.mvc.router.Router;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.easyarch.netcat.mvc.router.Router.LEFT;
+import static org.easyarch.netcat.mvc.router.Router.RIGHT;
 
 /**
  * Created by xingtianyu on 17-3-3
@@ -20,10 +26,35 @@ public class ActionHolder {
      */
     private static Map<Router, ActionWrapper> actions = new LinkedHashMap<>();
 
+    /**
+     * 1.遍历所有的router和action映射
+     * 2.做eq对比，参数化url和真正url对比出结果
+     * 3.不相等的继续遍历比较，相等的进行下一个逻辑
+     * 4.如果是path完全相等，则直接返回action；
+     * 5.否则是参数化匹配的结果，记录结果，继续遍历（因为path完全相等优先级最高）
+     *
+     * @param router
+     * @return
+     */
     public Action getAction(Router router) {
-        System.out.println("get ActionRouter:"+router);
-        ActionWrapper wrapper = actions.get(router);
-        System.out.println("get Action:"+wrapper);
+        System.out.println("get ActionRouter:" + router + ",actionsize:" + actions.size());
+        ActionWrapper wrapper = null;
+        for (Map.Entry<Router, ActionWrapper> entry : actions.entrySet()) {
+            Router r = entry.getKey();
+            boolean equals = eq(r, router);
+            System.out.println("isEquals:" + equals + ", r:" + entry.getKey());
+            if (equals) {
+                if (r.getPath().equals(router.getPath())) {
+                    wrapper = entry.getValue();
+                    if (wrapper == null) {
+                        return null;
+                    }
+                    return wrapper.getAction();
+                }
+                System.out.println("param url:" + router.getPathParams());
+                wrapper = entry.getValue();
+            }
+        }
         if (wrapper == null) {
             return null;
         }
@@ -31,9 +62,24 @@ public class ActionHolder {
     }
 
     public List<Filter> getFilters(Router router) {
-        ActionWrapper wrapper = actions.get(router);
+        ActionWrapper wrapper = null;
+        for (Map.Entry<Router, ActionWrapper> entry : actions.entrySet()) {
+            Router r = entry.getKey();
+            boolean equals = eq(r, router);
+            System.out.println("isEquals:" + equals + ", r:" + entry.getKey());
+            if (equals) {
+                if (r.getPath().equals(router.getPath())) {
+                    wrapper = entry.getValue();
+                    if (wrapper == null) {
+                        return null;
+                    }
+                    return wrapper.getFilters();
+                }
+                wrapper = entry.getValue();
+            }
+        }
         if (wrapper == null) {
-            return new ArrayList<>();
+            return null;
         }
         return wrapper.getFilters();
     }
@@ -42,15 +88,54 @@ public class ActionHolder {
         int currentIndex = actions.size();
         ActionWrapper wrapper = new ActionWrapper(action, currentIndex);
         int index = 0;
-        for (ActionWrapper rw: actions.values()){
-            if (index == currentIndex - 1){
-                System.out.println("add pre wrapper:"+rw.getType());
+        for (ActionWrapper rw : actions.values()) {
+            if (index == currentIndex - 1) {
                 wrapper.setPreAction(rw);
                 break;
             }
             index++;
         }
         actions.put(router, wrapper);
+        System.out.println("add Router:" + router + ", actionsize:" + actions.size());
+    }
+
+    /**
+     * 1.路由层级不同，不相等
+     * 2.路由地址相同必定相等
+     * 3.路由包括参数化片段，则进一步匹配;如果不包括，不相等
+     * 4.匹配每个片段，如果除了参数化片段都相等，则相等
+     * eq方法执行过程中，将参数保存，供request获取
+     *
+     * @param router1
+     * @param router2
+     * @return
+     */
+    private boolean eq(Router router1, Router router2) {
+        if (router1 == null || router2 == null) {
+            return false;
+        }
+        if (router1.getLevel() != router2.getLevel()) {
+            return false;
+        }
+        if (router1.getPath().equals(router2.getPath())) {
+            return true;
+        } else if (router1.isParameterize() || router2.isParameterize()) {
+            for (int index = 0; index < router1.getLevel(); index++) {
+                String seg1 = router1.getSegements().get(index);
+                String seg2 = router2.getSegements().get(index);
+                String paramSeg1 = router1.getParameterizeUrl().get(index);
+                //两个片段不相等，或当前片段不是参数化的,则不相等
+                if (!seg1.equals(seg2) && paramSeg1 == null) {
+                    return false;
+                }
+                if (paramSeg1 != null) {
+                    String name = StringKits.strip(paramSeg1, LEFT, RIGHT);
+                    router2.getPathParams().put(name, seg2);
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
 }

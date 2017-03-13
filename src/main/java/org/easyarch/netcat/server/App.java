@@ -71,6 +71,7 @@ public class App {
         if (StringKits.isEmpty(path)||httpHandler == null){
             return this;
         }
+
         holder.addAction(new Router(path),httpHandler);
         return this;
     }
