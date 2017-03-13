@@ -1,5 +1,6 @@
 package org.easyarch.netcat.mvc.action;
 
+import org.easyarch.netcat.http.protocol.HttpStatus;
 import org.easyarch.netcat.mvc.action.filter.Filter;
 
 import java.util.ArrayList;
@@ -18,6 +19,8 @@ public class ActionWrapper {
 
     private int index;
 
+    private int status;
+
     private ActionType type;
 
     private ActionWrapper pre;
@@ -26,12 +29,21 @@ public class ActionWrapper {
         this.self = action;
         this.type = ActionType.getType(action);
         this.index = 0;
+        this.status = HttpStatus.OK;
         this.pre = null;
     }
     public ActionWrapper(Action action, int index){
         this.self = action;
         this.type = ActionType.getType(action);
+        this.status = HttpStatus.OK;
         this.index = index;
+        this.pre = null;
+    }
+    public ActionWrapper(Action action,int status, int index){
+        this.self = action;
+        this.type = ActionType.getType(action);
+        this.index = index;
+        this.status = status;
         this.pre = null;
     }
 
@@ -50,6 +62,14 @@ public class ActionWrapper {
         this.self = self;
     }
 
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
     public int getIndex() {
         return index;
     }
@@ -57,6 +77,7 @@ public class ActionWrapper {
     public void setIndex(int index) {
         this.index = index;
     }
+
 
     public ActionType getType() {
         return type;

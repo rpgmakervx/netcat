@@ -8,6 +8,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.easyarch.netcat.context.ActionHolder;
 import org.easyarch.netcat.context.HandlerContext;
+import org.easyarch.netcat.http.protocol.HttpMethod;
 import org.easyarch.netcat.kits.StringKits;
 import org.easyarch.netcat.mvc.action.filter.Filter;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
@@ -63,7 +64,7 @@ public class App {
         if (filter == null){
             return this;
         }
-        holder.addAction(null,filter);
+        holder.addAction(new Router(null),filter);
         return this;
     }
 
@@ -73,6 +74,39 @@ public class App {
         }
 
         holder.addAction(new Router(path),httpHandler);
+        return this;
+    }
+
+    public App post(String path,HttpHandler httpHandler){
+        if (StringKits.isEmpty(path)||httpHandler == null){
+            return this;
+        }
+
+        holder.addAction(new Router(path,HttpMethod.POST),httpHandler);
+        return this;
+    }
+    public App put(String path,HttpHandler httpHandler){
+        if (StringKits.isEmpty(path)||httpHandler == null){
+            return this;
+        }
+
+        holder.addAction(new Router(path,HttpMethod.PUT), httpHandler);
+        return this;
+    }
+    public App delete(String path,HttpHandler httpHandler){
+        if (StringKits.isEmpty(path)||httpHandler == null){
+            return this;
+        }
+
+        holder.addAction(new Router(path,HttpMethod.DELETE),httpHandler);
+        return this;
+    }
+    public App receive(String path,HttpHandler httpHandler,HttpMethod method){
+        if (StringKits.isEmpty(path)||httpHandler == null){
+            return this;
+        }
+
+        holder.addAction(new Router(path, method),httpHandler);
         return this;
     }
 

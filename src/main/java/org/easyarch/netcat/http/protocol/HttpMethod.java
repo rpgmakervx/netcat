@@ -8,5 +8,14 @@ package org.easyarch.netcat.http.protocol;
  */
 
 public enum HttpMethod {
-    GET, POST, PUT, DELETE, HEAD, TRACE, CONNECT, OPTIONS, BEFORE, AFTER
+    GET, POST, PUT, DELETE, HEAD, TRACE, CONNECT, OPTIONS;
+
+    public static HttpMethod getMethod(io.netty.handler.codec.http.HttpMethod method){
+        for (HttpMethod m:values()){
+            if (m.name().equals(method.name())){
+                return m;
+            }
+        }
+        return GET;
+    }
 }

@@ -1,5 +1,6 @@
 package org.easyarch.netcat.context;
 
+import org.easyarch.netcat.http.protocol.HttpStatus;
 import org.easyarch.netcat.kits.StringKits;
 import org.easyarch.netcat.mvc.action.Action;
 import org.easyarch.netcat.mvc.action.ActionWrapper;
@@ -30,35 +31,35 @@ public class ActionHolder {
      * 1.遍历所有的router和action映射
      * 2.做eq对比，参数化url和真正url对比出结果
      * 3.不相等的继续遍历比较，相等的进行下一个逻辑
-     * 4.如果是path完全相等，则直接返回action；
+     * 4.如果是path完全相等，则直接返回action,返回前检查method是否匹配，否则返回405；
      * 5.否则是参数化匹配的结果，记录结果，继续遍历（因为path完全相等优先级最高）
      *
      * @param router
      * @return
      */
-    public Action getAction(Router router) {
+    public ActionWrapper getAction(Router router) {
         System.out.println("get ActionRouter:" + router + ",actionsize:" + actions.size());
         ActionWrapper wrapper = null;
         for (Map.Entry<Router, ActionWrapper> entry : actions.entrySet()) {
             Router r = entry.getKey();
             boolean equals = eq(r, router);
-            System.out.println("isEquals:" + equals + ", r:" + entry.getKey());
+            System.out.println("isEquals:" + equals + ", r:" + entry.getKey()+", method:"+r.getMethod().equals(router.getMethod()));
             if (equals) {
                 if (r.getPath().equals(router.getPath())) {
                     wrapper = entry.getValue();
-                    if (wrapper == null) {
-                        return null;
+                    if (!r.getMethod().equals(router.getMethod())){
+                        wrapper.setStatus(HttpStatus.METHOD_NOT_ALLOWED);
                     }
-                    return wrapper.getAction();
+                    return wrapper;
                 }
                 System.out.println("param url:" + router.getPathParams());
                 wrapper = entry.getValue();
+                if (!r.getMethod().equals(router.getMethod())){
+                    wrapper.setStatus(HttpStatus.METHOD_NOT_ALLOWED);
+                }
             }
         }
-        if (wrapper == null) {
-            return null;
-        }
-        return wrapper.getAction();
+        return wrapper;
     }
 
     public List<Filter> getFilters(Router router) {

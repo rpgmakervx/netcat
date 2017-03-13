@@ -1,5 +1,6 @@
 package org.easyarch.netcat.mvc.router;
 
+import org.easyarch.netcat.http.protocol.HttpMethod;
 import org.easyarch.netcat.kits.StringKits;
 
 import java.util.ArrayList;
@@ -25,6 +26,8 @@ public class Router {
 
     private List<String> segements;
 
+    private HttpMethod method;
+
     private Map<Integer,String> parameterizeUrl;
 
     private Map<String,String> pathParams;
@@ -39,6 +42,15 @@ public class Router {
      */
     public Router(String router){
         this.path = checkURL(router);
+        this.method = HttpMethod.GET;
+        this.parameterizeUrl = new HashMap<>();
+        this.pathParams = new HashMap<>();
+        this.segements = new ArrayList<>();
+        parse(router);
+    }
+    public Router(String router,HttpMethod method){
+        this.path = checkURL(router);
+        this.method = method;
         this.parameterizeUrl = new HashMap<>();
         this.pathParams = new HashMap<>();
         this.segements = new ArrayList<>();
@@ -85,6 +97,14 @@ public class Router {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public HttpMethod getMethod() {
+        return method;
+    }
+
+    public void setMethod(HttpMethod method) {
+        this.method = method;
     }
 
     public int getParameterizeSize(){
@@ -149,6 +169,7 @@ public class Router {
     public String toString() {
         return "Router{" +
                 "path='" + path + '\'' +
+                ", method=" + method +
                 ", level=" + level +
                 ", segements=" + segements +
                 '}';
