@@ -7,8 +7,8 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.*;
 import org.easyarch.netcat.context.ActionHolder;
 import org.easyarch.netcat.context.HandlerContext;
-import org.easyarch.netcat.http.protocol.*;
 import org.easyarch.netcat.http.protocol.HttpMethod;
+import org.easyarch.netcat.http.protocol.HttpStatus;
 import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
 import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
 import org.easyarch.netcat.mvc.action.Action;
@@ -16,8 +16,7 @@ import org.easyarch.netcat.mvc.action.ActionWrapper;
 import org.easyarch.netcat.mvc.action.filter.Filter;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 import org.easyarch.netcat.mvc.action.handler.impl.DefaultHttpHandler;
-import org.easyarch.netcat.mvc.action.handler.impl.NotFoundHandler;
-import org.easyarch.netcat.mvc.action.handler.impl.NotSupportHandler;
+import org.easyarch.netcat.mvc.action.handler.impl.ErrorHandler;
 import org.easyarch.netcat.mvc.router.Router;
 
 import java.util.List;
@@ -32,22 +31,16 @@ import java.util.List;
 
 public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
 
-    private static final String NOTFOUND_MSG = "<h1 align='center'>404 Not Found</h1>";
-
-    private static final String REDIRECT = "redirect:";
-
     private HandlerContext context;
     private ActionHolder holder;
 
     private DefaultHttpHandler defaultHttpHandler;
-    private NotSupportHandler notSupportHandler;
-    private HttpHandler notFoundHttpHandler;
+    private ErrorHandler errorHandler;
     public HttpDispatcherHandler(HandlerContext context, ActionHolder holder) {
         this.context = context;
         this.holder = holder;
         this.defaultHttpHandler = new DefaultHttpHandler();
-        this.notFoundHttpHandler = new NotFoundHandler();
-        this.notSupportHandler = new NotSupportHandler();
+
     }
 
     @Override
@@ -69,7 +62,7 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
         List<Filter> filters = holder.getFilters(router);
         ActionWrapper wrapper = holder.getAction(router);
         HttpHandlerRequest req = new HttpHandlerRequest(request,router,context,ctx.channel());
-        HttpHandlerResponse resp = new HttpHandlerResponse(response,context,ctx.channel());
+        HttpHandlerResponse resp = new HttpHandlerResponse(response,req,context,ctx.channel());
         defaultHttpHandler.handle(req,resp);
         if (defaultHttpHandler.isInterrupt()){
             return;
@@ -79,11 +72,13 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
             action = wrapper.getAction();
         }
         if (filters == null || filters.isEmpty() && action == null) {
-            notFoundHttpHandler.handle(req,resp);
+            this.errorHandler = new ErrorHandler(HttpResponseStatus.NOT_FOUND.code(),HttpResponseStatus.NOT_FOUND.reasonPhrase());
+            errorHandler.handle(req,resp);
             return;
         }
         if (wrapper.getStatus() == HttpStatus.METHOD_NOT_ALLOWED){
-            notSupportHandler.handle(req,resp);
+            this.errorHandler = new ErrorHandler(HttpResponseStatus.METHOD_NOT_ALLOWED.code(),HttpResponseStatus.METHOD_NOT_ALLOWED.reasonPhrase());
+            errorHandler.handle(req,resp);
             return ;
         }
         if (!filters.isEmpty()) {

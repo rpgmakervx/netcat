@@ -38,7 +38,6 @@ public class ActionHolder {
      * @return
      */
     public ActionWrapper getAction(Router router) {
-        System.out.println("get ActionRouter:" + router + ",actionsize:" + actions.size());
         ActionWrapper wrapper = null;
         for (Map.Entry<Router, ActionWrapper> entry : actions.entrySet()) {
             Router r = entry.getKey();

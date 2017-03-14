@@ -29,7 +29,7 @@ public class HandlerContext {
 
     public String contextPath = File.separator;
 
-    public String notFoundPage = "notfound.html";
+    public String errorPage = "error.html";
     /**
      * web资源路径
      */
@@ -86,12 +86,12 @@ public class HandlerContext {
         sessionMap.put(cookieId,session);
     }
 
-    public String getNotFoundPage() {
-        return notFoundPage;
+    public String getErrorPage() {
+        return errorPage;
     }
 
-    public void setNotFoundPage(String notFoundPage) {
-        this.notFoundPage = notFoundPage;
+    public void setErrorPage(String errorPage) {
+        this.errorPage = errorPage;
     }
 
     public int getMaxAge(){

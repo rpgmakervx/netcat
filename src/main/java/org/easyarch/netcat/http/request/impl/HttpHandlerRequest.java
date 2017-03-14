@@ -157,7 +157,12 @@ public class HttpHandlerRequest implements HandlerRequest {
         return attributes.get(name);
     }
 
-   
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
+
+
     public Collection<String> getAttributeNames() {
         return attributes.keySet();
     }

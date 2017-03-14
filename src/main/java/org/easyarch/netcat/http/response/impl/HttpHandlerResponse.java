@@ -9,12 +9,13 @@ import io.netty.handler.codec.http.cookie.Cookie;
 import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.protocol.HttpHeaderName;
 import org.easyarch.netcat.http.protocol.HttpHeaderValue;
+import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
 import org.easyarch.netcat.http.response.HandlerResponse;
 import org.easyarch.netcat.kits.ByteUtil;
 import org.easyarch.netcat.kits.JsonKits;
 import org.easyarch.netcat.kits.StringKits;
-import org.easyarch.netcat.kits.file.FileKits;
 import org.easyarch.netcat.mvc.entity.Json;
+import org.easyarch.netcat.mvc.temp.TemplateParser;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
@@ -37,12 +38,18 @@ public class HttpHandlerResponse implements HandlerResponse {
     private HttpHeaders headers;
     private String charset;
 
+    private TemplateParser tmpParser;
+
+    private Map<String,Object> params;
+
     public HandlerContext context;
 
-    public HttpHandlerResponse(FullHttpResponse response,HandlerContext context, Channel channel) {
+    public HttpHandlerResponse(FullHttpResponse response, HttpHandlerRequest request, HandlerContext context, Channel channel) {
         this.context = context;
         this.response = response;
+        this.tmpParser = new TemplateParser(context);
         this.headers = this.response.headers();
+        this.params = request.getAttributes();
         this.charset = "UTF-8";
         this.channel = channel;
     }
@@ -183,12 +190,11 @@ public class HttpHandlerResponse implements HandlerResponse {
     public void html(String view,int statusCode) {
 
         StringBuffer pathBuffer = new StringBuffer();
-        pathBuffer.append(context.getWebView())
-                .append(context.getViewPrefix())
-                .append(view).append(POINT)
+        pathBuffer.append(view).append(POINT)
                 .append(context.getViewSuffix());
         try {
-            byte[] content = FileKits.read(pathBuffer.toString());
+            tmpParser.addParam(params);
+            byte[] content = tmpParser.getTemplate(pathBuffer.toString()).getBytes();
             write(content,HttpHeaderValue.TEXT_HTML,statusCode);
         } catch (Exception e) {
             e.printStackTrace();
@@ -198,6 +204,7 @@ public class HttpHandlerResponse implements HandlerResponse {
     public void html(String view){
         html(view,HttpResponseStatus.OK.code());
     }
+
     @Override
     public void notFound(String view) {
         html(view,HttpResponseStatus.NOT_FOUND.code());

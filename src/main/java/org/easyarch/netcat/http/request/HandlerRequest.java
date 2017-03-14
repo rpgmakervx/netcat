@@ -48,6 +48,7 @@ public interface HandlerRequest {
     public HttpSession getSession();
 
     public Object getAttribute(String name);
+    public Map<String,Object> getAttributes();
 
 
     public Collection<String> getAttributeNames();
