@@ -42,7 +42,6 @@ public class ActionHolder {
         for (Map.Entry<Router, ActionWrapper> entry : actions.entrySet()) {
             Router r = entry.getKey();
             boolean equals = eq(r, router);
-            System.out.println("isEquals:" + equals + ", r:" + entry.getKey()+", method:"+r.getMethod().equals(router.getMethod()));
             if (equals) {
                 if (r.getPath().equals(router.getPath())) {
                     wrapper = entry.getValue();
@@ -51,7 +50,6 @@ public class ActionHolder {
                     }
                     return wrapper;
                 }
-                System.out.println("param url:" + router.getPathParams());
                 wrapper = entry.getValue();
                 if (!r.getMethod().equals(router.getMethod())){
                     wrapper.setStatus(HttpStatus.METHOD_NOT_ALLOWED);
@@ -66,7 +64,6 @@ public class ActionHolder {
         for (Map.Entry<Router, ActionWrapper> entry : actions.entrySet()) {
             Router r = entry.getKey();
             boolean equals = eq(r, router);
-            System.out.println("isEquals:" + equals + ", r:" + entry.getKey());
             if (equals) {
                 if (r.getPath().equals(router.getPath())) {
                     wrapper = entry.getValue();

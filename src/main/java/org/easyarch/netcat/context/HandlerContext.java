@@ -18,6 +18,8 @@ public class HandlerContext {
     public static final String DEFAULT_CONTEXT = File.separator;
     public static final String DEFAULT_SUFFIX = "html";
 
+    public static final String DEFAULT_ERRORPAGE = "error";
+
     private static final int DEFAULT_PORT = 8080;
 
     private int remotePort = DEFAULT_PORT;
@@ -33,7 +35,7 @@ public class HandlerContext {
 
     public String contextPath = File.separator;
 
-    public String errorPage = "error.html";
+    public String errorPage = "error";
     /**
      * web资源路径
      */

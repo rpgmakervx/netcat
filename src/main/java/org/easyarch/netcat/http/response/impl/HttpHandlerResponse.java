@@ -6,8 +6,9 @@ import io.netty.handler.codec.http.cookie.Cookie;
 import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.protocol.HttpHeaderName;
 import org.easyarch.netcat.http.protocol.HttpHeaderValue;
+import org.easyarch.netcat.http.protocol.HttpStatus;
 import org.easyarch.netcat.http.response.HandlerResponse;
-import org.easyarch.netcat.kits.ByteUtil;
+import org.easyarch.netcat.kits.ByteKits;
 import org.easyarch.netcat.kits.JsonKits;
 import org.easyarch.netcat.kits.StringKits;
 import org.easyarch.netcat.mvc.entity.Json;
@@ -42,7 +43,6 @@ public class HttpHandlerResponse implements HandlerResponse {
     public HandlerContext context;
 
     public HttpHandlerResponse(FullHttpResponse response, HandlerContext context, Channel channel) {
-        System.out.println("build response");
         init(response,context,channel);
     }
 
@@ -168,7 +168,7 @@ public class HttpHandlerResponse implements HandlerResponse {
     public void write(byte[] content, String contentType,int statusCode) {
         setHeader(HttpHeaderName.CONTENT_TYPE ,contentType);
         setHeader(HttpHeaderName.CONTENT_LENGTH, String.valueOf(content.length));
-        response = response.copy(ByteUtil.toByteBuf(content));
+        response = response.copy(ByteKits.toByteBuf(content));
         response.setStatus(HttpResponseStatus.valueOf(statusCode));
         channel.writeAndFlush(response);
     }
@@ -176,14 +176,14 @@ public class HttpHandlerResponse implements HandlerResponse {
     public void write(byte[] content, String contentType) {
         setHeader(HttpHeaderName.CONTENT_TYPE, contentType);
         setHeader(HttpHeaderName.CONTENT_LENGTH, String.valueOf(content.length));
-        response = response.copy(ByteUtil.toByteBuf(content));
+        response = response.copy(ByteKits.toByteBuf(content));
         channel.writeAndFlush(response);
     }
 
     @Override
     public void write(byte[] content) {
         setHeader(HttpHeaderName.CONTENT_LENGTH, String.valueOf(content.length));
-        response = response.copy(ByteUtil.toByteBuf(content));
+        response = response.copy(ByteKits.toByteBuf(content));
         channel.writeAndFlush(response);
     }
 
@@ -233,12 +233,12 @@ public class HttpHandlerResponse implements HandlerResponse {
 
     @Override
     public void notFound(String view) {
-        html(view,HttpResponseStatus.NOT_FOUND.code());
+        html(view, HttpStatus.NOT_FOUND);
     }
 
     @Override
     public void serverError(String view) {
-        html(view,HttpResponseStatus.INTERNAL_SERVER_ERROR.code());
+        html(view,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     public void image(byte[] bytes){

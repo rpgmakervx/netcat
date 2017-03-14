@@ -33,7 +33,11 @@ public class TemplateParser {
         try {
             this.context = context;
             this.params = new HashMap();
-            configuration.setDirectoryForTemplateLoading(new File(context.getWebView()+context.getViewPrefix()));
+            File file = new File(context.getWebView()+context.getViewPrefix());
+            if (!file.exists()){
+                file = new File(HandlerContext.DEFAULT_RESOURCE+context.getViewPrefix());
+            }
+            configuration.setDirectoryForTemplateLoading(file);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -3,6 +3,7 @@ package org.easyarch.netcat.mvc.action.handler.impl;
 import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
 import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
+import org.easyarch.netcat.kits.Kits;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 
 /**
@@ -16,7 +17,6 @@ public class ErrorHandler implements HttpHandler {
     private static final String HTTPSTATUS = "HTTPSTATUS";
     private static final String REASONPHASE = "REASONPHASE";
     private static final String MESSAGE = "MESSAGE";
-
 
     private int code;
 
@@ -36,12 +36,9 @@ public class ErrorHandler implements HttpHandler {
     @Override
     public void handle(HttpHandlerRequest request, HttpHandlerResponse response) throws Exception {
         HandlerContext context = new HandlerContext();
-        String webView = context.getWebView();
-        StringBuffer resourcePath = new StringBuffer();
-        resourcePath.append(webView).append(context.getErrorPage());
         response.setAttribute(HTTPSTATUS,code);
         response.setAttribute(REASONPHASE,reasonPhase);
         response.setAttribute(MESSAGE,message);
-        response.html("error", code);
+        response.html(Kits.getErrorView(context), code);
     }
 }

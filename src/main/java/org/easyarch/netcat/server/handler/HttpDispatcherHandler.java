@@ -51,8 +51,6 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         FullHttpRequest request = (FullHttpRequest) msg;
         boolean isSuccess = request.decoderResult().isSuccess();
-        String error = null;
-        System.out.println(error.length());
         if (!isSuccess) {
             ctx.close();
             return;

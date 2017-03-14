@@ -9,7 +9,7 @@ import io.netty.buffer.Unpooled;
  * description:
  */
 
-public class ByteUtil {
+public class ByteKits {
 
     public static ByteBuf toByteBuf(byte[] bytes){
         if (bytes == null||bytes.length == 0){

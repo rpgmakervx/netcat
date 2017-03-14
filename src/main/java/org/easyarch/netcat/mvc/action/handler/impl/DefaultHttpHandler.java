@@ -39,16 +39,13 @@ public class DefaultHttpHandler implements HttpHandler {
         resourcePath.append(webView).append(uri);
         int point = uri.lastIndexOf(".");
         if (point == -1){
-            System.out.println("不走默认");
             return ;
         }
         String suffix = uri.substring(point, uri.length());
         String filename = uri.substring(uri.lastIndexOf(File.separator),point);
         if (!FileKits.exists(resourcePath.toString())){
-            System.out.println("不走默认");
             return ;
         }
-        System.out.println("走默认");
         interrupt = true;
         if (cachedPattern.matcher(suffix).matches()){
             checkStrongCache(request,response);
@@ -66,7 +63,6 @@ public class DefaultHttpHandler implements HttpHandler {
         }else if (suffix.endsWith(PDF)){
             response.download(FileKits.read(resourcePath.toString()),filename,HttpHeaderValue.PDF);
         }else{
-            System.out.println("go to default");
             response.write(FileKits.read(resourcePath.toString()));
         }
     }

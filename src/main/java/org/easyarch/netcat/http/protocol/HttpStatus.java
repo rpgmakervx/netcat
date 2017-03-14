@@ -25,7 +25,7 @@ public interface HttpStatus {
     int NOT_FOUND = 404;
     int METHOD_NOT_ALLOWED = 405;
     int CONFLICT = 409;
-    int INTERNAL_ERROR = 500;
+    int INTERNAL_SERVER_ERROR = 500;
     int NOT_IMPLEMENTED = 501;
     int BAD_GATEWAY = 502;
     int GATEWAY_TIMEOUT = 503;

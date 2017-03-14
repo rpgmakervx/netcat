@@ -53,11 +53,11 @@ public class JsonKits {
         return toString(map);
     }
 
-    public static<T> byte[] serialize(T bean){
+    public static<T> byte[] serial(T bean){
         return JSONObject.toJSONBytes(bean, SerializerFeature.PrettyFormat);
     }
 
-    public static<T> T deserialize(byte[] json,Class<T> cls){
+    public static<T> T deserial(byte[] json,Class<T> cls){
         return (T) JSONObject.parse(json, Feature.OrderedField);
     }
 }
