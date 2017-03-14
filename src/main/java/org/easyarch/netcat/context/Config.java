@@ -14,11 +14,30 @@ public class Config {
         this.context = context;
     }
 
-    public void maxAge(int maxAge){
-        context.setMaxAge(maxAge);
+    public Config webView(String webView){
+        context.setWebView(webView);
+        return this;
     }
 
-    public void webView(String webView){
-        context.setWebView(webView);
+    public Config contextPath(String contextPath){
+        if (!contextPath.startsWith("/")){
+            contextPath = "/" + contextPath;
+        }
+        if (!contextPath.endsWith("/")){
+            contextPath = contextPath + "/";
+        }
+        context.setContextPath(contextPath);
+        return this;
     }
+
+    public Config cacheMaxAge(int maxAge){
+        context.setMaxAge(maxAge);
+        return this;
+    }
+
+    public Config useCache(){
+        context.setNegoCache(true);
+        return this;
+    }
+
 }

@@ -1,6 +1,7 @@
 package org.easyarch.netcat.server;
 
 import org.easyarch.netcat.context.ActionHolder;
+import org.easyarch.netcat.context.Config;
 import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.protocol.HttpMethod;
 import org.easyarch.netcat.kits.StringKits;
@@ -23,9 +24,12 @@ final public class App {
 
     private Launcher launcher;
 
+    private Config config;
+
     public App(){
         context = new HandlerContext();
         holder = new ActionHolder();
+        this.config = new Config(context);
         launcher = new Launcher(context,holder);
     }
 
@@ -61,14 +65,15 @@ final public class App {
         if (StringKits.isEmpty(path)||httpHandler == null){
             return this;
         }
-
-        holder.addAction(new Router(path, method),httpHandler);
+        if (path.startsWith("/")){
+            path = path.substring(1,path.length());
+        }
+        holder.addAction(new Router(context.getContextPath() + path, method),httpHandler);
         return this;
     }
 
-    public App config(){
-        return this;
+    public Config config(){
+        return this.config;
     }
-
 
 }

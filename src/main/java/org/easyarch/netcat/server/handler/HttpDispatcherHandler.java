@@ -1,7 +1,6 @@
 package org.easyarch.netcat.server.handler;
 
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.*;
 import org.easyarch.netcat.context.ActionHolder;
 import org.easyarch.netcat.context.HandlerContext;
@@ -13,7 +12,6 @@ import org.easyarch.netcat.mvc.action.Action;
 import org.easyarch.netcat.mvc.action.ActionWrapper;
 import org.easyarch.netcat.mvc.action.filter.Filter;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
-import org.easyarch.netcat.mvc.action.handler.impl.DefaultHttpHandler;
 import org.easyarch.netcat.mvc.action.handler.impl.ErrorHandler;
 import org.easyarch.netcat.mvc.router.Router;
 
@@ -27,18 +25,12 @@ import java.util.List;
  * description:
  */
 
-public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
+public class HttpDispatcherHandler extends BaseDispatcherHandler {
 
-    private HandlerContext context;
-    private ActionHolder holder;
-
-    private DefaultHttpHandler defaultHttpHandler;
     private ErrorHandler errorHandler;
 
     public HttpDispatcherHandler(HandlerContext context, ActionHolder holder) {
-        this.context = context;
-        this.holder = holder;
-        this.defaultHttpHandler = new DefaultHttpHandler();
+        super(context,holder);
 
     }
 
@@ -62,10 +54,6 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
         ActionWrapper wrapper = holder.getAction(router);
         HttpHandlerRequest req = new HttpHandlerRequest(request, router, context, ctx.channel());
         HttpHandlerResponse resp = new HttpHandlerResponse(response, context, ctx.channel());
-        defaultHttpHandler.handle(req, resp);
-        if (defaultHttpHandler.isInterrupt()) {
-            return;
-        }
         Action action = null;
         if (wrapper != null && wrapper.getAction() != null) {
             action = wrapper.getAction();
@@ -96,22 +84,4 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        cause.printStackTrace();
-        StringBuffer errorBuffer = new StringBuffer();
-        errorBuffer.append(cause.toString());
-        StackTraceElement[] elements = cause.getStackTrace();
-        for (StackTraceElement e : elements) {
-            errorBuffer.append("<br/><span style='margin-left:50px'>at  ").append(e).append("</span>");
-        }
-        HttpResponseStatus status = HttpResponseStatus.INTERNAL_SERVER_ERROR;
-        errorHandler = new ErrorHandler(status.code(), status.reasonPhrase());
-        errorHandler.setMessage(errorBuffer.toString());
-        FullHttpResponse response = new DefaultFullHttpResponse(
-                HttpVersion.HTTP_1_1,status);
-        HttpHandlerRequest req = new HttpHandlerRequest(null, new Router(null), context, ctx.channel());
-        HttpHandlerResponse resp = new HttpHandlerResponse(response,context, ctx.channel());
-        errorHandler.handle(req,resp);
-    }
 }

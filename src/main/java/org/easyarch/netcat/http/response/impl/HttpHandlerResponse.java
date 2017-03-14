@@ -38,7 +38,7 @@ public class HttpHandlerResponse implements HandlerResponse {
 
     private TemplateParser tmpParser;
 
-    private Map<String,Object> attributes = new ConcurrentHashMap<>();;
+    private Map<String,Object> attributes = new ConcurrentHashMap<>();
 
     public HandlerContext context;
 
@@ -137,6 +137,7 @@ public class HttpHandlerResponse implements HandlerResponse {
 
     @Override
     public void setAttribute(String name, Object value) {
+        System.out.println("name:"+attributes+",value:"+value);
         attributes.put(name,value);
     }
 
@@ -214,7 +215,6 @@ public class HttpHandlerResponse implements HandlerResponse {
     }
 
     public void html(String view,int statusCode) {
-
         StringBuffer pathBuffer = new StringBuffer();
         pathBuffer.append(view).append(POINT)
                 .append(context.getViewSuffix());

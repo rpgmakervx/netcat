@@ -13,6 +13,7 @@ public class Application {
 
     public static void main(String[] args) {
         App app = new App();
+        app.config().useCache();
         app.get("/index",new IndexHandler())
                 .get("/image",new ImageHandler())
                 .get("/json",new JsonHandler())

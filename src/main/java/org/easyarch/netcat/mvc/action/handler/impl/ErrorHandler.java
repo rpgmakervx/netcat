@@ -3,7 +3,6 @@ package org.easyarch.netcat.mvc.action.handler.impl;
 import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
 import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
-import org.easyarch.netcat.kits.Kits;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 
 /**
@@ -22,7 +21,7 @@ public class ErrorHandler implements HttpHandler {
 
     private String reasonPhase;
 
-    private String message;
+    private String message = "";
 
     public ErrorHandler(int code, String reasonPhase) {
         this.code = code;
@@ -30,7 +29,9 @@ public class ErrorHandler implements HttpHandler {
     }
 
     public void setMessage(String message){
-        this.message = message;
+        if (message != null){
+            this.message = message;
+        }
     }
 
     @Override
@@ -39,6 +40,6 @@ public class ErrorHandler implements HttpHandler {
         response.setAttribute(HTTPSTATUS,code);
         response.setAttribute(REASONPHASE,reasonPhase);
         response.setAttribute(MESSAGE,message);
-        response.html(Kits.getErrorView(context), code);
+        response.html(context.getErrorPage(), code);
     }
 }
