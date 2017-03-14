@@ -47,13 +47,6 @@ public interface HandlerRequest {
 
     public HttpSession getSession();
 
-    public Object getAttribute(String name);
-    public Map<String,Object> getAttributes();
-
-
-    public Collection<String> getAttributeNames();
-
-
     public String getCharacterEncoding();
 
 
@@ -68,12 +61,9 @@ public interface HandlerRequest {
 
     public String getParameter(String name);
 
-
     public Collection<String> getParameterNames();
 
-
     public Collection<String> getParameterValues(String name);
-
 
     public Map<String, String> getParameterMap();
 
@@ -82,8 +72,4 @@ public interface HandlerRequest {
 
     public String getRemoteAddr();
 
-
-    public void setAttribute(String name, Object object);
-
-    public void removeAttribute(String name);
 }

@@ -18,7 +18,11 @@ public class HandlerContext {
     public static final String DEFAULT_CONTEXT = File.separator;
     public static final String DEFAULT_SUFFIX = "html";
 
-    public int maxAge = 3600;
+    private static final int DEFAULT_PORT = 8080;
+
+    private int remotePort = DEFAULT_PORT;
+
+    private int maxAge = 3600;
 
     public boolean negoCache = false;
     public boolean strongCache = true;
@@ -44,6 +48,17 @@ public class HandlerContext {
     public String viewSuffix = DEFAULT_SUFFIX;
 
     public HandlerContext(){
+    }
+
+    public int getRemotePort() {
+        return remotePort;
+    }
+
+    public void setRemotePort(int remotePort) {
+        if (remotePort < 1){
+            remotePort = DEFAULT_PORT;
+        }
+        this.remotePort = remotePort;
     }
 
     public String getContextPath(){

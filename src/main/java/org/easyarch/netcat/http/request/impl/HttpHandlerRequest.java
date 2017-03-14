@@ -1,14 +1,13 @@
 package org.easyarch.netcat.http.request.impl;
 
 import io.netty.channel.Channel;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.request.HandlerRequest;
 import org.easyarch.netcat.http.request.ParamParser;
+import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
 import org.easyarch.netcat.http.session.HttpSession;
 import org.easyarch.netcat.kits.StringKits;
 import org.easyarch.netcat.mvc.router.Router;
@@ -37,7 +36,6 @@ public class HttpHandlerRequest implements HandlerRequest {
     private Router router;
 
     private HandlerContext context;
-    private Map<String,Object> attributes = new ConcurrentHashMap<>();
 
     private String charset;
     private ParamParser paramParser;
@@ -45,17 +43,24 @@ public class HttpHandlerRequest implements HandlerRequest {
     private ServerCookieDecoder decoder;
     private static final String QUESTION = "?";
 
-    public HttpHandlerRequest(FullHttpRequest request,Router router,HandlerContext context, Channel channel){
+    public HttpHandlerRequest(FullHttpRequest request,Router router, HandlerContext context, Channel channel){
         this.context = context;
-        this.request = request;
         this.router = router;
-        this.headers = request.headers();
         this.channel = channel;
+        checkRequest(request);
         this.decoder = ServerCookieDecoder.LAX;
         this.charset = "UTF-8";
         this.paramParser = new ParamParser(request);
         this.params = paramParser.parse();
         this.params.putAll(router.getPathParams());
+    }
+
+    private void checkRequest(FullHttpRequest request){
+        if (request == null){
+            this.headers = new DefaultHttpHeaders();
+        }else{
+            this.headers = request.headers();
+        }
     }
 
     public HandlerContext getContext() {
@@ -153,19 +158,7 @@ public class HttpHandlerRequest implements HandlerRequest {
         return context.getSession(sessionId);
     }
 
-    public Object getAttribute(String name) {
-        return attributes.get(name);
-    }
 
-    @Override
-    public Map<String, Object> getAttributes() {
-        return attributes;
-    }
-
-
-    public Collection<String> getAttributeNames() {
-        return attributes.keySet();
-    }
 
    
     public String getCharacterEncoding() {
@@ -230,43 +223,4 @@ public class HttpHandlerRequest implements HandlerRequest {
     }
 
    
-    public void setAttribute(String name, Object object) {
-        attributes.put(name,object);
-    }
-
-    public void removeAttribute(String name) {
-        attributes.remove(name);
-    }
-
-//    public static class RequestBuilder{
-//        HttpHandlerRequest request;
-//
-//        public RequestBuilder setParam(String name,String value){
-//            request.params.put(name,value);
-//            return this;
-//        }
-//        public RequestBuilder setParams(Map<String,String> params){
-//            request.params.putAll(params);
-//            return this;
-//        }
-//        public RequestBuilder setContext(HandlerContext context){
-//            request.context = context;
-//            return this;
-//        }
-//
-//        public RequestBuilder setChannel(Channel channel){
-//            request.channel = channel;
-//            return this;
-//        }
-//
-//        public RequestBuilder setRouter(Router router){
-//            request.router = router;
-//            return this;
-//        }
-//
-//        public HttpHandlerRequest build(){
-//            return request;
-//        }
-//    }
-
 }

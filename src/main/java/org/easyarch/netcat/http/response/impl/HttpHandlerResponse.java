@@ -1,15 +1,11 @@
 package org.easyarch.netcat.http.response.impl;
 
 import io.netty.channel.Channel;
-import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.Cookie;
 import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.protocol.HttpHeaderName;
 import org.easyarch.netcat.http.protocol.HttpHeaderValue;
-import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
 import org.easyarch.netcat.http.response.HandlerResponse;
 import org.easyarch.netcat.kits.ByteUtil;
 import org.easyarch.netcat.kits.JsonKits;
@@ -20,6 +16,7 @@ import org.easyarch.netcat.mvc.temp.TemplateParser;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.easyarch.netcat.http.Const.NETCATID;
 import static org.easyarch.netcat.http.Const.POINT;
@@ -40,20 +37,27 @@ public class HttpHandlerResponse implements HandlerResponse {
 
     private TemplateParser tmpParser;
 
-    private Map<String,Object> params;
+    private Map<String,Object> attributes = new ConcurrentHashMap<>();;
 
     public HandlerContext context;
 
-    public HttpHandlerResponse(FullHttpResponse response, HttpHandlerRequest request, HandlerContext context, Channel channel) {
+    public HttpHandlerResponse(FullHttpResponse response, HandlerContext context, Channel channel) {
+        System.out.println("build response");
+        init(response,context,channel);
+    }
+
+    private void init(FullHttpResponse response, HandlerContext context, Channel channel){
         this.context = context;
         this.response = response;
         this.tmpParser = new TemplateParser(context);
-        this.headers = this.response.headers();
-        this.params = request.getAttributes();
+        if (response == null){
+            this.headers = new DefaultHttpHeaders();
+        }else {
+            this.headers = this.response.headers();
+        }
         this.charset = "UTF-8";
         this.channel = channel;
     }
-
     public HandlerContext getContext() {
         return context;
     }
@@ -71,7 +75,7 @@ public class HttpHandlerResponse implements HandlerResponse {
     }
 
     public void setHeader(String name, String value) {
-        this.response.headers().set(name, value);
+        this.headers.set(name, value);
     }
 
     @Override
@@ -117,11 +121,33 @@ public class HttpHandlerResponse implements HandlerResponse {
         this.charset = charset;
     }
 
+    public Object getAttribute(String name) {
+        return attributes.get(name);
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
+
+
+    public Collection<String> getAttributeNames() {
+        return attributes.keySet();
+    }
+
+    @Override
+    public void setAttribute(String name, Object value) {
+        attributes.put(name,value);
+    }
+
+    @Override
+    public void removeAttribute(String name) {
+        attributes.remove(name);
+    }
 
     public void setContentLength(int len) {
         this.headers.set(HttpHeaderNames.CONTENT_LENGTH, len);
     }
-
 
     public void setContentType(String type) {
         this.headers.set(HttpHeaderNames.CONTENT_TYPE, type);
@@ -193,7 +219,7 @@ public class HttpHandlerResponse implements HandlerResponse {
         pathBuffer.append(view).append(POINT)
                 .append(context.getViewSuffix());
         try {
-            tmpParser.addParam(params);
+            tmpParser.addParam(attributes);
             byte[] content = tmpParser.getTemplate(pathBuffer.toString()).getBytes();
             write(content,HttpHeaderValue.TEXT_HTML,statusCode);
         } catch (Exception e) {

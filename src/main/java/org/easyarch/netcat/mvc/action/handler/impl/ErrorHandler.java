@@ -15,14 +15,21 @@ public class ErrorHandler implements HttpHandler {
 
     private static final String HTTPSTATUS = "HTTPSTATUS";
     private static final String REASONPHASE = "REASONPHASE";
+    private static final String MESSAGE = "MESSAGE";
 
 
     private int code;
 
+    private String reasonPhase;
+
     private String message;
 
-    public ErrorHandler(int code, String message) {
+    public ErrorHandler(int code, String reasonPhase) {
         this.code = code;
+        this.reasonPhase = reasonPhase;
+    }
+
+    public void setMessage(String message){
         this.message = message;
     }
 
@@ -32,8 +39,9 @@ public class ErrorHandler implements HttpHandler {
         String webView = context.getWebView();
         StringBuffer resourcePath = new StringBuffer();
         resourcePath.append(webView).append(context.getErrorPage());
-        request.setAttribute(HTTPSTATUS,code);
-        request.setAttribute(REASONPHASE,message);
+        response.setAttribute(HTTPSTATUS,code);
+        response.setAttribute(REASONPHASE,reasonPhase);
+        response.setAttribute(MESSAGE,message);
         response.html("error", code);
     }
 }

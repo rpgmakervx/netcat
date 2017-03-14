@@ -35,6 +35,10 @@ public class ParamParser {
      * @throws IOException
      */
     public Map<String, String> parse() {
+        if (this.fullReq == null){
+            System.out.println("build params");
+            return new HashMap<>();
+        }
         HttpMethod method = fullReq.method();
 
         Map<String, String> parmMap = new HashMap<>();

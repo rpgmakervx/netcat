@@ -25,11 +25,12 @@ public interface HandlerResponse {
     public void setDateHeader(String name, long date);
 
     public void setHeader(String name, String value);
+
     public void addHeader(String name, String value);
 
-    public void setStatus(int code) ;
+    public void setStatus(int code);
 
-    public void setStatus(int code, String msg) ;
+    public void setStatus(int code, String msg);
 
     public int getStatus();
 
@@ -38,22 +39,32 @@ public interface HandlerResponse {
     public Collection<String> getHeaderNames();
 
 
-    public String getCharacterEncoding() ;
+    public String getCharacterEncoding();
 
     public String getContentType();
-
 
     public void setCharacterEncoding(String charset);
 
     public void setContentLength(int len);
 
+    public Object getAttribute(String name);
 
-    public void setContentType(String type) ;
+    public Map<String, Object> getAttributes();
 
-    public void write(byte[] content, String headerValue,int statusCode);
+    public Collection<String> getAttributeNames();
+
+    public void setAttribute(String name, Object value) ;
+
+    public void removeAttribute(String name);
+
+    public void setContentType(String type);
+
+    public void write(byte[] content, String headerValue, int statusCode);
 
     public void write(byte[] content, String headerValue);
+
     public void write(byte[] content);
+
     public void write();
 
     public void text(String content);
@@ -62,7 +73,7 @@ public interface HandlerResponse {
 
     public void json(String json);
 
-    public void json(Map<String,Object> json);
+    public void json(Map<String, Object> json);
 
     public void json(Json json);
 
@@ -76,6 +87,6 @@ public interface HandlerResponse {
 
     public void redirect(String url);
 
-    public void download(byte[] bytes,String filename,String headerValue);
+    public void download(byte[] bytes, String filename, String headerValue);
 
 }

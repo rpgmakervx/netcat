@@ -35,11 +35,15 @@ public class App {
         holder = new ActionHolder();
     }
 
-    public void start(int port) {
-        launch(port);
+    public void start() {
+        launch();
     }
-    private void launch(int port) {
-        System.out.println("正在启动服务。。。,服务端口:" + port);
+    public void start(int port) {
+        context.setRemotePort(port);
+        launch();
+    }
+    private void launch() {
+        System.out.println("正在启动服务。。。,服务端口:" + context.getRemotePort());
         EventLoopGroup bossGroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors() * 8);
         EventLoopGroup workerGroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors() * 8);
         ServerBootstrap b = new ServerBootstrap();
@@ -49,7 +53,7 @@ public class App {
                     .childHandler(new BaseChildHandler(context,holder))
                     .option(ChannelOption.SO_BACKLOG, 2048)
                     .option(ChannelOption.TCP_NODELAY,true);
-            f = b.bind(port).sync();
+            f = b.bind(context.getRemotePort()).sync();
             System.out.println("服务已启动");
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {

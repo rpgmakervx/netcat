@@ -1,7 +1,5 @@
 package org.easyarch.netcat.server.handler;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.*;
@@ -36,6 +34,7 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
 
     private DefaultHttpHandler defaultHttpHandler;
     private ErrorHandler errorHandler;
+
     public HttpDispatcherHandler(HandlerContext context, ActionHolder holder) {
         this.context = context;
         this.holder = holder;
@@ -52,6 +51,8 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         FullHttpRequest request = (FullHttpRequest) msg;
         boolean isSuccess = request.decoderResult().isSuccess();
+        String error = null;
+        System.out.println(error.length());
         if (!isSuccess) {
             ctx.close();
             return;
@@ -61,35 +62,35 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
         Router router = new Router(request.uri(), HttpMethod.getMethod(request.method()));
         List<Filter> filters = holder.getFilters(router);
         ActionWrapper wrapper = holder.getAction(router);
-        HttpHandlerRequest req = new HttpHandlerRequest(request,router,context,ctx.channel());
-        HttpHandlerResponse resp = new HttpHandlerResponse(response,req,context,ctx.channel());
-        defaultHttpHandler.handle(req,resp);
-        if (defaultHttpHandler.isInterrupt()){
+        HttpHandlerRequest req = new HttpHandlerRequest(request, router, context, ctx.channel());
+        HttpHandlerResponse resp = new HttpHandlerResponse(response, context, ctx.channel());
+        defaultHttpHandler.handle(req, resp);
+        if (defaultHttpHandler.isInterrupt()) {
             return;
         }
         Action action = null;
-        if (wrapper != null&&wrapper.getAction() != null){
+        if (wrapper != null && wrapper.getAction() != null) {
             action = wrapper.getAction();
         }
         if (filters == null || filters.isEmpty() && action == null) {
-            this.errorHandler = new ErrorHandler(HttpResponseStatus.NOT_FOUND.code(),HttpResponseStatus.NOT_FOUND.reasonPhrase());
-            errorHandler.handle(req,resp);
+            this.errorHandler = new ErrorHandler(HttpResponseStatus.NOT_FOUND.code(), HttpResponseStatus.NOT_FOUND.reasonPhrase());
+            errorHandler.handle(req, resp);
             return;
         }
-        if (wrapper.getStatus() == HttpStatus.METHOD_NOT_ALLOWED){
-            this.errorHandler = new ErrorHandler(HttpResponseStatus.METHOD_NOT_ALLOWED.code(),HttpResponseStatus.METHOD_NOT_ALLOWED.reasonPhrase());
-            errorHandler.handle(req,resp);
-            return ;
+        if (wrapper.getStatus() == HttpStatus.METHOD_NOT_ALLOWED) {
+            this.errorHandler = new ErrorHandler(HttpResponseStatus.METHOD_NOT_ALLOWED.code(), HttpResponseStatus.METHOD_NOT_ALLOWED.reasonPhrase());
+            errorHandler.handle(req, resp);
+            return;
         }
         if (!filters.isEmpty()) {
             for (Filter filter : filters) {
-                if (!filter.before(req, resp)){
+                if (!filter.before(req, resp)) {
                     return;
                 }
             }
         }
-        HttpHandler handler = (HttpHandler)action;
-        handler.handle(req,resp);
+        HttpHandler handler = (HttpHandler) action;
+        handler.handle(req, resp);
         if (!filters.isEmpty()) {
             for (Filter filter : filters) {
                 filter.after(req, resp);
@@ -100,19 +101,19 @@ public class HttpDispatcherHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();
-        StringBuffer buffer = new StringBuffer();
-        buffer.append("<h1>500 Server Error</h1>");
         StringBuffer errorBuffer = new StringBuffer();
-        errorBuffer.append(cause.toString() );
+        errorBuffer.append(cause.toString());
         StackTraceElement[] elements = cause.getStackTrace();
-        for (StackTraceElement e: elements){
+        for (StackTraceElement e : elements) {
             errorBuffer.append("<br/><span style='margin-left:50px'>at  ").append(e).append("</span>");
         }
-        buffer.append("<p>" + errorBuffer.toString() + "</p>");
-        byte[] content = buffer.toString().getBytes();
-        ByteBuf buf = Unpooled.wrappedBuffer(content, 0, content.length);
+        HttpResponseStatus status = HttpResponseStatus.INTERNAL_SERVER_ERROR;
+        errorHandler = new ErrorHandler(status.code(), status.reasonPhrase());
+        errorHandler.setMessage(errorBuffer.toString());
         FullHttpResponse response = new DefaultFullHttpResponse(
-                HttpVersion.HTTP_1_1, HttpResponseStatus.OK, buf);
-        ctx.writeAndFlush(response);
+                HttpVersion.HTTP_1_1,status);
+        HttpHandlerRequest req = new HttpHandlerRequest(null, new Router(null), context, ctx.channel());
+        HttpHandlerResponse resp = new HttpHandlerResponse(response,context, ctx.channel());
+        errorHandler.handle(req,resp);
     }
 }
