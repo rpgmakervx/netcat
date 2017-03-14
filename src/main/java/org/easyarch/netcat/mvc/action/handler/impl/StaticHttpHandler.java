@@ -21,7 +21,7 @@ import static org.easyarch.netcat.kits.file.FileFilter.*;
  * description:处理静态资源，以及强缓存和协商缓存
  */
 
-public class DefaultHttpHandler implements HttpHandler {
+public class StaticHttpHandler implements HttpHandler {
 
     /**
      * 资源是否被默认handler捕获

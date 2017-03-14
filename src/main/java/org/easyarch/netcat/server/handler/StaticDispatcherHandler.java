@@ -6,7 +6,7 @@ import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.protocol.HttpMethod;
 import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
 import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
-import org.easyarch.netcat.mvc.action.handler.impl.DefaultHttpHandler;
+import org.easyarch.netcat.mvc.action.handler.impl.StaticHttpHandler;
 import org.easyarch.netcat.mvc.router.Router;
 
 /**
@@ -17,7 +17,7 @@ import org.easyarch.netcat.mvc.router.Router;
 
 public class StaticDispatcherHandler extends BaseDispatcherHandler {
 
-    private DefaultHttpHandler defaultHttpHandler;
+    private StaticHttpHandler staticHttpHandler;
 
     public StaticDispatcherHandler(HandlerContext context, ActionHolder holder) {
         super(context,holder);
@@ -36,9 +36,9 @@ public class StaticDispatcherHandler extends BaseDispatcherHandler {
         Router router = new Router(request.uri(), HttpMethod.getMethod(request.method()));
         HttpHandlerRequest req = new HttpHandlerRequest(request, router, context, ctx.channel());
         HttpHandlerResponse resp = new HttpHandlerResponse(response, context, ctx.channel());
-        this.defaultHttpHandler = new DefaultHttpHandler();
-        defaultHttpHandler.handle(req, resp);
-        if (defaultHttpHandler.isInterrupt()) {
+        this.staticHttpHandler = new StaticHttpHandler();
+        staticHttpHandler.handle(req, resp);
+        if (staticHttpHandler.isInterrupt()) {
             return;
         }
         ctx.fireChannelRead(msg);
