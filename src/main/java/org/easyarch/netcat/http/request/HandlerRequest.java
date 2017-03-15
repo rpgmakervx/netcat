@@ -40,9 +40,6 @@ public interface HandlerRequest {
 
     public SocketAddress getRemoteAddress();
 
-    public String getRequestedSessionId();
-
-
     public String getRequestURI();
 
     public HttpSession getSession();

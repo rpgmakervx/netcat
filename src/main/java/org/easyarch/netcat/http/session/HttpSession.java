@@ -1,8 +1,6 @@
 package org.easyarch.netcat.http.session;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Description :
@@ -11,24 +9,10 @@ import java.util.Map;
  * description:
  */
 
-public class HttpSession implements Serializable {
+public interface HttpSession extends Serializable{
 
-    private Map<String,Object> sessionMap = new HashMap<>();
-
-    private int maxAge;
-
-    public Object getAttr(String name){
-        return sessionMap.get(name);
-    }
-    public void setAttr(String name,String value){
-        sessionMap.put(name,value);
-    }
-
-    public int getMaxAge() {
-        return maxAge;
-    }
-
-    public void setMaxAge(int maxAge) {
-        this.maxAge = maxAge;
-    }
+    public Object getAttr(String name);
+    public void setAttr(String name,String value);
+    public int getMaxAge();
+    public void setMaxAge(int maxAge);
 }

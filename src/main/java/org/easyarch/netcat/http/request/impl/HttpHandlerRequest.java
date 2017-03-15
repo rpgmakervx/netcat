@@ -1,13 +1,15 @@
 package org.easyarch.netcat.http.request.impl;
 
 import io.netty.channel.Channel;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.DefaultHttpHeaders;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.request.HandlerRequest;
 import org.easyarch.netcat.http.request.ParamParser;
-import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
 import org.easyarch.netcat.http.session.HttpSession;
 import org.easyarch.netcat.kits.StringKits;
 import org.easyarch.netcat.mvc.router.Router;
@@ -16,7 +18,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.SocketAddress;
 import java.nio.charset.Charset;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.easyarch.netcat.http.Const.NETCATID;
 
@@ -139,11 +140,6 @@ public class HttpHandlerRequest implements HandlerRequest {
         return channel.remoteAddress();
     }
 
-    public String getRequestedSessionId() {
-        return null;
-    }
-
-   
     public String getRequestURI() {
         return router.getPath();
     }
@@ -159,8 +155,6 @@ public class HttpHandlerRequest implements HandlerRequest {
     }
 
 
-
-   
     public String getCharacterEncoding() {
         return this.charset;
     }
