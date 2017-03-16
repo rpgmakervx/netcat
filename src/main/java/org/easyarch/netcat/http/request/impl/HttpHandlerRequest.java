@@ -8,6 +8,7 @@ import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import org.easyarch.netcat.context.HandlerContext;
+import org.easyarch.netcat.http.cookie.HttpCookie;
 import org.easyarch.netcat.http.request.HandlerRequest;
 import org.easyarch.netcat.http.request.ParamParser;
 import org.easyarch.netcat.http.session.HttpSession;
@@ -20,6 +21,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 import static org.easyarch.netcat.http.Const.NETCATID;
+import static org.easyarch.netcat.http.protocol.HttpHeaderName.COOKIE;
 
 /**
  * Description :
@@ -45,6 +47,7 @@ public class HttpHandlerRequest implements HandlerRequest {
     private static final String QUESTION = "?";
 
     public HttpHandlerRequest(FullHttpRequest request,Router router, HandlerContext context, Channel channel){
+        this.request = request;
         this.context = context;
         this.router = router;
         this.channel = channel;
@@ -54,6 +57,7 @@ public class HttpHandlerRequest implements HandlerRequest {
         this.paramParser = new ParamParser(request);
         this.params = paramParser.parse();
         this.params.putAll(router.getPathParams());
+
     }
 
     private void checkRequest(FullHttpRequest request){
@@ -64,14 +68,41 @@ public class HttpHandlerRequest implements HandlerRequest {
         }
     }
 
+    private Set<HttpCookie> wrapCookies(Set<Cookie> cookies){
+        Set<HttpCookie> httpCookies = new HashSet<>();
+        for (Cookie cookie:cookies){
+            HttpCookie hc = new HttpCookie();
+            hc.setMaxAge(cookie.maxAge());
+            hc.setDomain(cookie.domain());
+            hc.setHttpOnly(cookie.isHttpOnly());
+            hc.setName(cookie.name());
+            hc.setValue(cookie.value());
+            hc.setPath(cookie.path());
+            httpCookies.add(hc);
+        }
+        return httpCookies;
+    }
+
+    private String checkURL(String url){
+        if (StringKits.isEmpty(url)){
+            return null;
+        }
+        int index = url.lastIndexOf(QUESTION);
+        if (index == -1){
+            return null;
+        }
+        String queryString = url.substring(url.lastIndexOf(QUESTION) + 1,url.length());
+        return encode(queryString);
+    }
+
     public HandlerContext getContext() {
         return context;
     }
 
-    public Set<Cookie> getCookies() {
-        String cookieVallue = this.headers.get(HttpHeaderNames.COOKIE);
-        Set<Cookie> cookie = decoder.decode(cookieVallue);
-        return cookie;
+    public Set<HttpCookie> getCookies() {
+        String cookieValue = this.headers.get(COOKIE);
+        Set<Cookie> cookies = decoder.decode(cookieValue);
+        return wrapCookies(cookies);
     }
 
 
@@ -113,18 +144,6 @@ public class HttpHandlerRequest implements HandlerRequest {
         return checkURL(url);
     }
 
-    private String checkURL(String url){
-        if (StringKits.isEmpty(url)){
-            return null;
-        }
-        int index = url.lastIndexOf(QUESTION);
-        if (index == -1){
-            return null;
-        }
-        String queryString = url.substring(url.lastIndexOf(QUESTION) + 1,url.length());
-        return encode(queryString);
-    }
-
     private String encode(String content){
         if (StringKits.isEmpty(content)){
             return null;
@@ -146,7 +165,7 @@ public class HttpHandlerRequest implements HandlerRequest {
 
     public HttpSession getSession() {
         String sessionId = "";
-        for(Cookie cookie:getCookies()){
+        for(HttpCookie cookie:getCookies()){
             if (NETCATID.equals(cookie.name())){
                 sessionId = cookie.value();
             }

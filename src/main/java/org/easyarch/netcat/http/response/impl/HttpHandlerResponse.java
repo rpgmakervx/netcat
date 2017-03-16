@@ -2,8 +2,8 @@ package org.easyarch.netcat.http.response.impl;
 
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.*;
-import io.netty.handler.codec.http.cookie.Cookie;
 import org.easyarch.netcat.context.HandlerContext;
+import org.easyarch.netcat.http.cookie.HttpCookie;
 import org.easyarch.netcat.http.protocol.HttpHeaderName;
 import org.easyarch.netcat.http.protocol.HttpHeaderValue;
 import org.easyarch.netcat.http.protocol.HttpStatus;
@@ -19,8 +19,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.easyarch.netcat.http.Const.NETCATID;
 import static org.easyarch.netcat.http.Const.POINT;
+import static org.easyarch.netcat.http.protocol.HttpHeaderName.COOKIE;
 
 /**
  * Description :
@@ -58,22 +58,27 @@ public class HttpHandlerResponse implements HandlerResponse {
         this.charset = "UTF-8";
         this.channel = channel;
     }
+
+    @Override
     public HandlerContext getContext() {
         return context;
     }
-
+    @Override
     public void setContext(HandlerContext context) {
         this.context = context;
     }
 
-    public void addCookie(Cookie cookie) {
-        this.headers.add(NETCATID, cookie);
+    @Override
+    public void addCookie(HttpCookie cookie) {
+        this.headers.add(COOKIE, cookie);
     }
 
+    @Override
     public void setDateHeader(String name, long date) {
         this.headers.set(name, date);
     }
 
+    @Override
     public void setHeader(String name, String value) {
         this.headers.set(name, value);
     }
@@ -83,44 +88,52 @@ public class HttpHandlerResponse implements HandlerResponse {
         this.headers.add(name,value);
     }
 
+    @Override
     public void setStatus(int code) {
         response.setStatus(HttpResponseStatus.valueOf(code));
     }
 
+    @Override
     public void setStatus(int code, String msg) {
         response.setStatus(new HttpResponseStatus(code, msg));
     }
 
+    @Override
     public int getStatus() {
         return response.status().code();
     }
 
 
+    @Override
     public String getHeader(String name) {
         String headr = this.headers.get(name);
         return encode(headr);
     }
 
 
+    @Override
     public Collection<String> getHeaderNames() {
         return this.headers.names();
     }
 
 
+    @Override
     public String getCharacterEncoding() {
         return this.charset;
     }
 
 
+    @Override
     public String getContentType() {
         return this.headers.get(HttpHeaderNames.CONTENT_TYPE);
     }
 
 
+    @Override
     public void setCharacterEncoding(String charset) {
         this.charset = charset;
     }
-
+    @Override
     public Object getAttribute(String name) {
         return attributes.get(name);
     }
@@ -130,7 +143,7 @@ public class HttpHandlerResponse implements HandlerResponse {
         return attributes;
     }
 
-
+    @Override
     public Collection<String> getAttributeNames() {
         return attributes.keySet();
     }
@@ -145,27 +158,16 @@ public class HttpHandlerResponse implements HandlerResponse {
     public void removeAttribute(String name) {
         attributes.remove(name);
     }
-
+    @Override
     public void setContentLength(int len) {
         this.headers.set(HttpHeaderNames.CONTENT_LENGTH, len);
     }
-
+    @Override
     public void setContentType(String type) {
         this.headers.set(HttpHeaderNames.CONTENT_TYPE, type);
     }
 
-    private String encode(String content) {
-        if (StringKits.isEmpty(content)) {
-            return null;
-        }
-        try {
-            return new String(content.getBytes(), charset);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return content;
-        }
-    }
-
+    @Override
     public void write(byte[] content, String contentType,int statusCode) {
         setHeader(HttpHeaderName.CONTENT_TYPE ,contentType);
         setHeader(HttpHeaderName.CONTENT_LENGTH, String.valueOf(content.length));
@@ -173,7 +175,7 @@ public class HttpHandlerResponse implements HandlerResponse {
         response.setStatus(HttpResponseStatus.valueOf(statusCode));
         channel.writeAndFlush(response);
     }
-
+    @Override
     public void write(byte[] content, String contentType) {
         setHeader(HttpHeaderName.CONTENT_TYPE, contentType);
         setHeader(HttpHeaderName.CONTENT_LENGTH, String.valueOf(content.length));
@@ -193,7 +195,7 @@ public class HttpHandlerResponse implements HandlerResponse {
         channel.writeAndFlush(response);
     }
 
-
+    @Override
     public void text(String content) {
         write(content.getBytes(), HttpHeaderValue.TEXT_PLAIN);
     }
@@ -202,10 +204,11 @@ public class HttpHandlerResponse implements HandlerResponse {
     public void json(byte[] json) {
         write(json,HttpHeaderValue.APPLICATION_JSON);
     }
-
+    @Override
     public void json(String json) {
         write(json.getBytes(), HttpHeaderValue.APPLICATION_JSON);
     }
+    @Override
     public void json(Map<String,Object> json) {
         json(JsonKits.toString(json));
     }
@@ -213,7 +216,7 @@ public class HttpHandlerResponse implements HandlerResponse {
     public void json(Json json) {
         json(json.getJsonMap());
     }
-
+    @Override
     public void html(String view,int statusCode) {
         StringBuffer pathBuffer = new StringBuffer();
         pathBuffer.append(view).append(POINT)
@@ -227,6 +230,7 @@ public class HttpHandlerResponse implements HandlerResponse {
         }
     }
 
+    @Override
     public void html(String view){
         html(view,HttpResponseStatus.OK.code());
     }
@@ -241,16 +245,19 @@ public class HttpHandlerResponse implements HandlerResponse {
         html(view,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
     public void image(byte[] bytes){
         write(bytes,HttpHeaderValue.IMAGE);
     }
 
+    @Override
     public void redirect(String url){
         response.setStatus(HttpResponseStatus.FOUND);
         setHeader(HttpHeaderNames.LOCATION.toString(),url);
         write();
     }
 
+    @Override
     public void download(byte[] bytes,String filename,String contentType){
         String fn = filename;
         try {
@@ -262,4 +269,15 @@ public class HttpHandlerResponse implements HandlerResponse {
         write(bytes,contentType.toString());
     }
 
+    private String encode(String content) {
+        if (StringKits.isEmpty(content)) {
+            return null;
+        }
+        try {
+            return new String(content.getBytes(), charset);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return content;
+        }
+    }
 }

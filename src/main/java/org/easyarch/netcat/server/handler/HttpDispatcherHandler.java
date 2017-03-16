@@ -10,7 +10,7 @@ import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
 import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
 import org.easyarch.netcat.mvc.action.Action;
 import org.easyarch.netcat.mvc.action.ActionWrapper;
-import org.easyarch.netcat.mvc.action.filter.Filter;
+import org.easyarch.netcat.mvc.action.filter.HttpFilter;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 import org.easyarch.netcat.mvc.action.handler.impl.ErrorHandler;
 import org.easyarch.netcat.mvc.router.Router;
@@ -23,6 +23,9 @@ import java.util.List;
  * Created by xingtianyu on 17-2-23
  * 下午4:52
  * description:
+ * 1.请求路由
+ * 2.判断要执行的处理器
+ * 3.执行对应处理器
  */
 
 public class HttpDispatcherHandler extends BaseDispatcherHandler {
@@ -39,20 +42,26 @@ public class HttpDispatcherHandler extends BaseDispatcherHandler {
         super.channelActive(ctx);
     }
 
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         FullHttpRequest request = (FullHttpRequest) msg;
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         Router router = new Router(request.uri(), HttpMethod.getMethod(request.method()));
-        List<Filter> filters = holder.getFilters(router);
         ActionWrapper wrapper = holder.getAction(router);
+        List<HttpFilter> filters ;
+        Action action = null;
+        //直接从wrapper获取比遍历一遍快
+        if (wrapper!= null){
+            filters = wrapper.getFilters();
+            action = wrapper.getAction();
+        }else{
+            filters = holder.getFilters(router);
+        }
         HttpHandlerRequest req = new HttpHandlerRequest(request, router, context, ctx.channel());
         HttpHandlerResponse resp = new HttpHandlerResponse(response, context, ctx.channel());
-        Action action = null;
-        if (wrapper != null && wrapper.getAction() != null) {
-            action = wrapper.getAction();
-        }
+
         if (filters == null || filters.isEmpty() && action == null) {
             this.errorHandler = new ErrorHandler(HttpResponseStatus.NOT_FOUND.code(), HttpResponseStatus.NOT_FOUND.reasonPhrase());
             errorHandler.handle(req, resp);
@@ -64,7 +73,7 @@ public class HttpDispatcherHandler extends BaseDispatcherHandler {
             return;
         }
         if (!filters.isEmpty()) {
-            for (Filter filter : filters) {
+            for (HttpFilter filter : filters) {
                 if (!filter.before(req, resp)) {
                     return;
                 }
@@ -73,7 +82,7 @@ public class HttpDispatcherHandler extends BaseDispatcherHandler {
         HttpHandler handler = (HttpHandler) action;
         handler.handle(req, resp);
         if (!filters.isEmpty()) {
-            for (Filter filter : filters) {
+            for (HttpFilter filter : filters) {
                 filter.after(req, resp);
             }
         }

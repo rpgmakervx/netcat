@@ -5,7 +5,7 @@ import org.easyarch.netcat.context.Config;
 import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.protocol.HttpMethod;
 import org.easyarch.netcat.kits.StringKits;
-import org.easyarch.netcat.mvc.action.filter.Filter;
+import org.easyarch.netcat.mvc.action.filter.HttpFilter;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 import org.easyarch.netcat.mvc.router.Router;
 
@@ -40,7 +40,7 @@ final public class App {
         launcher.start(port);
     }
 
-    public App filter(Filter filter){
+    public App filter(HttpFilter filter){
         if (filter == null){
             return this;
         }

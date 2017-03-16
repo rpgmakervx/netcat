@@ -6,18 +6,65 @@ package org.easyarch.netcat.http.cookie;
  * description:
  */
 
-public interface HttpCookie {
+public class HttpCookie {
 
-    public void setMaxAge(int expiry);
+    private long maxAge;
 
-    public void setValue(String value);
+    private String name;
 
-    public void setName(String name);
+    private String value;
 
-    public int getMaxAge();
+    private String domain;
 
-    public String getValue();
+    private String path;
 
-    public String getName();
+    private boolean httpOnly;
 
+    public void setMaxAge(long maxAge){
+        this.maxAge = maxAge;
+    }
+
+    public void setValue(String value){
+        this.value = value;
+    }
+
+    public void setName(String name){
+        this.name = name;
+    }
+
+    public long maxAge(){
+        return this.maxAge;
+    }
+
+    public String value(){
+        return this.value;
+    }
+
+    public String name(){
+        return this.name;
+    }
+
+    public String domain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    public String path() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public boolean isHttpOnly() {
+        return httpOnly;
+    }
+
+    public void setHttpOnly(boolean httpOnly) {
+        this.httpOnly = httpOnly;
+    }
 }

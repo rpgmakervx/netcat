@@ -1,7 +1,7 @@
 package org.easyarch.netcat.http.response;
 
-import io.netty.handler.codec.http.cookie.Cookie;
 import org.easyarch.netcat.context.HandlerContext;
+import org.easyarch.netcat.http.cookie.HttpCookie;
 import org.easyarch.netcat.mvc.entity.Json;
 
 import java.util.Collection;
@@ -20,7 +20,7 @@ public interface HandlerResponse {
 
     public void setContext(HandlerContext context);
 
-    public void addCookie(Cookie cookie);
+    public void addCookie(HttpCookie cookie);
 
     public void setDateHeader(String name, long date);
 
@@ -78,6 +78,7 @@ public interface HandlerResponse {
     public void json(Json json);
 
     public void html(String view);
+    public void html(String view,int statusCode);
 
     public void notFound(String view);
 

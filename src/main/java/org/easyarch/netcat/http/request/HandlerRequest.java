@@ -1,7 +1,7 @@
 package org.easyarch.netcat.http.request;
 
-import io.netty.handler.codec.http.cookie.Cookie;
 import org.easyarch.netcat.context.HandlerContext;
+import org.easyarch.netcat.http.cookie.HttpCookie;
 import org.easyarch.netcat.http.session.HttpSession;
 
 import java.io.UnsupportedEncodingException;
@@ -19,7 +19,7 @@ import java.util.Set;
 public interface HandlerRequest {
     public HandlerContext getContext();
 
-    public Set<Cookie> getCookies();
+    public Set<HttpCookie> getCookies();
 
 
     public String getHeader(String name);

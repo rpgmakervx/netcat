@@ -1,7 +1,7 @@
 package org.easyarch.netcat.mvc.action;
 
 import org.easyarch.netcat.http.protocol.HttpStatus;
-import org.easyarch.netcat.mvc.action.filter.Filter;
+import org.easyarch.netcat.mvc.action.filter.HttpFilter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -103,15 +103,15 @@ public class ActionWrapper {
      * 该方法不会返回空指针
      * @return
      */
-    public List<Filter> getFilters(){
-        List<Filter> filter = new ArrayList<>();
+    public List<HttpFilter> getFilters(){
+        List<HttpFilter> filter = new ArrayList<>();
         ActionWrapper wrapper = this;
         boolean continuly = true;
         while (wrapper != null){
             ActionType type = wrapper.getType();
             Action action = wrapper.getAction();
             if (type == ActionType.FILTER&&continuly){
-                filter.add((Filter) action);
+                filter.add((HttpFilter) action);
                 ActionWrapper preWrapper = wrapper.getPreAction();
                 //下一个action如果不是过滤器的话就结束过滤器遍历
                 if (preWrapper.getType() != ActionType.FILTER

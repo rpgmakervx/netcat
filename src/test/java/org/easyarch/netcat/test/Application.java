@@ -1,6 +1,7 @@
 package org.easyarch.netcat.test;
 
 import org.easyarch.netcat.server.App;
+import org.easyarch.netcat.test.filter.LoginFilter;
 import org.easyarch.netcat.test.handler.*;
 
 /**
@@ -17,6 +18,7 @@ public class Application {
         app.get("/index",new IndexHandler())
                 .get("/image",new ImageHandler())
                 .get("/json",new JsonHandler())
+                .filter(new LoginFilter())
                 .get("/get/{username}", new ParameterizeHandler())
                 .get("/download",new DownLoadHandler())
                 .start(7070);

@@ -4,7 +4,7 @@ import org.easyarch.netcat.http.protocol.HttpStatus;
 import org.easyarch.netcat.kits.StringKits;
 import org.easyarch.netcat.mvc.action.Action;
 import org.easyarch.netcat.mvc.action.ActionWrapper;
-import org.easyarch.netcat.mvc.action.filter.Filter;
+import org.easyarch.netcat.mvc.action.filter.HttpFilter;
 import org.easyarch.netcat.mvc.router.Router;
 
 import java.util.LinkedHashMap;
@@ -66,7 +66,7 @@ public class ActionHolder {
      * @param router
      * @return
      */
-    public List<Filter> getFilters(Router router) {
+    public List<HttpFilter> getFilters(Router router) {
         ActionWrapper wrapper = null;
         for (Map.Entry<Router, ActionWrapper> entry : actions.entrySet()) {
             Router r = entry.getKey();

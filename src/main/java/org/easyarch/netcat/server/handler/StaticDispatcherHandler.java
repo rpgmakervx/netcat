@@ -1,4 +1,5 @@
 package org.easyarch.netcat.server.handler;
+
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import org.easyarch.netcat.context.ActionHolder;
@@ -6,7 +7,7 @@ import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.protocol.HttpMethod;
 import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
 import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
-import org.easyarch.netcat.mvc.action.handler.impl.StaticHttpHandler;
+import org.easyarch.netcat.mvc.action.filter.impl.StaticFilter;
 import org.easyarch.netcat.mvc.router.Router;
 
 /**
@@ -17,7 +18,7 @@ import org.easyarch.netcat.mvc.router.Router;
 
 public class StaticDispatcherHandler extends BaseDispatcherHandler {
 
-    private StaticHttpHandler staticHttpHandler;
+    private StaticFilter staticFilter;
 
     public StaticDispatcherHandler(HandlerContext context, ActionHolder holder) {
         super(context,holder);
@@ -36,12 +37,10 @@ public class StaticDispatcherHandler extends BaseDispatcherHandler {
         Router router = new Router(request.uri(), HttpMethod.getMethod(request.method()));
         HttpHandlerRequest req = new HttpHandlerRequest(request, router, context, ctx.channel());
         HttpHandlerResponse resp = new HttpHandlerResponse(response, context, ctx.channel());
-        this.staticHttpHandler = new StaticHttpHandler();
-        staticHttpHandler.handle(req, resp);
-        if (staticHttpHandler.isInterrupt()) {
-            return;
+        this.staticFilter = new StaticFilter();
+        if (staticFilter.before(req,resp)) {
+            ctx.fireChannelRead(msg);
         }
-        ctx.fireChannelRead(msg);
     }
 
 }

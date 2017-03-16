@@ -10,7 +10,7 @@ import org.easyarch.netcat.mvc.action.Action;
  * description:
  */
 
-public interface Filter extends Action {
+public interface HttpFilter extends Action {
 
     boolean before(HttpHandlerRequest request, HttpHandlerResponse response);
     void after(HttpHandlerRequest request, HttpHandlerResponse response);

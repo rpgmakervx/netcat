@@ -1,6 +1,6 @@
 package org.easyarch.netcat.mvc.action;
 
-import org.easyarch.netcat.mvc.action.filter.Filter;
+import org.easyarch.netcat.mvc.action.filter.HttpFilter;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 
 /**
@@ -17,7 +17,7 @@ public enum ActionType {
         if (action instanceof HttpHandler){
             return HANDLER;
         }
-        if (action instanceof Filter){
+        if (action instanceof HttpFilter){
             return FILTER;
         }
         return null;
