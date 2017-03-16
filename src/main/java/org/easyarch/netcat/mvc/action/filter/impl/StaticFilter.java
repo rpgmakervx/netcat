@@ -46,7 +46,6 @@ public class StaticFilter implements HttpFilter {
             boolean cached = checkNagoCache(request,response,suffix,resourcePath.toString());
             if (cached){
                 response.write();
-                return false;
             }
             response.write(FileKits.read(resourcePath.toString())
                     ,HttpHeaderValue.getContentType(suffix));
@@ -59,7 +58,7 @@ public class StaticFilter implements HttpFilter {
         }else{
             response.write(FileKits.read(resourcePath.toString()));
         }
-        return true;
+        return false;
     }
 
     @Override

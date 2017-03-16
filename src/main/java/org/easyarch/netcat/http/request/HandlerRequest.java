@@ -37,6 +37,7 @@ public interface HandlerRequest {
 
     public String getQueryString();
 
+    public String getSessionId();
 
     public SocketAddress getRemoteAddress();
 

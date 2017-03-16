@@ -1,5 +1,8 @@
 package org.easyarch.netcat.http.cookie;
 
+import io.netty.handler.codec.http.cookie.Cookie;
+import io.netty.handler.codec.http.cookie.DefaultCookie;
+
 /**
  * Created by xingtianyu on 17-3-16
  * 上午1:13
@@ -8,63 +11,74 @@ package org.easyarch.netcat.http.cookie;
 
 public class HttpCookie {
 
-    private long maxAge;
+    private Cookie cookie;
 
-    private String name;
-
-    private String value;
-
-    private String domain;
-
-    private String path;
-
-    private boolean httpOnly;
-
-    public void setMaxAge(long maxAge){
-        this.maxAge = maxAge;
+    public HttpCookie(String name,String value){
+        cookie = new DefaultCookie(name,value);
     }
 
-    public void setValue(String value){
-        this.value = value;
+    public HttpCookie(Cookie cookie){
+        this.cookie = cookie;
+        cookie.setHttpOnly(true);
     }
 
-    public void setName(String name){
-        this.name = name;
+    public String name() {
+        return cookie.name();
     }
 
-    public long maxAge(){
-        return this.maxAge;
+    public String value() {
+        return cookie.value();
     }
 
-    public String value(){
-        return this.value;
-    }
-
-    public String name(){
-        return this.name;
+    public void setValue(String value) {
+        cookie.setValue(value);
     }
 
     public String domain() {
-        return domain;
+        return cookie.domain();
     }
 
     public void setDomain(String domain) {
-        this.domain = domain;
+        cookie.setDomain(domain);
     }
 
     public String path() {
-        return path;
+        return cookie.path();
     }
 
     public void setPath(String path) {
-        this.path = path;
+        cookie.setPath(path);
+    }
+
+    public long maxAge() {
+        return cookie.maxAge();
+    }
+
+    public void setMaxAge(long maxAge) {
+        cookie.setMaxAge(maxAge);
+    }
+
+    public boolean isSecure() {
+        return cookie.isSecure();
+    }
+
+    public void setSecure(boolean secure) {
+        cookie.setSecure(secure);
     }
 
     public boolean isHttpOnly() {
-        return httpOnly;
+        return cookie.isHttpOnly();
     }
 
     public void setHttpOnly(boolean httpOnly) {
-        this.httpOnly = httpOnly;
+        cookie.setHttpOnly(httpOnly);
+    }
+
+    public int compareTo(Cookie o) {
+        return cookie.compareTo(o);
+    }
+
+    public Cookie getWrapper(){
+        return this.cookie;
     }
 }

@@ -2,6 +2,7 @@ package org.easyarch.netcat.http.response.impl;
 
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
 import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.cookie.HttpCookie;
 import org.easyarch.netcat.http.protocol.HttpHeaderName;
@@ -20,7 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.easyarch.netcat.http.Const.POINT;
-import static org.easyarch.netcat.http.protocol.HttpHeaderName.COOKIE;
+import static org.easyarch.netcat.http.protocol.HttpHeaderName.SET_COOKIE;
 
 /**
  * Description :
@@ -42,6 +43,8 @@ public class HttpHandlerResponse implements HandlerResponse {
 
     public HandlerContext context;
 
+    private ServerCookieEncoder encoder;
+
     public HttpHandlerResponse(FullHttpResponse response, HandlerContext context, Channel channel) {
         init(response,context,channel);
     }
@@ -57,6 +60,7 @@ public class HttpHandlerResponse implements HandlerResponse {
         }
         this.charset = "UTF-8";
         this.channel = channel;
+        this.encoder = ServerCookieEncoder.LAX;
     }
 
     @Override
@@ -70,7 +74,8 @@ public class HttpHandlerResponse implements HandlerResponse {
 
     @Override
     public void addCookie(HttpCookie cookie) {
-        this.headers.add(COOKIE, cookie);
+        this.headers.add(SET_COOKIE, encoder.encode(cookie.getWrapper()));
+        System.out.println("添加了一个cookie");
     }
 
     @Override

@@ -12,6 +12,7 @@ public class HttpHeaderName {
     public static final String CONTENT_LENGTH = "content-length";
     public static final String CONTENT_DISPOSITION = "content-disposition";
     public static final String COOKIE = "cookie";
+    public static final String SET_COOKIE = "set-cookie";
 
     public static final String CACHE_CONTROL = "cache-control";
     public static final String EXPIRES = "expires";
