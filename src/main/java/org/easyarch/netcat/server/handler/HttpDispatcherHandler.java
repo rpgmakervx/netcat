@@ -42,11 +42,6 @@ public class HttpDispatcherHandler extends BaseDispatcherHandler {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         FullHttpRequest request = (FullHttpRequest) msg;
-        boolean isSuccess = request.decoderResult().isSuccess();
-        if (!isSuccess) {
-            ctx.close();
-            return;
-        }
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         Router router = new Router(request.uri(), HttpMethod.getMethod(request.method()));

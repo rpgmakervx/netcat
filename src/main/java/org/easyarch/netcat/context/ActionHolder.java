@@ -24,6 +24,7 @@ public class ActionHolder {
 
     /**
      * handler写path; filter写类全名
+     * 顺序的连式结构
      */
     private static Map<Router, ActionWrapper> actions = new LinkedHashMap<>();
 
@@ -59,6 +60,12 @@ public class ActionHolder {
         return wrapper;
     }
 
+    /**
+     * 获取拦截这个请求的所有拦截器
+     * 便利顺序的action集合，如果命中router则说明
+     * @param router
+     * @return
+     */
     public List<Filter> getFilters(Router router) {
         ActionWrapper wrapper = null;
         for (Map.Entry<Router, ActionWrapper> entry : actions.entrySet()) {

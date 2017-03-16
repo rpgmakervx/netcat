@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by xingtianyu on 17-3-3
  * 下午6:12
- * description:
+ * description:ActionWrapper是一个链表结构，持有一个指向前面的指针
  */
 
 public class ActionWrapper {
@@ -95,6 +95,14 @@ public class ActionWrapper {
         this.pre = wrapper;
     }
 
+    /**
+     * 获取当前wrapper的真实action类型
+     * 如果是Filter则存储到返回结果中，并继续遍历，下一个如果不是filter了，说明该wrapper所处的拦截器结束
+     * 否则继续存储到返回结果，继续遍历，直到不是filter为止。
+     * 返回时做一次结果翻转，保证先声明的filter先被获取并执行。
+     * 该方法不会返回空指针
+     * @return
+     */
     public List<Filter> getFilters(){
         List<Filter> filter = new ArrayList<>();
         ActionWrapper wrapper = this;
