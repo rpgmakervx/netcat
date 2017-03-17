@@ -9,6 +9,7 @@ import org.easyarch.netcat.http.protocol.HttpStatus;
 import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
 import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
 import org.easyarch.netcat.mvc.action.Action;
+import org.easyarch.netcat.mvc.action.ActionType;
 import org.easyarch.netcat.mvc.action.ActionWrapper;
 import org.easyarch.netcat.mvc.action.filter.HttpFilter;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
@@ -48,16 +49,15 @@ public class HttpDispatcherHandler extends BaseDispatcherHandler {
         FullHttpRequest request = (FullHttpRequest) msg;
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-        Router router = new Router(request.uri(), HttpMethod.getMethod(request.method()));
+        Router router = new Router(request.uri(), ActionType.HANDLER, HttpMethod.getMethod(request.method()));
         ActionWrapper wrapper = holder.getAction(router);
         List<HttpFilter> filters ;
+        filters = holder.getFilters(router);
+        System.out.println("get filters:"+filters.size());
         Action action = null;
         //直接从wrapper获取比遍历一遍快
         if (wrapper!= null){
-            filters = wrapper.getFilters();
             action = wrapper.getAction();
-        }else{
-            filters = holder.getFilters(router);
         }
         HttpHandlerRequest req = new HttpHandlerRequest(request, router, context, ctx.channel());
         HttpHandlerResponse resp = new HttpHandlerResponse(response, context, ctx.channel());

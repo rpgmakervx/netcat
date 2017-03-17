@@ -1,6 +1,7 @@
 package org.easyarch.netcat.test;
 
 import org.easyarch.netcat.server.App;
+import org.easyarch.netcat.test.filter.DemoFilter;
 import org.easyarch.netcat.test.filter.LoginFilter;
 import org.easyarch.netcat.test.handler.*;
 
@@ -15,12 +16,13 @@ public class Application {
     public static void main(String[] args) {
         App app = new App();
         app.config().useCache();
-        app.get("/index",new IndexHandler())
-                .get("/image",new ImageHandler())
-                .get("/json",new JsonHandler())
-                .filter(new LoginFilter())
-                .get("/get/{username}", new ParameterizeHandler())
+        app.get("/user/index",new IndexHandler())
+                .get("/index/{username}", new ParameterizeHandler())
                 .get("/download",new DownLoadHandler())
+                .get("/user/json",new JsonHandler())
+                .get("/image",new ImageHandler())
+                .filter("*.html",new DemoFilter())
+                .filter("/user/*",new LoginFilter())
                 .start(7070);
     }
 }

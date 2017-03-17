@@ -8,10 +8,8 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import org.easyarch.netcat.context.ActionHolder;
 import org.easyarch.netcat.context.HandlerContext;
-import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
-import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
+import org.easyarch.netcat.kits.ByteKits;
 import org.easyarch.netcat.mvc.action.handler.impl.ErrorHandler;
-import org.easyarch.netcat.mvc.router.Router;
 
 /**
  * Created by xingtianyu on 17-3-14
@@ -33,19 +31,24 @@ public class BaseDispatcherHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();
+        HttpResponseStatus status = HttpResponseStatus.INTERNAL_SERVER_ERROR;
         StringBuffer errorBuffer = new StringBuffer();
-        errorBuffer.append(cause.toString());
+        errorBuffer.append("<h1 align='center'>"+status.code()+" "+status.reasonPhrase()+"</h1>");
+        errorBuffer.append("<p>"+cause.toString());
         StackTraceElement[] elements = cause.getStackTrace();
         for (StackTraceElement e : elements) {
             errorBuffer.append("<br/><span style='margin-left:50px'>at  ").append(e).append("</span>");
         }
-        HttpResponseStatus status = HttpResponseStatus.INTERNAL_SERVER_ERROR;
-        errorHandler = new ErrorHandler(status.code(), status.reasonPhrase());
-        errorHandler.setMessage(errorBuffer.toString());
+        errorBuffer.append("</p><hr/>");
+        errorBuffer.append("<div align='center'><span>netcat/1.0</span></div>");
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1,status);
-        HttpHandlerRequest req = new HttpHandlerRequest(null, new Router(null), context, ctx.channel());
-        HttpHandlerResponse resp = new HttpHandlerResponse(response,context, ctx.channel());
-        errorHandler.handle(req,resp);
+        response = response.copy(ByteKits.toByteBuf(errorBuffer.toString()));
+        ctx.channel().writeAndFlush(response);
+//        errorHandler = new ErrorHandler(status.code(), status.reasonPhrase());
+//        errorHandler.setMessage(errorBuffer.toString());
+//        HttpHandlerRequest req = new HttpHandlerRequest(null, new Router(null), context, ctx.channel());
+//        HttpHandlerResponse resp = new HttpHandlerResponse(response,context, ctx.channel());
+//        errorHandler.handle(req,resp);
     }
 }

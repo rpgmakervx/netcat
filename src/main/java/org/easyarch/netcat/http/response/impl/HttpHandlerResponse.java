@@ -12,15 +12,18 @@ import org.easyarch.netcat.http.response.HandlerResponse;
 import org.easyarch.netcat.kits.ByteKits;
 import org.easyarch.netcat.kits.JsonKits;
 import org.easyarch.netcat.kits.StringKits;
+import org.easyarch.netcat.kits.file.FileKits;
+import org.easyarch.netcat.mvc.action.handler.impl.ErrorHandler;
 import org.easyarch.netcat.mvc.entity.Json;
 import org.easyarch.netcat.mvc.temp.TemplateParser;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.easyarch.netcat.http.Const.POINT;
+import static org.easyarch.netcat.http.Const.*;
 import static org.easyarch.netcat.http.protocol.HttpHeaderName.SET_COOKIE;
 
 /**
@@ -45,11 +48,13 @@ public class HttpHandlerResponse implements HandlerResponse {
 
     private ServerCookieEncoder encoder;
 
-    public HttpHandlerResponse(FullHttpResponse response, HandlerContext context, Channel channel) {
+    private ErrorHandler errorHandler;
+
+    public HttpHandlerResponse(FullHttpResponse response, HandlerContext context, Channel channel) throws IOException {
         init(response,context,channel);
     }
 
-    private void init(FullHttpResponse response, HandlerContext context, Channel channel){
+    private void init(FullHttpResponse response, HandlerContext context, Channel channel) throws IOException {
         this.context = context;
         this.response = response;
         this.tmpParser = new TemplateParser(context);
@@ -221,32 +226,39 @@ public class HttpHandlerResponse implements HandlerResponse {
     public void json(Json json) {
         json(json.getJsonMap());
     }
+
+    /**
+     * 视图不存在返回404,404如果还不存在，只能报错
+     * @param view
+     * @param statusCode
+     */
     @Override
-    public void html(String view,int statusCode) {
+    public void html(String view,int statusCode) throws Exception {
         StringBuffer pathBuffer = new StringBuffer();
         pathBuffer.append(view).append(POINT)
                 .append(context.getViewSuffix());
-        try {
-            tmpParser.addParam(attributes);
-            byte[] content = tmpParser.getTemplate(pathBuffer.toString()).getBytes();
-            write(content,HttpHeaderValue.TEXT_HTML,statusCode);
-        } catch (Exception e) {
-            e.printStackTrace();
+        String wholePath = context.getWebView()+context.getViewPrefix()+pathBuffer.toString();
+        if (!FileKits.exists(wholePath)){
+            notFound();
+            return;
         }
+        tmpParser.addParam(attributes);
+        byte[] content = tmpParser.getTemplate(pathBuffer.toString()).getBytes();
+        write(content,HttpHeaderValue.TEXT_HTML,statusCode);
     }
 
     @Override
-    public void html(String view){
+    public void html(String view) throws Exception {
         html(view,HttpResponseStatus.OK.code());
     }
 
     @Override
-    public void notFound(String view) {
+    public void notFound(String view) throws Exception {
         html(view, HttpStatus.NOT_FOUND);
     }
 
     @Override
-    public void serverError(String view) {
+    public void serverError(String view) throws Exception {
         html(view,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -284,5 +296,20 @@ public class HttpHandlerResponse implements HandlerResponse {
             e.printStackTrace();
             return content;
         }
+    }
+
+    private void notFound() throws Exception {
+        int statusCode = HttpResponseStatus.NOT_FOUND.code();
+        StringBuffer pathBuffer = new StringBuffer();
+        pathBuffer.append(context.getErrorPage())
+                .append(POINT)
+                .append(context.getViewSuffix());
+        setAttribute(HTTPSTATUS,statusCode);
+        setAttribute(REASONPHASE, HttpResponseStatus.NOT_FOUND.reasonPhrase());
+        setAttribute(MESSAGE,"");
+        TemplateParser parser = new TemplateParser(HandlerContext.DEFAULT_RESOURCE);
+        parser.addParam(attributes);
+        byte[] content = parser.getTemplate(pathBuffer.toString()).getBytes();
+        write(content,HttpHeaderValue.TEXT_HTML,statusCode);
     }
 }

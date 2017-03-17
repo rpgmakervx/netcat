@@ -77,12 +77,12 @@ public interface HandlerResponse {
 
     public void json(Json json);
 
-    public void html(String view);
-    public void html(String view,int statusCode);
+    public void html(String view) throws Exception;
+    public void html(String view,int statusCode) throws Exception;
 
-    public void notFound(String view);
+    public void notFound(String view) throws Exception;
 
-    public void serverError(String view);
+    public void serverError(String view) throws Exception;
 
     public void image(byte[] bytes);
 

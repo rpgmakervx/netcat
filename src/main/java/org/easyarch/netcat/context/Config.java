@@ -1,5 +1,9 @@
 package org.easyarch.netcat.context;
 
+import org.easyarch.netcat.kits.StringKits;
+
+import java.io.File;
+
 /**
  * Created by xingtianyu on 17-3-14
  * 下午4:32
@@ -15,7 +19,23 @@ public class Config {
     }
 
     public Config webView(String webView){
+        if (!webView.startsWith("/")){
+            webView = "/" + webView;
+        }
         context.setWebView(webView);
+        return this;
+    }
+
+    public Config viewPrefix(String viewPrefix){
+        if (StringKits.isNotEmpty(viewPrefix)&&!viewPrefix.startsWith(File.separator)){
+            viewPrefix = "/" + viewPrefix;
+        }
+        context.setViewPrefix(viewPrefix);
+        return this;
+    }
+
+    public Config viewSuffix(String viewSuffix){
+        context.setViewSuffix(viewSuffix);
         return this;
     }
 

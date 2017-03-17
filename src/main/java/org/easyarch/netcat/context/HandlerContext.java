@@ -20,6 +20,8 @@ public class HandlerContext {
 
     public static final String DEFAULT_ERRORPAGE = "error";
 
+    public static final String WEB_INF = "/WEB-INF/";
+
     private static final int DEFAULT_PORT = 8080;
 
     private int remotePort = DEFAULT_PORT;
@@ -43,7 +45,7 @@ public class HandlerContext {
     /**
      * 视图资源路径前缀
      */
-    public String viewPrefix = "";
+    public String viewPrefix = WEB_INF;
     /**
      * 视图资源文件后缀（默认html）
      */

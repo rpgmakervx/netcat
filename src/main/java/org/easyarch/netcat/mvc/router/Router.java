@@ -2,6 +2,7 @@ package org.easyarch.netcat.mvc.router;
 
 import org.easyarch.netcat.http.protocol.HttpMethod;
 import org.easyarch.netcat.kits.StringKits;
+import org.easyarch.netcat.mvc.action.ActionType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,9 +19,10 @@ public class Router {
 
     private static final String SEPARATOR = "/";
     private static final String QUESTION = "?";
-
+    public static final String POINT = ".";
     public static final String LEFT = "{";
     public static final String RIGHT = "}";
+    public static final String WILDCARD = "*";
 
     private String path;
 
@@ -34,22 +36,26 @@ public class Router {
 
     private boolean parameterize;
 
+    private ActionType type;
+
     private int level;
 
     /**
      * 地址最后一个不带分隔符
      * @param router
      */
-    public Router(String router){
+    public Router(String router, ActionType type){
         this.path = checkURL(router);
+        this.type = type;
         this.method = HttpMethod.GET;
         this.parameterizeUrl = new HashMap<>();
         this.pathParams = new HashMap<>();
         this.segements = new ArrayList<>();
         parse(router);
     }
-    public Router(String router,HttpMethod method){
+    public Router(String router, ActionType type,HttpMethod method){
         this.path = checkURL(router);
+        this.type = type;
         this.method = method;
         this.parameterizeUrl = new HashMap<>();
         this.pathParams = new HashMap<>();
@@ -62,8 +68,10 @@ public class Router {
             return null;
         }
         String path = null;
-        if (url.endsWith(SEPARATOR)){
+        if (!url.equals(SEPARATOR)&&url.endsWith(SEPARATOR)){
             path = url.substring(0,url.length() - 1);
+        }else if (!url.startsWith(SEPARATOR)&&!url.contains(WILDCARD)){
+            path = "/"+url;
         }else{
             path = url;
         }
@@ -77,6 +85,14 @@ public class Router {
     private void parse(String path){
         if (StringKits.isEmpty(path)){
             return;
+        }
+        if (!path.contains(SEPARATOR)&&!path.isEmpty()){
+            if (path.startsWith(LEFT)&&path.endsWith(RIGHT)){
+                this.parameterize = true;
+                parameterizeUrl.put(0,path);
+            }
+            this.level++;
+            this.segements.add(path);
         }
         String[] segements = path.split(SEPARATOR);
         for (String block:segements){
@@ -117,6 +133,14 @@ public class Router {
 
     public void setParameterize(boolean parameterize) {
         this.parameterize = parameterize;
+    }
+
+    public ActionType getType() {
+        return type;
+    }
+
+    public void setType(ActionType type) {
+        this.type = type;
     }
 
     public int getLevel() {

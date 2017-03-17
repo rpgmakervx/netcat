@@ -2,6 +2,7 @@ package org.easyarch.netcat.mvc.action;
 
 import org.easyarch.netcat.http.protocol.HttpStatus;
 import org.easyarch.netcat.mvc.action.filter.HttpFilter;
+import org.easyarch.netcat.mvc.router.Router;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +18,8 @@ public class ActionWrapper {
 
     private Action self;
 
+    private Router router;
+
     private int index;
 
     private int status;
@@ -25,15 +28,17 @@ public class ActionWrapper {
 
     private ActionWrapper pre;
 
-    public ActionWrapper(Action action){
+    public ActionWrapper(Action action,Router router){
         this.self = action;
+        this.router = router;
         this.type = ActionType.getType(action);
         this.index = 0;
         this.status = HttpStatus.OK;
         this.pre = null;
     }
-    public ActionWrapper(Action action, int index){
+    public ActionWrapper(Action action,Router router, int index){
         this.self = action;
+        this.router = router;
         this.type = ActionType.getType(action);
         this.status = HttpStatus.OK;
         this.index = index;
@@ -93,6 +98,14 @@ public class ActionWrapper {
 
     public void setPreAction(ActionWrapper wrapper) {
         this.pre = wrapper;
+    }
+
+    public Router getRouter() {
+        return router;
+    }
+
+    public void setRouter(Router router) {
+        this.router = router;
     }
 
     /**

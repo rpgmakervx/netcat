@@ -27,6 +27,21 @@ public class Kits {
         return FileKits.exists(path.toString());
     }
 
+    public static boolean hasResource(HandlerContext context,String uri){
+        StringBuffer resourcePath = new StringBuffer();
+        resourcePath.append(context.getWebView()).append(uri);
+        String prefix = "";
+        if (!uri.equals("/")) {
+            String[] segement = uri.split("/");
+            prefix = "/" + segement[1] + "/";
+        }
+        if (HandlerContext.WEB_INF.equals(prefix)
+                || !FileKits.exists(resourcePath.toString())) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * 确保正确得到错误页面
      * 默认错误页面在jar包中

@@ -12,4 +12,8 @@ public class Const {
 
     public static final String POINT = ".";
 
+
+    public static final String HTTPSTATUS = "HTTPSTATUS";
+    public static final String REASONPHASE = "REASONPHASE";
+    public static final String MESSAGE = "MESSAGE";
 }

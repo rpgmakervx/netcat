@@ -5,6 +5,10 @@ import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
 import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 
+import static org.easyarch.netcat.http.Const.HTTPSTATUS;
+import static org.easyarch.netcat.http.Const.MESSAGE;
+import static org.easyarch.netcat.http.Const.REASONPHASE;
+
 /**
  * Created by xingtianyu on 17-3-9
  * 下午3:51
@@ -13,9 +17,7 @@ import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 
 public class ErrorHandler implements HttpHandler {
 
-    private static final String HTTPSTATUS = "HTTPSTATUS";
-    private static final String REASONPHASE = "REASONPHASE";
-    private static final String MESSAGE = "MESSAGE";
+
 
     private int code;
 

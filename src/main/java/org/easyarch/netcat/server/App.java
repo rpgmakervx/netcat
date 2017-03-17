@@ -5,6 +5,7 @@ import org.easyarch.netcat.context.Config;
 import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.protocol.HttpMethod;
 import org.easyarch.netcat.kits.StringKits;
+import org.easyarch.netcat.mvc.action.ActionType;
 import org.easyarch.netcat.mvc.action.filter.HttpFilter;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 import org.easyarch.netcat.mvc.router.Router;
@@ -40,11 +41,11 @@ final public class App {
         launcher.start(port);
     }
 
-    public App filter(HttpFilter filter){
+    public App filter(String path,HttpFilter filter){
         if (filter == null){
             return this;
         }
-        holder.addAction(new Router(null),filter);
+        holder.addAction(new Router(path, ActionType.FILTER),filter);
         return this;
     }
 
@@ -68,7 +69,7 @@ final public class App {
         if (path.startsWith("/")){
             path = path.substring(1,path.length());
         }
-        holder.addAction(new Router(context.getContextPath() + path, method),httpHandler);
+        holder.addAction(new Router(context.getContextPath() + path,ActionType.HANDLER, method),httpHandler);
         return this;
     }
 
