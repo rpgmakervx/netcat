@@ -154,6 +154,11 @@ public class HttpHandlerRequest implements HandlerRequest {
     }
 
     @Override
+    public <T> T body(Class<T> cls) {
+        return null;
+    }
+
+    @Override
     public String getQueryString() {
         String url = request.uri();
         return checkURL(url);

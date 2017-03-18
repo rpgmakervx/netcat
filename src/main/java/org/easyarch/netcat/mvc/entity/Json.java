@@ -1,5 +1,11 @@
 package org.easyarch.netcat.mvc.entity;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import org.easyarch.netcat.kits.StringKits;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +32,11 @@ public class Json<V> {
         init(datas);
     }
 
+    public Json(Map<String,V> map){
+        this.jsonMap = map;
+    }
+
+
     private void init(Object ... datas){
         int index = 0;
         Object tmp = null;
@@ -38,8 +49,41 @@ public class Json<V> {
         }
     }
 
-    public Json(Map<String,V> map){
-        this.jsonMap = map;
+    private static Map<String,Object> toMap(String json){
+        if (StringKits.isEmpty(json)){
+            return null;
+        }
+        JSONObject object = JSON.parseObject(json);
+        Map<String,Object> jsonMap = new HashMap<String,Object>();
+        for (Map.Entry<String,Object> entry:object.entrySet()){
+            jsonMap.put(entry.getKey(),entry.getValue());
+        }
+        return jsonMap;
+    }
+    public static String stringify(Map<String,Object> jsonMap){
+        if (jsonMap ==null||jsonMap.size()== 0){
+            return "";
+        }
+        JSONObject jsonObject = new JSONObject(jsonMap);
+        return jsonObject.toJSONString();
+    }
+
+    public static Json parse(String str){
+        Json json = new Json(toMap(str));
+        return json;
+    }
+
+    public static String stringify(Json json){
+        Map<String,Object> map = json.getJsonMap();
+        return stringify(map);
+    }
+
+    public static<T> byte[] serial(T bean){
+        return JSONObject.toJSONBytes(bean, SerializerFeature.PrettyFormat);
+    }
+
+    public static<T> T deserial(byte[] json,Class<T> cls){
+        return (T) JSONObject.parse(json, Feature.OrderedField);
     }
 
     public Map<String, V> getJsonMap() {

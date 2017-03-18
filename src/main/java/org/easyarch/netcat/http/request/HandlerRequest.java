@@ -34,6 +34,7 @@ public interface HandlerRequest {
 
     public String getContextPath();
 
+    public<T> T body(Class<T> cls);
 
     public String getQueryString();
 

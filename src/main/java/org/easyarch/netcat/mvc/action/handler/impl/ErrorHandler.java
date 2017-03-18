@@ -1,13 +1,11 @@
 package org.easyarch.netcat.mvc.action.handler.impl;
 
 import org.easyarch.netcat.context.HandlerContext;
-import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
-import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
+import org.easyarch.netcat.http.request.HandlerRequest;
+import org.easyarch.netcat.http.response.HandlerResponse;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 
-import static org.easyarch.netcat.http.Const.HTTPSTATUS;
-import static org.easyarch.netcat.http.Const.MESSAGE;
-import static org.easyarch.netcat.http.Const.REASONPHASE;
+import static org.easyarch.netcat.http.Const.*;
 
 /**
  * Created by xingtianyu on 17-3-9
@@ -37,7 +35,7 @@ public class ErrorHandler implements HttpHandler {
     }
 
     @Override
-    public void handle(HttpHandlerRequest request, HttpHandlerResponse response) throws Exception {
+    public void handle(HandlerRequest request, HandlerResponse response) throws Exception {
         HandlerContext context = new HandlerContext();
         response.setAttribute(HTTPSTATUS,code);
         response.setAttribute(REASONPHASE,reasonPhase);

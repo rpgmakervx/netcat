@@ -3,8 +3,8 @@ package org.easyarch.netcat.mvc.action.handler.impl;
 import io.netty.channel.ChannelHandlerContext;
 import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.cookie.HttpCookie;
-import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
-import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
+import org.easyarch.netcat.http.request.HandlerRequest;
+import org.easyarch.netcat.http.response.HandlerResponse;
 import org.easyarch.netcat.kits.HashKits;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 
@@ -27,7 +27,7 @@ public class SessionHandler implements HttpHandler {
     }
 
     @Override
-    public void handle(HttpHandlerRequest request, HttpHandlerResponse response) throws Exception {
+    public void handle(HandlerRequest request, HandlerResponse response) throws Exception {
         HandlerContext context = request.getContext();
         if (request.getCookies().isEmpty()){
             HttpCookie cookie = new HttpCookie(NETCATID,

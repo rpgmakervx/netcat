@@ -4,8 +4,8 @@ import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.protocol.HttpHeaderName;
 import org.easyarch.netcat.http.protocol.HttpHeaderValue;
 import org.easyarch.netcat.http.protocol.HttpStatus;
-import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
-import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
+import org.easyarch.netcat.http.request.HandlerRequest;
+import org.easyarch.netcat.http.response.HandlerResponse;
 import org.easyarch.netcat.kits.TimeKits;
 import org.easyarch.netcat.kits.file.FileKits;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
@@ -25,7 +25,7 @@ import static org.easyarch.netcat.kits.file.FileFilter.*;
 public class StaticHttpHandler implements HttpHandler {
 
     @Override
-    public void handle(HttpHandlerRequest request, HttpHandlerResponse response) throws Exception {
+    public void handle(HandlerRequest request, HandlerResponse response) throws Exception {
         HandlerContext context = request.getContext();
         String webView = context.getWebView();
         String uri = request.getRequestURI();
@@ -44,7 +44,7 @@ public class StaticHttpHandler implements HttpHandler {
         }
         if (cachedPattern.matcher(suffix).matches()){
             checkStrongCache(request,response);
-            boolean cached = checkNagoCache(request,response,suffix,resourcePath.toString());
+            boolean cached = checkNagoCache(request,response,resourcePath.toString());
             if (cached){
                 response.write();
                 return;
@@ -62,7 +62,7 @@ public class StaticHttpHandler implements HttpHandler {
         }
     }
 
-    private void checkStrongCache(HttpHandlerRequest request, HttpHandlerResponse response){
+    private void checkStrongCache(HandlerRequest request, HandlerResponse response){
         if (!request.getContext().isStrongCache()){
             return ;
         }
@@ -70,7 +70,7 @@ public class StaticHttpHandler implements HttpHandler {
                 HttpHeaderValue.MAXAGE+String.valueOf(request.getContext().getMaxAge()));
     }
 
-    private boolean checkNagoCache(HttpHandlerRequest request, HttpHandlerResponse response,String type,String resourcePath){
+    private boolean checkNagoCache(HandlerRequest request, HandlerResponse response,String resourcePath){
         if (!request.getContext().isNegoCache()){
             return false;
         }

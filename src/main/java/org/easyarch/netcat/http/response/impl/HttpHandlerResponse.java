@@ -10,7 +10,6 @@ import org.easyarch.netcat.http.protocol.HttpHeaderValue;
 import org.easyarch.netcat.http.protocol.HttpStatus;
 import org.easyarch.netcat.http.response.HandlerResponse;
 import org.easyarch.netcat.kits.ByteKits;
-import org.easyarch.netcat.kits.JsonKits;
 import org.easyarch.netcat.kits.StringKits;
 import org.easyarch.netcat.kits.file.FileKits;
 import org.easyarch.netcat.mvc.action.handler.impl.ErrorHandler;
@@ -220,7 +219,7 @@ public class HttpHandlerResponse implements HandlerResponse {
     }
     @Override
     public void json(Map<String,Object> json) {
-        json(JsonKits.toString(json));
+        json(Json.stringify(json));
     }
     @Override
     public void json(Json json) {

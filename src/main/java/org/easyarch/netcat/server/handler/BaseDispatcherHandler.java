@@ -9,7 +9,6 @@ import io.netty.handler.codec.http.HttpVersion;
 import org.easyarch.netcat.context.ActionHolder;
 import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.kits.ByteKits;
-import org.easyarch.netcat.mvc.action.handler.impl.ErrorHandler;
 
 /**
  * Created by xingtianyu on 17-3-14
@@ -21,7 +20,6 @@ public class BaseDispatcherHandler extends ChannelInboundHandlerAdapter {
 
     protected HandlerContext context;
     protected ActionHolder holder;
-    protected ErrorHandler errorHandler;
 
     public BaseDispatcherHandler(HandlerContext context, ActionHolder holder) {
         this.context = context;

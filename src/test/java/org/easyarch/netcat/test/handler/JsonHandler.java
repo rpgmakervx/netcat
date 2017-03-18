@@ -1,7 +1,7 @@
 package org.easyarch.netcat.test.handler;
 
-import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
-import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
+import org.easyarch.netcat.http.request.HandlerRequest;
+import org.easyarch.netcat.http.response.HandlerResponse;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 import org.easyarch.netcat.mvc.entity.Json;
 
@@ -13,7 +13,7 @@ import org.easyarch.netcat.mvc.entity.Json;
 
 public class JsonHandler implements HttpHandler {
     @Override
-    public void handle(HttpHandlerRequest request, HttpHandlerResponse response) throws Exception {
+    public void handle(HandlerRequest request, HandlerResponse response) throws Exception {
         response.json(new Json("message","ok","code",200));
     }
 }

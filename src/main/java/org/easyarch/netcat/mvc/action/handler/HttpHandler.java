@@ -1,7 +1,7 @@
 package org.easyarch.netcat.mvc.action.handler;
 
-import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
-import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
+import org.easyarch.netcat.http.request.HandlerRequest;
+import org.easyarch.netcat.http.response.HandlerResponse;
 import org.easyarch.netcat.mvc.action.Action;
 
 /**
@@ -13,5 +13,5 @@ import org.easyarch.netcat.mvc.action.Action;
 
 public interface HttpHandler extends Action {
 
-    public void handle(HttpHandlerRequest request, HttpHandlerResponse response) throws Exception;
+    public void handle(HandlerRequest request, HandlerResponse response) throws Exception;
 }

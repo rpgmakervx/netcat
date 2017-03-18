@@ -1,8 +1,8 @@
 package org.easyarch.netcat.test.handler;
 
 import org.easyarch.netcat.http.protocol.HttpHeaderValue;
-import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
-import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
+import org.easyarch.netcat.http.request.HandlerRequest;
+import org.easyarch.netcat.http.response.HandlerResponse;
 import org.easyarch.netcat.kits.file.FileKits;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 
@@ -15,7 +15,7 @@ import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 public class DownLoadHandler implements HttpHandler {
 
     @Override
-    public void handle(HttpHandlerRequest request, HttpHandlerResponse response) throws Exception {
+    public void handle(HandlerRequest request, HandlerResponse response) throws Exception {
         byte[] pdf = FileKits.read("/home/code4j/58daojia/技术/文档/mybatis-plus.pdf");
         response.download(pdf,"mybatis权威指南", HttpHeaderValue.PDF);
     }
