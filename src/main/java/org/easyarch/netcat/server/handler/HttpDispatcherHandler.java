@@ -14,6 +14,7 @@ import org.easyarch.netcat.mvc.action.ActionWrapper;
 import org.easyarch.netcat.mvc.action.filter.HttpFilter;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 import org.easyarch.netcat.mvc.action.handler.impl.ErrorHandler;
+import org.easyarch.netcat.mvc.action.handler.impl.SessionHandler;
 import org.easyarch.netcat.mvc.router.Router;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public class HttpDispatcherHandler extends BaseDispatcherHandler {
     private ErrorHandler errorHandler;
 
     public HttpDispatcherHandler(HandlerContext context, ActionHolder holder) {
-        super(context,holder);
+        super(context, holder);
 
     }
 
@@ -49,14 +50,15 @@ public class HttpDispatcherHandler extends BaseDispatcherHandler {
         FullHttpRequest request = (FullHttpRequest) msg;
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-        Router router = new Router(request.uri(), ActionType.HANDLER, HttpMethod.getMethod(request.method()));
+        Router router = new Router(request.uri(),
+                ActionType.HANDLER, HttpMethod.getMethod(request.method()));
         ActionWrapper wrapper = holder.getAction(router);
-        List<HttpFilter> filters ;
+        List<HttpFilter> filters;
         filters = holder.getFilters(router);
-        System.out.println("get filters:"+filters.size());
+        System.out.println("get filters:" + filters.size());
         Action action = null;
         //直接从wrapper获取比遍历一遍快
-        if (wrapper!= null){
+        if (wrapper != null) {
             action = wrapper.getAction();
         }
         HttpHandlerRequest req = new HttpHandlerRequest(request, router, context, ctx.channel());
@@ -72,6 +74,8 @@ public class HttpDispatcherHandler extends BaseDispatcherHandler {
             errorHandler.handle(req, resp);
             return;
         }
+        SessionHandler sessionHandler = new SessionHandler(ctx);
+        HttpHandler handler = (HttpHandler) action;
         if (!filters.isEmpty()) {
             for (HttpFilter filter : filters) {
                 if (!filter.before(req, resp)) {
@@ -79,7 +83,7 @@ public class HttpDispatcherHandler extends BaseDispatcherHandler {
                 }
             }
         }
-        HttpHandler handler = (HttpHandler) action;
+        sessionHandler.handle(req,resp);
         handler.handle(req, resp);
         if (!filters.isEmpty()) {
             for (HttpFilter filter : filters) {

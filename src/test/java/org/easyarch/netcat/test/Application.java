@@ -22,7 +22,7 @@ public class Application {
                 .get("/user/json",new JsonHandler())
                 .get("/image",new ImageHandler())
                 .filter("*.html",new DemoFilter())
-                .filter("/user/*",new LoginFilter())
+                .filter("/user/json",new LoginFilter())
                 .start(7070);
     }
 }

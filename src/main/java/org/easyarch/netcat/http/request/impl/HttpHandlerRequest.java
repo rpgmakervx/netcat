@@ -7,7 +7,6 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
-import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
 import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.cookie.HttpCookie;
 import org.easyarch.netcat.http.request.HandlerRequest;
@@ -45,7 +44,6 @@ public class HttpHandlerRequest implements HandlerRequest {
     private ParamParser paramParser;
     private Map<String,String> params ;
     private ServerCookieDecoder decoder;
-    private ServerCookieEncoder encoder;
     private static final String QUESTION = "?";
 
     public HttpHandlerRequest(FullHttpRequest request,Router router, HandlerContext context, Channel channel){
