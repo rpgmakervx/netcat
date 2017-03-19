@@ -79,7 +79,6 @@ public class HttpHandlerResponse implements HandlerResponse {
     @Override
     public void addCookie(HttpCookie cookie) {
         this.headers.add(SET_COOKIE, encoder.encode(cookie.getWrapper()));
-        System.out.println("添加了一个cookie");
     }
 
     @Override

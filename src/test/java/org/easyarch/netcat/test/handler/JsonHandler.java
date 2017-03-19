@@ -2,6 +2,7 @@ package org.easyarch.netcat.test.handler;
 
 import org.easyarch.netcat.http.request.HandlerRequest;
 import org.easyarch.netcat.http.response.HandlerResponse;
+import org.easyarch.netcat.http.session.HttpSession;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 import org.easyarch.netcat.mvc.entity.Json;
 
@@ -14,6 +15,8 @@ import org.easyarch.netcat.mvc.entity.Json;
 public class JsonHandler implements HttpHandler {
     @Override
     public void handle(HandlerRequest request, HandlerResponse response) throws Exception {
-        response.json(new Json("message","ok","code",200));
+        HttpSession session = request.getSession();
+        System.out.println("json handler session:"+session);
+        response.json(new Json("message",session.getAttr("user"),"code",200));
     }
 }

@@ -4,8 +4,6 @@ package org.easyarch.netcat.context;
 import org.easyarch.netcat.http.session.HttpSession;
 
 import java.io.File;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Description :
@@ -24,16 +22,17 @@ public class HandlerContext {
 
     private static final int DEFAULT_PORT = 8080;
 
+    public static final String DEFAULT_RESOURCE = HandlerContext.class.getResource("/").getPath();
+
     private int remotePort = DEFAULT_PORT;
 
     private int maxAge = 3600;
 
+    private int sessionAge = Integer.MAX_VALUE;
+
     public boolean negoCache = false;
     public boolean strongCache = true;
 
-    public static final String DEFAULT_RESOURCE = HandlerContext.class.getResource("/").getPath();
-
-    private static Map<String,HttpSession> sessionMap = new ConcurrentHashMap<>();
 
     public String contextPath = File.separator;
 
@@ -51,7 +50,10 @@ public class HandlerContext {
      */
     public String viewSuffix = DEFAULT_SUFFIX;
 
+    public SessionHolder sessionHolder;
+
     public HandlerContext(){
+        sessionHolder = new SessionHolder();
     }
 
     public int getRemotePort() {
@@ -97,12 +99,12 @@ public class HandlerContext {
         this.viewSuffix = viewSuffix;
     }
 
-    public HttpSession getSession(String cookieId){
-        return sessionMap.get(cookieId);
+    public HttpSession getSession(String sessionId){
+        return sessionHolder.getSession(sessionId);
     }
 
-    public void setSession(String cookieId,HttpSession session){
-        sessionMap.put(cookieId,session);
+    public void addSession(String sessionId, HttpSession session){
+        sessionHolder.addSession(sessionId,session);
     }
 
     public String getErrorPage() {
@@ -121,6 +123,14 @@ public class HandlerContext {
         this.maxAge = maxAge;
     }
 
+    public int getSessionAge() {
+        return sessionAge;
+    }
+
+    public void setSessionAge(int sessionAge) {
+        this.sessionAge = sessionAge;
+    }
+
     public boolean isNegoCache() {
         return negoCache;
     }
@@ -136,4 +146,6 @@ public class HandlerContext {
     public void setStrongCache(boolean strongCache) {
         this.strongCache = strongCache;
     }
+
+
 }

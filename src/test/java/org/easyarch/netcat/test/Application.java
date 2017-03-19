@@ -21,8 +21,9 @@ public class Application {
                 .get("/download",new DownLoadHandler())
                 .get("/user/json",new JsonHandler())
                 .get("/image",new ImageHandler())
+                .get("/redirect",new RedirectHandler())
                 .filter("*.html",new DemoFilter())
-                .filter("/user/json",new LoginFilter())
+                .filter("/user/index",new LoginFilter())
                 .start(7070);
     }
 }

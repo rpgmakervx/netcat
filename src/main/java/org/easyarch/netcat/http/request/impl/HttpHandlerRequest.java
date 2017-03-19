@@ -12,6 +12,8 @@ import org.easyarch.netcat.http.cookie.HttpCookie;
 import org.easyarch.netcat.http.request.HandlerRequest;
 import org.easyarch.netcat.http.request.ParamParser;
 import org.easyarch.netcat.http.session.HttpSession;
+import org.easyarch.netcat.http.session.impl.DefaultHttpSession;
+import org.easyarch.netcat.kits.HashKits;
 import org.easyarch.netcat.kits.StringKits;
 import org.easyarch.netcat.mvc.router.Router;
 
@@ -182,15 +184,30 @@ public class HttpHandlerRequest implements HandlerRequest {
         return router.getPath();
     }
 
+    /**
+     * session不存在则直接创建
+     * @return
+     */
     @Override
     public HttpSession getSession() {
         String sessionId = "";
         for(HttpCookie cookie:getCookies()){
             if (NETCATID.equals(cookie.name())){
                 sessionId = cookie.value();
+                break;
             }
         }
-        return context.getSession(sessionId);
+        HttpSession session = context.getSession(sessionId);
+        if (StringKits.isEmpty(sessionId) ||session == null){
+            sessionId = HashKits
+                    .sha1(channel.id().asLongText());
+            System.out.println("sessionId:"+sessionId);
+            session = new DefaultHttpSession();
+            session.setSessionId(sessionId);
+            session.setMaxAge(context.getSessionAge());
+            context.addSession(sessionId,session);
+        }
+        return session;
     }
 
     @Override

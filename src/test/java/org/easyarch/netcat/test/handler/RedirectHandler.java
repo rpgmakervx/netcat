@@ -6,17 +6,17 @@ import org.easyarch.netcat.http.session.HttpSession;
 import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 
 /**
- * Created by xingtianyu on 17-3-14
- * 下午2:32
+ * Created by xingtianyu on 17-3-19
+ * 下午1:56
  * description:
  */
 
-public class IndexHandler implements HttpHandler{
-
+public class RedirectHandler implements HttpHandler {
     @Override
     public void handle(HandlerRequest request, HandlerResponse response) throws Exception {
         HttpSession session = request.getSession();
-        System.out.println(session.getAttr("user"));
-        response.html("index-v1");
+        System.out.println("session:"+session);
+        session.setAttr("user","xingtianyu");
+        response.redirect("/user/json");
     }
 }

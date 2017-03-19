@@ -28,14 +28,27 @@ public class SessionHandler implements HttpHandler {
 
     @Override
     public void handle(HandlerRequest request, HandlerResponse response) throws Exception {
-        HandlerContext context = request.getContext();
+        String sessionId = HashKits
+                .sha1(ctx.channel().id().asLongText());
         if (request.getCookies().isEmpty()){
-            HttpCookie cookie = new HttpCookie(NETCATID,
-                    HashKits.sha1(ctx.channel().id().asLongText()));
-            InetSocketAddress hostAddress = (InetSocketAddress) ctx.channel().remoteAddress();
-            cookie.setDomain(hostAddress.getHostName());
-            cookie.setPath(context.getContextPath());
-            response.addCookie(cookie);
+            createCookie(sessionId,response);
         }
+        for (HttpCookie cookie:request.getCookies()){
+            if (cookie.name().equals(NETCATID)
+                    &&!sessionId.equals(cookie.value())){
+                System.out.println("重建cookie");
+                createCookie(sessionId,response);
+            }
+        }
+    }
+
+    private void createCookie(String sessionId, HandlerResponse response){
+        HandlerContext context = response.getContext();
+        HttpCookie cookie = new HttpCookie(NETCATID,sessionId);
+        InetSocketAddress hostAddress =
+                (InetSocketAddress) ctx.channel().remoteAddress();
+        cookie.setDomain(hostAddress.getHostName());
+        cookie.setPath(context.getContextPath());
+        response.addCookie(cookie);
     }
 }
