@@ -259,7 +259,7 @@ public class HttpHandlerRequest implements HandlerRequest {
     }
 
     @Override
-    public Map<String, String> getParameterMap() {
+    public Map getParameterMap() {
         return this.params;
     }
 

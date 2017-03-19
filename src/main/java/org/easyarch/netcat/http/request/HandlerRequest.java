@@ -64,7 +64,7 @@ public interface HandlerRequest {
 
     public Collection<String> getParameterValues(String name);
 
-    public Map<String, String> getParameterMap();
+    public Map getParameterMap();
 
 
     public String getProtocol();

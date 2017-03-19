@@ -2,7 +2,6 @@ package org.easyarch.netcat.test;
 
 import org.easyarch.netcat.server.App;
 import org.easyarch.netcat.test.filter.DemoFilter;
-import org.easyarch.netcat.test.filter.LoginFilter;
 import org.easyarch.netcat.test.handler.*;
 
 /**
@@ -22,8 +21,9 @@ public class Application {
                 .get("/user/json",new JsonHandler())
                 .get("/image",new ImageHandler())
                 .get("/redirect",new RedirectHandler())
+                .get("/user/login",new LoginPageHandler())
+                .post("/user/login",new LoginHandler())
                 .filter("*.html",new DemoFilter())
-                .filter("/user/index",new LoginFilter())
                 .start(7070);
     }
 }

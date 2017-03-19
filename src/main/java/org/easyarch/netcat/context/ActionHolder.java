@@ -183,6 +183,9 @@ public class ActionHolder {
         if (storeRouter == null || cmpRouter == null) {
             return false;
         }
+        if (!storeRouter.getMethod().equals(cmpRouter.getMethod())){
+            return false;
+        }
         boolean isFilter = FILTER.equals(storeRouter.getType());
         if (storeRouter.getLevel() != cmpRouter.getLevel()
                 &&!isFilter) {

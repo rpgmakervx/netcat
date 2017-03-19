@@ -3,9 +3,10 @@ package org.easyarch.netcat.http.request;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.QueryStringDecoder;
-import io.netty.handler.codec.http.multipart.Attribute;
+import io.netty.handler.codec.http.multipart.DefaultHttpDataFactory;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
+import io.netty.handler.codec.http.multipart.MemoryAttribute;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -36,7 +37,6 @@ public class ParamParser {
      */
     public Map<String, String> parse() {
         if (this.fullReq == null){
-            System.out.println("build params");
             return new HashMap<>();
         }
         HttpMethod method = fullReq.method();
@@ -45,30 +45,31 @@ public class ParamParser {
 
         if (HttpMethod.GET == method) {
             // 是GET请求
-            QueryStringDecoder decoder = new QueryStringDecoder(fullReq.uri());
-//            System.out.println("query string param:"+decoder.parameters());
-            decoder.parameters().entrySet().forEach( entry -> {
-                // entry.getValue()是一个List, 只取第一个元素
-                parmMap.put(entry.getKey(), entry.getValue().get(0));
-            });
+            parmMap = decodeQueryString();
         } else if (HttpMethod.POST == method) {
             // 是POST请求
-            HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(fullReq);
-            decoder.offer(fullReq);
-
-            List<InterfaceHttpData> parmList = decoder.getBodyHttpDatas();
-
-            for (InterfaceHttpData parm : parmList) {
-                Attribute data = (Attribute) parm;
-                try {
+            parmMap = decodeQueryString();
+            HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(
+                    new DefaultHttpDataFactory(false),fullReq);
+            List<InterfaceHttpData> paramlist = decoder.getBodyHttpDatas();
+            System.out.println("paramlist:"+paramlist);
+            for (InterfaceHttpData param : paramlist) {
+                if (param.getHttpDataType() == InterfaceHttpData.HttpDataType.Attribute) {
+                    MemoryAttribute data = (MemoryAttribute) param;
                     parmMap.put(data.getName(), data.getValue());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    break;
                 }
             }
-
         }
         return parmMap;
+    }
+
+    private Map<String, String> decodeQueryString(){
+        Map<String, String> paramMap = new HashMap<>();
+        QueryStringDecoder decoder = new QueryStringDecoder(fullReq.uri());
+        Map<String, List<String>> parame = decoder.parameters();
+        for(Map.Entry<String, List<String>> entry:parame.entrySet()){
+            paramMap.put(entry.getKey(), entry.getValue().get(0));
+        }
+        return paramMap;
     }
 }
