@@ -16,7 +16,7 @@ public class DownLoadHandler implements HttpHandler {
 
     @Override
     public void handle(HandlerRequest request, HandlerResponse response) throws Exception {
-        byte[] pdf = FileKits.read("/home/code4j/58daojia/技术/文档/mybatis-plus.pdf");
+        byte[] pdf = FileKits.read("/home/code4j/dumps/mybatis-plus.pdf");
         response.download(pdf,"mybatis权威指南", HttpHeaderValue.PDF);
     }
 }

@@ -36,7 +36,7 @@ public interface HandlerRequest {
 
     public byte[] file(String name);
 
-    public<T> T body(Class<T> cls);
+    public<T> T body(Class<T> cls) throws Exception;
 
     public String getQueryString();
 
@@ -49,7 +49,6 @@ public interface HandlerRequest {
     public HttpSession getSession();
 
     public String getCharacterEncoding();
-
 
     public void setCharacterEncoding(String env) throws UnsupportedEncodingException;
 

@@ -1,5 +1,6 @@
 package org.easyarch.netcat.http.request;
 
+import io.netty.buffer.ByteBufUtil;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.QueryStringDecoder;
@@ -76,15 +77,15 @@ public class ParamParser {
             decoder.offer(fullReq);
             List<InterfaceHttpData> paramlist = decoder.getBodyHttpDatas();
             for (InterfaceHttpData param : paramlist) {
-
-                System.out.println("param type:"+param.getHttpDataType());
+//                System.out.println("param type:"+param.getHttpDataType());
                 if (param.getHttpDataType() == InterfaceHttpData.HttpDataType.Attribute){
-                    System.out.println("paramClass:"+param.getClass().getName());
+//                    System.out.println("paramClass:"+param.getClass().getName());
                     MemoryAttribute data = (MemoryAttribute) param;
+                    System.out.println("data content:"+ ByteBufUtil.getBytes(data.content()).length);
                     if (data.getName().equals(name)){
                         file = data.get();
                     }
-                    System.out.println("param length:"+data.get().length);
+//                    System.out.println("param length:"+data.get().length);
                 }
             }
         }
