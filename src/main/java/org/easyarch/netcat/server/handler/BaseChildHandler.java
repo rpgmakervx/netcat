@@ -4,8 +4,9 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.*;
-import org.easyarch.netcat.context.HandlerContext;
+import io.netty.handler.stream.ChunkedWriteHandler;
 import org.easyarch.netcat.context.ActionHolder;
+import org.easyarch.netcat.context.HandlerContext;
 
 /**
  * Description :
@@ -31,6 +32,7 @@ public class BaseChildHandler extends ChannelInitializer<SocketChannel> {
         pipeline.addLast("compress", new HttpContentCompressor(9));
         pipeline.addLast("aggregator", new HttpObjectAggregator(1024000));
         pipeline.addLast("decompress", new HttpContentDecompressor());
+        pipeline.addLast(new ChunkedWriteHandler());
         pipeline.addLast(new StaticDispatcherHandler(context,holder));
         pipeline.addLast(new HttpDispatcherHandler(context,holder));
     }

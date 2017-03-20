@@ -3,10 +3,7 @@ package org.easyarch.netcat.http.request;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.QueryStringDecoder;
-import io.netty.handler.codec.http.multipart.DefaultHttpDataFactory;
-import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
-import io.netty.handler.codec.http.multipart.InterfaceHttpData;
-import io.netty.handler.codec.http.multipart.MemoryAttribute;
+import io.netty.handler.codec.http.multipart.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -54,13 +51,44 @@ public class ParamParser {
             List<InterfaceHttpData> paramlist = decoder.getBodyHttpDatas();
             System.out.println("paramlist:"+paramlist);
             for (InterfaceHttpData param : paramlist) {
+                System.out.println("data type:"+param.getHttpDataType());
                 if (param.getHttpDataType() == InterfaceHttpData.HttpDataType.Attribute) {
                     MemoryAttribute data = (MemoryAttribute) param;
                     parmMap.put(data.getName(), data.getValue());
+                }else if (param.getHttpDataType() == InterfaceHttpData.HttpDataType.FileUpload){
+                    MemoryFileUpload data = (MemoryFileUpload) param;
+
                 }
             }
         }
         return parmMap;
+    }
+
+    public byte[] getFile(String name){
+        byte[] file = new byte[0];
+        if (this.fullReq == null){
+            return new byte[0];
+        }
+        HttpMethod method = fullReq.method();
+        if (HttpMethod.POST == method){
+            HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(
+                    new DefaultHttpDataFactory(false),fullReq);
+            decoder.offer(fullReq);
+            List<InterfaceHttpData> paramlist = decoder.getBodyHttpDatas();
+            for (InterfaceHttpData param : paramlist) {
+
+                System.out.println("param type:"+param.getHttpDataType());
+                if (param.getHttpDataType() == InterfaceHttpData.HttpDataType.Attribute){
+                    System.out.println("paramClass:"+param.getClass().getName());
+                    MemoryAttribute data = (MemoryAttribute) param;
+                    if (data.getName().equals(name)){
+                        file = data.get();
+                    }
+                    System.out.println("param length:"+data.get().length);
+                }
+            }
+        }
+        return file;
     }
 
     private Map<String, String> decodeQueryString(){

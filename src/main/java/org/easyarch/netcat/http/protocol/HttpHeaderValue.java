@@ -13,9 +13,9 @@ import java.util.Map;
 
 public class HttpHeaderValue {
 
-    public static final String TEXT_HTML = "text/html";
-    public static final String TEXT_PLAIN = "text/plain";
-    public static final String APPLICATION_JSON = "application/json";
+    public static final String TEXT_HTML = "text/html;charset=utf-8";
+    public static final String TEXT_PLAIN = "text/plain;charset=utf-8";
+    public static final String APPLICATION_JSON = "application/json;charset=utf-8";
     public static final String JS = "application/javascript";
     public static final String CSS = "text/css";
     public static final String SVG = "image/svg+xml";
@@ -26,9 +26,9 @@ public class HttpHeaderValue {
     public static final String MP4 = "video/mp4";
 
     public static final String IMAGE = "image/png";
-    public static final String PDF = "application/pdf";
-    public static final String DOC = "application/msword";
-    public static final String XLS = "application/vnd.ms-excel";
+    public static final String PDF = "application/pdf;charset=utf-8";
+    public static final String DOC = "application/msword;charset=utf-8";
+    public static final String XLS = "application/vnd.ms-excel;charset=utf-8";
 
     public static final String ATTACHMENT = "attachment;filename=";
 

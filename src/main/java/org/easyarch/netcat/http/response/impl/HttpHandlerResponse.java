@@ -205,7 +205,7 @@ public class HttpHandlerResponse implements HandlerResponse {
 
     @Override
     public void text(String content) {
-        write(content.getBytes(), HttpHeaderValue.TEXT_PLAIN);
+        write(encode(content).getBytes(), HttpHeaderValue.TEXT_PLAIN);
     }
 
     @Override
@@ -218,7 +218,7 @@ public class HttpHandlerResponse implements HandlerResponse {
     }
     @Override
     public void json(Map<String,Object> json) {
-        json(Json.stringify(json));
+        json(encode(Json.stringify(json)));
     }
     @Override
     public void json(Json json) {
@@ -286,7 +286,7 @@ public class HttpHandlerResponse implements HandlerResponse {
 
     private String encode(String content) {
         if (StringKits.isEmpty(content)) {
-            return null;
+            return "";
         }
         try {
             return new String(content.getBytes(), charset);

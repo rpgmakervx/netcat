@@ -6,12 +6,15 @@
 </head>
 <body>
     <h1>login</h1>
-    <form action="/user/login" method="post">
+    <form action="/user/login" method="post" enctype="application/x-www-form-urlencoded">
         <p>
             <input type="text" placeholder="用户名" name="username"/>
         </p>
         <p>
             <input type="password" placeholder="密码" name="password"/>
+        </p>
+        <p>
+            <input type="file" placeholder="资料" name="file"/>
         </p>
         <p>
             <input type="submit" value="登录"/>

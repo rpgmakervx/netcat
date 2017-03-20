@@ -16,6 +16,7 @@ public class LoginHandler implements HttpHandler {
     @Override
     public void handle(HandlerRequest request, HandlerResponse response) throws Exception {
         System.out.println("login param:"+request.getParameterMap());
+        System.out.println("file length:"+request.file("file").length);
         response.json(Json.stringify(request.getParameterMap()));
     }
 }

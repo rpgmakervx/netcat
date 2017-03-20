@@ -154,6 +154,11 @@ public class HttpHandlerRequest implements HandlerRequest {
     }
 
     @Override
+    public byte[] file(String name) {
+        return paramParser.getFile(name);
+    }
+
+    @Override
     public <T> T body(Class<T> cls) {
         return null;
     }
