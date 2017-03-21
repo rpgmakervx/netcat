@@ -1,7 +1,7 @@
 package org.easyarch.netcat.server;
 
 import org.easyarch.netcat.context.ActionHolder;
-import org.easyarch.netcat.context.Config;
+import org.easyarch.netcat.context.config.HandlerConfig;
 import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.protocol.HttpMethod;
 import org.easyarch.netcat.kits.StringKits;
@@ -25,12 +25,12 @@ final public class App {
 
     private Launcher launcher;
 
-    private Config config;
+    private HandlerConfig handlerConfig;
 
     public App(){
         context = new HandlerContext();
         holder = new ActionHolder();
-        this.config = new Config(context);
+        this.handlerConfig = new HandlerConfig(context);
         launcher = new Launcher(context,holder);
     }
 
@@ -73,8 +73,8 @@ final public class App {
         return this;
     }
 
-    public Config config(){
-        return this.config;
+    public HandlerConfig config(){
+        return this.handlerConfig;
     }
 
 }

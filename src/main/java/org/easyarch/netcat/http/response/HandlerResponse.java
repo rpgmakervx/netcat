@@ -15,7 +15,6 @@ import java.util.Map;
 
 public interface HandlerResponse {
 
-
     public HandlerContext getContext();
 
     public void setContext(HandlerContext context);
@@ -38,7 +37,6 @@ public interface HandlerResponse {
 
     public Collection<String> getHeaderNames();
 
-
     public String getCharacterEncoding();
 
     public String getContentType();
@@ -47,15 +45,15 @@ public interface HandlerResponse {
 
     public void setContentLength(int len);
 
-    public Object getAttribute(String name);
+    public Object getModel(String name);
 
-    public Map<String, Object> getAttributes();
+    public Map<String, Object> getModel();
 
-    public Collection<String> getAttributeNames();
+    public Collection<String> getModelNames();
 
-    public void setAttribute(String name, Object value) ;
+    public void addModel(String name, Object value) ;
 
-    public void removeAttribute(String name);
+    public void removeModel(String name);
 
     public void setContentType(String type);
 

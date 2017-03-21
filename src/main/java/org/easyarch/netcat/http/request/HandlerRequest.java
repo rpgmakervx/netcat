@@ -3,6 +3,7 @@ package org.easyarch.netcat.http.request;
 import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.http.cookie.HttpCookie;
 import org.easyarch.netcat.http.session.HttpSession;
+import org.easyarch.netcat.mvc.entity.UploadFile;
 
 import java.io.UnsupportedEncodingException;
 import java.net.SocketAddress;
@@ -34,7 +35,7 @@ public interface HandlerRequest {
 
     public String getContextPath();
 
-    public byte[] file(String name);
+    public UploadFile file(String name);
 
     public<T> T body(Class<T> cls) throws Exception;
 
@@ -52,21 +53,19 @@ public interface HandlerRequest {
 
     public void setCharacterEncoding(String env) throws UnsupportedEncodingException;
 
-
     public int getContentLength();
-
 
     public String getContentType();
 
+    public String getParam(String name);
 
-    public String getParameter(String name);
+    public Integer getIntParam(String name);
 
-    public Collection<String> getParameterNames();
+    public Collection<String> getParamNames();
 
-    public Collection<String> getParameterValues(String name);
+    public Collection<String> getParamValues(String name);
 
-    public Map getParameterMap();
-
+    public Map getParamMap();
 
     public String getProtocol();
 

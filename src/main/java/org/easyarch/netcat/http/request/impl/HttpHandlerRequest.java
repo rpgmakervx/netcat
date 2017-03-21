@@ -16,6 +16,7 @@ import org.easyarch.netcat.http.session.HttpSession;
 import org.easyarch.netcat.http.session.impl.DefaultHttpSession;
 import org.easyarch.netcat.kits.HashKits;
 import org.easyarch.netcat.kits.StringKits;
+import org.easyarch.netcat.mvc.entity.UploadFile;
 import org.easyarch.netcat.mvc.router.Router;
 
 import java.io.UnsupportedEncodingException;
@@ -155,13 +156,13 @@ public class HttpHandlerRequest implements HandlerRequest {
     }
 
     @Override
-    public byte[] file(String name) {
+    public UploadFile file(String name) {
         return paramParser.getFile(name);
     }
 
     @Override
     public <T> T body(Class<T> cls) throws Exception {
-        Map<String,Object> params = getParameterMap();
+        Map<String,Object> params = getParamMap();
         BodyWrapper<T> wrapper = new BodyWrapper<>();
         return wrapper.getBean(cls,params);
     }
@@ -247,18 +248,24 @@ public class HttpHandlerRequest implements HandlerRequest {
     }
 
     @Override
-    public String getParameter(String name) {
+    public String getParam(String name) {
         String value = this.params.get(name);
         return encode(value);
     }
 
     @Override
-    public Collection<String> getParameterNames() {
+    public Integer getIntParam(String name) {
+        String value = this.params.get(name);
+        return Integer.parseInt(value);
+    }
+
+    @Override
+    public Collection<String> getParamNames() {
         return this.params.keySet();
     }
 
     @Override
-    public Collection<String> getParameterValues(String name) {
+    public Collection<String> getParamValues(String name) {
         List<String> values = new ArrayList<>();
         for (String val:this.params.values()){
             values.add(encode(val));
@@ -267,7 +274,7 @@ public class HttpHandlerRequest implements HandlerRequest {
     }
 
     @Override
-    public Map getParameterMap() {
+    public Map getParamMap() {
         return this.params;
     }
 

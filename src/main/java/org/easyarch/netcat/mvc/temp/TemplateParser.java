@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by xingtianyu on 17-3-13
@@ -17,6 +18,8 @@ import java.util.Map;
  */
 
 public class TemplateParser {
+
+    private static final String MODEL = "model";
 
     private static Configuration configuration;
 
@@ -31,7 +34,7 @@ public class TemplateParser {
 
     public TemplateParser(HandlerContext context) throws IOException {
         this.context = context;
-        this.params = new HashMap();
+        this.params = new ConcurrentHashMap<>();
         File file = new File(context.getWebView()+context.getViewPrefix());
         if (!file.exists()){
             file = new File(HandlerContext.DEFAULT_RESOURCE);

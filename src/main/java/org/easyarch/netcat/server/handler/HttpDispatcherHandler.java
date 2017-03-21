@@ -52,11 +52,9 @@ public class HttpDispatcherHandler extends BaseDispatcherHandler {
                 HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         Router router = new Router(request.uri(),
                 ActionType.HANDLER, HttpMethod.getMethod(request.method()));
-        System.out.println("in router:"+router);
         ActionWrapper wrapper = holder.getAction(router);
         List<HttpFilter> filters;
         filters = holder.getFilters(router);
-        System.out.println("get filters:" + filters.size());
         Action action = null;
         //直接从wrapper获取比遍历一遍快
         if (wrapper != null) {

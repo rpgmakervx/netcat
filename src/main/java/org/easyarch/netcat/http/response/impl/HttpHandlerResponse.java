@@ -12,7 +12,6 @@ import org.easyarch.netcat.http.response.HandlerResponse;
 import org.easyarch.netcat.kits.ByteKits;
 import org.easyarch.netcat.kits.StringKits;
 import org.easyarch.netcat.kits.file.FileKits;
-import org.easyarch.netcat.mvc.action.handler.impl.ErrorHandler;
 import org.easyarch.netcat.mvc.entity.Json;
 import org.easyarch.netcat.mvc.temp.TemplateParser;
 
@@ -41,13 +40,11 @@ public class HttpHandlerResponse implements HandlerResponse {
 
     private TemplateParser tmpParser;
 
-    private Map<String,Object> attributes = new ConcurrentHashMap<>();
+    private Map<String,Object> models = new ConcurrentHashMap<>();
 
     public HandlerContext context;
 
     private ServerCookieEncoder encoder;
-
-    private ErrorHandler errorHandler;
 
     public HttpHandlerResponse(FullHttpResponse response, HandlerContext context, Channel channel) throws IOException {
         init(response,context,channel);
@@ -142,29 +139,29 @@ public class HttpHandlerResponse implements HandlerResponse {
         this.charset = charset;
     }
     @Override
-    public Object getAttribute(String name) {
-        return attributes.get(name);
+    public Object getModel(String name) {
+        return models.get(name);
     }
 
     @Override
-    public Map<String, Object> getAttributes() {
-        return attributes;
+    public Map<String, Object> getModel() {
+        return models;
     }
 
     @Override
-    public Collection<String> getAttributeNames() {
-        return attributes.keySet();
+    public Collection<String> getModelNames() {
+        return models.keySet();
     }
 
     @Override
-    public void setAttribute(String name, Object value) {
-        System.out.println("name:"+attributes+",value:"+value);
-        attributes.put(name,value);
+    public void addModel(String name, Object value) {
+        System.out.println("name:"+ models +",value:"+value);
+        models.put(name,value);
     }
 
     @Override
-    public void removeAttribute(String name) {
-        attributes.remove(name);
+    public void removeModel(String name) {
+        models.remove(name);
     }
     @Override
     public void setContentLength(int len) {
@@ -240,7 +237,7 @@ public class HttpHandlerResponse implements HandlerResponse {
             notFound();
             return;
         }
-        tmpParser.addParam(attributes);
+        tmpParser.addParam(models);
         byte[] content = tmpParser.getTemplate(pathBuffer.toString()).getBytes();
         write(content,HttpHeaderValue.TEXT_HTML,statusCode);
     }
@@ -302,11 +299,11 @@ public class HttpHandlerResponse implements HandlerResponse {
         pathBuffer.append(context.getErrorPage())
                 .append(POINT)
                 .append(context.getViewSuffix());
-        setAttribute(HTTPSTATUS,statusCode);
-        setAttribute(REASONPHASE, HttpResponseStatus.NOT_FOUND.reasonPhrase());
-        setAttribute(MESSAGE,"");
+        addModel(HTTPSTATUS,statusCode);
+        addModel(REASONPHASE, HttpResponseStatus.NOT_FOUND.reasonPhrase());
+        addModel(MESSAGE,"");
         TemplateParser parser = new TemplateParser(HandlerContext.DEFAULT_RESOURCE);
-        parser.addParam(attributes);
+        parser.addParam(models);
         byte[] content = parser.getTemplate(pathBuffer.toString()).getBytes();
         write(content,HttpHeaderValue.TEXT_HTML,statusCode);
     }

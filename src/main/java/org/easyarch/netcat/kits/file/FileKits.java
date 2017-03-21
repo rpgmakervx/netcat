@@ -131,7 +131,6 @@ public class FileKits {
         return write(path, str.getBytes());
     }
 
-
     public static File write(String path, byte[] data) throws Exception {
         if (path == null)
             throw new NullPointerException("path is null");

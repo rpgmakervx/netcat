@@ -4,21 +4,45 @@
     <meta charset="UTF-8">
     <title>hello world</title>
 </head>
+<script src="/assets/js/jquery-1.8.2.min.js"></script>
 <body>
     <h1>login</h1>
-    <form action="/user/login" method="post" enctype="application/x-www-form-urlencoded">
+    <form action="/user/login" method="post" enctype="multipart/form-data">
         <p>
-            <input type="text" placeholder="用户名" name="username"/>
+            <input type="text" id="username" placeholder="用户名" name="username"/>
         </p>
         <p>
-            <input type="password" placeholder="密码" name="password"/>
+            <input type="password" id="password" placeholder="密码" name="password"/>
         </p>
         <p>
-            <input type="file" placeholder="资料" name="file"/>
+            <input type="file" id="file" placeholder="资料" name="file"/>
         </p>
         <p>
-            <input type="submit" value="登录"/>
+            <input type="button" id="login" value="登录"/>
+            <input type="submit" value="表单登录"/>
         </p>
     </form>
 </body>
+<script type="application/javascript">
+    $(function () {
+        $("#login").on("click",function () {
+            var fileForm = $("#file")[0];
+            var formData = new FormData();
+            formData.append("file",fileForm.files[0]);
+            formData.append("username",$("#username").val())
+            formData.append("password",$("#password").val())
+            $.ajax({
+                method:"POST",
+                processData : false,
+                contentType : false,
+                data : formData,
+                type:"POST",
+                url:"/user/login",
+                success:function(data){
+                    alert(data)
+                }
+            });
+        })
+    })
+</script>
 </html>

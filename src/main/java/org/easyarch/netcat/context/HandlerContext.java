@@ -2,6 +2,7 @@ package org.easyarch.netcat.context;
 
 
 import org.easyarch.netcat.http.session.HttpSession;
+import org.easyarch.netcat.kits.file.FileKits;
 
 import java.io.File;
 
@@ -27,6 +28,8 @@ public class HandlerContext {
     private int remotePort = DEFAULT_PORT;
 
     private int maxAge = 3600;
+
+    private long maxFileUpload = FileKits.ONE_MB * 128;
 
     private int sessionAge = Integer.MAX_VALUE;
 
@@ -147,5 +150,11 @@ public class HandlerContext {
         this.strongCache = strongCache;
     }
 
+    public long getMaxFileUpload() {
+        return maxFileUpload;
+    }
 
+    public void setMaxFileUpload(long maxFileUpload) {
+        this.maxFileUpload = maxFileUpload;
+    }
 }

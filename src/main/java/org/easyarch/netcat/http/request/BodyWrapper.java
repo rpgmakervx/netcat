@@ -16,7 +16,6 @@ public class BodyWrapper<T> {
     public T getBean(Class<T> cls,Map<String,Object> params) throws Exception {
         T bean = cls.newInstance();
         Field[] fields = cls.getDeclaredFields();
-        int index = 0;
         for (Field field:fields){
             Class<?> type = field.getType();
             String filedName = field.getName();

@@ -13,7 +13,7 @@ import org.easyarch.netcat.mvc.action.handler.HttpHandler;
 public class ParameterizeHandler implements HttpHandler {
     @Override
     public void handle(HandlerRequest request, HandlerResponse response) throws Exception {
-        response.setAttribute("username",request.getParameter("username"));
+        response.addModel("username",request.getParam("username"));
         response.html("hello");
     }
 }

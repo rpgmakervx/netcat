@@ -1,5 +1,6 @@
-package org.easyarch.netcat.context;
+package org.easyarch.netcat.context.config;
 
+import org.easyarch.netcat.context.HandlerContext;
 import org.easyarch.netcat.kits.StringKits;
 
 import java.io.File;
@@ -10,15 +11,15 @@ import java.io.File;
  * description:
  */
 
-public class Config {
+public class HandlerConfig {
 
     private HandlerContext context;
 
-    public Config(HandlerContext context){
+    public HandlerConfig(HandlerContext context){
         this.context = context;
     }
 
-    public Config webView(String webView){
+    public HandlerConfig webView(String webView){
         if (!webView.startsWith("/")){
             webView = "/" + webView;
         }
@@ -26,7 +27,7 @@ public class Config {
         return this;
     }
 
-    public Config viewPrefix(String viewPrefix){
+    public HandlerConfig viewPrefix(String viewPrefix){
         if (StringKits.isNotEmpty(viewPrefix)&&!viewPrefix.startsWith(File.separator)){
             viewPrefix = "/" + viewPrefix;
         }
@@ -34,12 +35,12 @@ public class Config {
         return this;
     }
 
-    public Config viewSuffix(String viewSuffix){
+    public HandlerConfig viewSuffix(String viewSuffix){
         context.setViewSuffix(viewSuffix);
         return this;
     }
 
-    public Config contextPath(String contextPath){
+    public HandlerConfig contextPath(String contextPath){
         if (!contextPath.startsWith("/")){
             contextPath = "/" + contextPath;
         }
@@ -50,14 +51,18 @@ public class Config {
         return this;
     }
 
-    public Config cacheMaxAge(int maxAge){
+    public HandlerConfig cacheMaxAge(int maxAge){
         context.setMaxAge(maxAge);
         return this;
     }
 
-    public Config useCache(){
+    public HandlerConfig useCache(){
         context.setNegoCache(true);
         return this;
     }
 
+    public HandlerConfig maxFileUpload(long maxFileUpload){
+        context.setMaxFileUpload(maxFileUpload);
+        return this;
+    }
 }

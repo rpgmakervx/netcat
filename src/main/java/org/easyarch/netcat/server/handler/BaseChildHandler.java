@@ -30,7 +30,7 @@ public class BaseChildHandler extends ChannelInitializer<SocketChannel> {
         pipeline.addLast("decoder", new HttpRequestDecoder());
         pipeline.addLast("encoder", new HttpResponseEncoder());
         pipeline.addLast("compress", new HttpContentCompressor(9));
-        pipeline.addLast("aggregator", new HttpObjectAggregator(1024000));
+        pipeline.addLast("aggregator", new HttpObjectAggregator((int)context.getMaxFileUpload()));
         pipeline.addLast("decompress", new HttpContentDecompressor());
         pipeline.addLast(new ChunkedWriteHandler());
         pipeline.addLast(new StaticDispatcherHandler(context,holder));

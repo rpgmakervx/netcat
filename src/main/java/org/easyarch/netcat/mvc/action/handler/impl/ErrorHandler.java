@@ -37,9 +37,9 @@ public class ErrorHandler implements HttpHandler {
     @Override
     public void handle(HandlerRequest request, HandlerResponse response) throws Exception {
         HandlerContext context = new HandlerContext();
-        response.setAttribute(HTTPSTATUS,code);
-        response.setAttribute(REASONPHASE,reasonPhase);
-        response.setAttribute(MESSAGE,message);
+        response.addModel(HTTPSTATUS,code);
+        response.addModel(REASONPHASE,reasonPhase);
+        response.addModel(MESSAGE,message);
         response.html(context.getErrorPage(), code);
     }
 }
