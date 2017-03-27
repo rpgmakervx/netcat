@@ -4,8 +4,10 @@ import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
+import org.easyarch.netcat.mvc.entity.Json;
 
 import java.net.MalformedURLException;
+import java.util.Map;
 
 /**
  * Description :
@@ -77,6 +79,19 @@ public class AsyncHttpClient {
         }
         launcher.doRequest(HttpMethod.POST, null, Unpooled.wrappedBuffer(bytes));
         return getContent();
+    }
+
+    public void postJson(Json json) throws Exception {
+        if (json == null||json.isEmpty()){
+            json = new Json();
+        }
+        String jsonString = Json.stringify(json);
+        post(jsonString.getBytes());
+    }
+
+    public void postJson(Map<String,Object> jsonMap) throws Exception {
+        String jsonString = Json.stringify(jsonMap);
+        post(jsonString.getBytes());
     }
 
     public void put(String url, HttpHeaders headers, byte[] bytes) throws Exception {
