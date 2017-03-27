@@ -18,12 +18,12 @@ public class Application {
         app.get("/user/index",new IndexHandler())
                 .get("/index/{username}", new ParameterizeHandler())
                 .get("/download",new DownLoadHandler())
-                .get("/user/json",new JsonHandler())
+                .get("/user/{username}",new JsonHandler())
                 .get("/image",new ImageHandler())
                 .get("/redirect",new RedirectHandler())
                 .get("/user/login",new LoginPageHandler())
                 .post("/user/login",new LoginHandler())
                 .filter("*.html",new DemoFilter())
-                .start(7070);
+                .start(8800);
     }
 }

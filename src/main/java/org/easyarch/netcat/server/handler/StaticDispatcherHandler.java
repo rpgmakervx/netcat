@@ -10,7 +10,6 @@ import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
 import org.easyarch.netcat.kits.Kits;
 import org.easyarch.netcat.mvc.action.ActionType;
 import org.easyarch.netcat.mvc.action.filter.HttpFilter;
-import org.easyarch.netcat.mvc.action.filter.impl.StaticFilter;
 import org.easyarch.netcat.mvc.action.handler.impl.StaticHttpHandler;
 import org.easyarch.netcat.mvc.router.Router;
 
@@ -24,7 +23,6 @@ import java.util.List;
 
 public class StaticDispatcherHandler extends BaseDispatcherHandler {
 
-    private StaticFilter staticFilter;
     private StaticHttpHandler staticHttpHandler;
 
     public StaticDispatcherHandler(HandlerContext context, ActionHolder holder) {

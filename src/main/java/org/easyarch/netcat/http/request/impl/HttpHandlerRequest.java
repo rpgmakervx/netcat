@@ -210,7 +210,6 @@ public class HttpHandlerRequest implements HandlerRequest {
         if (StringKits.isEmpty(sessionId) ||session == null){
             sessionId = HashKits
                     .sha1(channel.id().asLongText());
-            System.out.println("sessionId:"+sessionId);
             session = new DefaultHttpSession();
             session.setSessionId(sessionId);
             session.setMaxAge(context.getSessionAge());
