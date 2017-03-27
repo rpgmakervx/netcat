@@ -1,7 +1,7 @@
 package org.easyarch.netcat.kits;
 
-import org.easyarch.netcat.context.HandlerContext;
-import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
+import org.easyarch.netcat.web.context.HandlerContext;
+import org.easyarch.netcat.web.http.request.impl.HttpHandlerRequest;
 import org.easyarch.netcat.kits.file.FileKits;
 
 /**

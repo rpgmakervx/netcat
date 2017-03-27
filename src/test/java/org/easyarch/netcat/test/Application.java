@@ -1,6 +1,6 @@
 package org.easyarch.netcat.test;
 
-import org.easyarch.netcat.server.App;
+import org.easyarch.netcat.web.server.App;
 import org.easyarch.netcat.test.filter.DemoFilter;
 import org.easyarch.netcat.test.handler.*;
 
@@ -15,8 +15,8 @@ public class Application {
     public static void main(String[] args) {
         App app = new App();
         app.config().useCache();
-        app.get("/user/index",new IndexHandler())
-                .get("/index/{username}", new ParameterizeHandler())
+        app.post("/user/index",new IndexHandler())
+                .post("/index/{username}", new ParameterizeHandler())
                 .get("/download",new DownLoadHandler())
                 .get("/user/{username}",new JsonHandler())
                 .get("/image",new ImageHandler())

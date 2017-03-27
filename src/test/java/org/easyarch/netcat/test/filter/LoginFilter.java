@@ -1,8 +1,8 @@
 package org.easyarch.netcat.test.filter;
 
-import org.easyarch.netcat.http.request.impl.HttpHandlerRequest;
-import org.easyarch.netcat.http.response.impl.HttpHandlerResponse;
-import org.easyarch.netcat.mvc.action.filter.HttpFilter;
+import org.easyarch.netcat.web.http.request.impl.HttpHandlerRequest;
+import org.easyarch.netcat.web.http.response.impl.HttpHandlerResponse;
+import org.easyarch.netcat.web.mvc.action.filter.HttpFilter;
 
 /**
  * Created by xingtianyu on 17-3-16

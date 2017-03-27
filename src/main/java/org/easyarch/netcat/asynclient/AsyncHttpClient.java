@@ -4,7 +4,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
-import org.easyarch.netcat.mvc.entity.Json;
+import org.easyarch.netcat.web.mvc.entity.Json;
 
 import java.net.MalformedURLException;
 import java.util.Map;
