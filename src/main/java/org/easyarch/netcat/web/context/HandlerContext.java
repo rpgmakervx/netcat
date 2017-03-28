@@ -14,6 +14,11 @@ import java.io.File;
  */
 
 public class HandlerContext {
+
+    static {
+        System.setProperty("netcat.home",System.getProperty("user.dir")+ File.separator);
+    }
+
     public static final String DEFAULT_CONTEXT = File.separator;
     public static final String DEFAULT_SUFFIX = "html";
 
@@ -23,7 +28,7 @@ public class HandlerContext {
 
     private static final int DEFAULT_PORT = 8080;
 
-    public static final String DEFAULT_RESOURCE = HandlerContext.class.getResource("/").getPath();
+    public static final String DEFAULT_RESOURCE = System.getProperty("netcat.home");
 
     private int remotePort = DEFAULT_PORT;
 
