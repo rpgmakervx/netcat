@@ -40,6 +40,6 @@ public class ErrorHandler implements HttpHandler {
         response.addModel(HTTPSTATUS,code);
         response.addModel(REASONPHASE,reasonPhase);
         response.addModel(MESSAGE,message);
-        response.html(context.getErrorPage(), code);
+        response.error(code);
     }
 }

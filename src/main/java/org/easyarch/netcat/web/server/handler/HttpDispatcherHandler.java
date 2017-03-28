@@ -51,6 +51,7 @@ public class HttpDispatcherHandler extends BaseDispatcherHandler {
                 HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         Router router = new Router(request.uri(),
                 ActionType.HANDLER, org.easyarch.netcat.web.http.protocol.HttpMethod.getMethod(request.method()));
+        System.out.println("request method:"+request.method()+" , router:"+router);
         ActionWrapper wrapper = holder.getAction(router);
         List<HttpFilter> filters;
         filters = holder.getFilters(router);
@@ -61,12 +62,13 @@ public class HttpDispatcherHandler extends BaseDispatcherHandler {
         }
         HttpHandlerRequest req = new HttpHandlerRequest(request, router, context, ctx.channel());
         HttpHandlerResponse resp = new HttpHandlerResponse(response, context, ctx.channel());
-
+        System.out.println("404 ? :"+(filters == null || filters.isEmpty() && action == null));
         if (filters == null || filters.isEmpty() && action == null) {
             this.errorHandler = new ErrorHandler(HttpResponseStatus.NOT_FOUND.code(), HttpResponseStatus.NOT_FOUND.reasonPhrase());
             errorHandler.handle(req, resp);
             return;
         }
+        System.out.println("method not allowd?"+wrapper.getStatus() );
         if (wrapper.getStatus() == HttpStatus.METHOD_NOT_ALLOWED) {
             this.errorHandler = new ErrorHandler(HttpResponseStatus.METHOD_NOT_ALLOWED.code(), HttpResponseStatus.METHOD_NOT_ALLOWED.reasonPhrase());
             errorHandler.handle(req, resp);

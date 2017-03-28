@@ -28,8 +28,13 @@ public class HandlerConfig {
     }
 
     public HandlerConfig viewPrefix(String viewPrefix){
-        if (StringKits.isNotEmpty(viewPrefix)&&!viewPrefix.startsWith(File.separator)){
+        if (StringKits.isNotEmpty(viewPrefix)
+                &&!viewPrefix.startsWith(File.separator)){
             viewPrefix = "/" + viewPrefix;
+        }
+        if (StringKits.isNotEmpty(viewPrefix)
+                &&!viewPrefix.endsWith(File.separator)){
+            viewPrefix = viewPrefix + "/";
         }
         context.setViewPrefix(viewPrefix);
         return this;

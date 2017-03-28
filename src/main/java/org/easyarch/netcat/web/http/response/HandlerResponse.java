@@ -77,6 +77,7 @@ public interface HandlerResponse {
 
     public void html(String view) throws Exception;
     public void html(String view,int statusCode) throws Exception;
+    public void error(int statusCode) throws Exception;
 
     public void notFound(String view) throws Exception;
 

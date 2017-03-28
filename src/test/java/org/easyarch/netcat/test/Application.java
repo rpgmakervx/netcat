@@ -15,15 +15,15 @@ public class Application {
     public static void main(String[] args) {
         App app = new App();
         app.config().useCache();
-        app.post("/user/index",new IndexHandler())
-                .post("/index/{username}", new ParameterizeHandler())
+        app.post("/index/{username}", new ParameterizeHandler())
                 .get("/download",new DownLoadHandler())
-                .get("/user/{username}",new JsonHandler())
+                .get("/index/{username}",new JsonHandler())
                 .get("/image",new ImageHandler())
                 .get("/redirect",new RedirectHandler())
                 .get("/user/login",new LoginPageHandler())
                 .post("/user/login",new LoginHandler())
                 .filter("*.html",new DemoFilter())
+//                .post("/user/index",new IndexHandler())
                 .start(8800);
     }
 }

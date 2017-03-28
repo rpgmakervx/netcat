@@ -3,18 +3,20 @@ package org.easyarch.netcat.web.http.response.impl;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
+import org.easyarch.netcat.kits.ByteKits;
+import org.easyarch.netcat.kits.StringKits;
+import org.easyarch.netcat.kits.file.FileKits;
 import org.easyarch.netcat.web.context.HandlerContext;
+import org.easyarch.netcat.web.http.Const;
 import org.easyarch.netcat.web.http.cookie.HttpCookie;
 import org.easyarch.netcat.web.http.protocol.HttpHeaderName;
 import org.easyarch.netcat.web.http.protocol.HttpHeaderValue;
 import org.easyarch.netcat.web.http.protocol.HttpStatus;
 import org.easyarch.netcat.web.http.response.HandlerResponse;
-import org.easyarch.netcat.kits.ByteKits;
-import org.easyarch.netcat.kits.StringKits;
-import org.easyarch.netcat.kits.file.FileKits;
 import org.easyarch.netcat.web.mvc.entity.Json;
 import org.easyarch.netcat.web.mvc.temp.TemplateParser;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
@@ -223,23 +225,32 @@ public class HttpHandlerResponse implements HandlerResponse {
     }
 
     /**
-     * 视图不存在返回404,404如果还不存在，只能报错
+     * 视图返回对应code的页面,
+     * 404如果不存在，检查默认路径，
+     * 若默认路径还不存在则只能报错
      * @param view
      * @param statusCode
      */
     @Override
     public void html(String view,int statusCode) throws Exception {
         StringBuffer pathBuffer = new StringBuffer();
-        pathBuffer.append(view).append(POINT)
+        pathBuffer.append(view).append(Const.POINT)
                 .append(context.getViewSuffix());
         String wholePath = context.getWebView()+context.getViewPrefix()+pathBuffer.toString();
         if (!FileKits.exists(wholePath)){
-            notFound();
-            return;
+            wholePath = context.getWebView()+pathBuffer.toString();
+            if (!FileKits.exists(wholePath)){
+                throw new FileNotFoundException(wholePath+" not exists");
+            }
         }
         tmpParser.addParam(models);
         byte[] content = tmpParser.getTemplate(pathBuffer.toString()).getBytes();
         write(content,HttpHeaderValue.TEXT_HTML,statusCode);
+    }
+
+    @Override
+    public void error(int statusCode) throws Exception {
+        html(context.getErrorPage(),statusCode);
     }
 
     @Override
