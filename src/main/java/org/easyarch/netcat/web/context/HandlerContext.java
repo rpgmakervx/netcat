@@ -45,6 +45,11 @@ public class HandlerContext {
     public String contextPath = File.separator;
 
     public String errorPage = "error";
+
+    public String notFound = "error";
+
+    public String serverError = "error";
+
     /**
      * web资源路径
      */
@@ -121,6 +126,22 @@ public class HandlerContext {
 
     public void setErrorPage(String errorPage) {
         this.errorPage = errorPage;
+    }
+
+    public String getNotFound() {
+        return notFound;
+    }
+
+    public String getServerError() {
+        return serverError;
+    }
+
+    public void setServerError(String serverError) {
+        this.serverError = serverError;
+    }
+
+    public void setNotFound(String notFound) {
+        this.notFound = notFound;
     }
 
     public int getMaxAge(){

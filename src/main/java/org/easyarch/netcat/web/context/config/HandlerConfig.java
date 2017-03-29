@@ -20,8 +20,13 @@ public class HandlerConfig {
     }
 
     public HandlerConfig webView(String webView){
-        if (!webView.startsWith("/")){
+        if (StringKits.isNotEmpty(webView)
+                &&!webView.startsWith(File.separator)){
             webView = "/" + webView;
+        }
+        if (StringKits.isNotEmpty(webView)
+                &&!webView.endsWith(File.separator)){
+            webView = webView + "/";
         }
         context.setWebView(webView);
         return this;
@@ -68,6 +73,21 @@ public class HandlerConfig {
 
     public HandlerConfig maxFileUpload(long maxFileUpload){
         context.setMaxFileUpload(maxFileUpload);
+        return this;
+    }
+
+    public HandlerConfig errorPage(String view){
+        context.setErrorPage(view);
+        return this;
+    }
+
+    public HandlerConfig notFound(String view){
+        context.setNotFound(view);
+        return this;
+    }
+
+    public HandlerConfig serverError(String view){
+        context.setServerError(view);
         return this;
     }
 }

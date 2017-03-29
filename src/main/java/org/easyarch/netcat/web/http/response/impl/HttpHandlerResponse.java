@@ -16,14 +16,13 @@ import org.easyarch.netcat.web.http.response.HandlerResponse;
 import org.easyarch.netcat.web.mvc.entity.Json;
 import org.easyarch.netcat.web.mvc.temp.TemplateParser;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.easyarch.netcat.web.http.Const.*;
 import static org.easyarch.netcat.web.http.protocol.HttpHeaderName.SET_COOKIE;
 
 /**
@@ -42,23 +41,23 @@ public class HttpHandlerResponse implements HandlerResponse {
 
     private TemplateParser tmpParser;
 
-    private Map<String,Object> models = new ConcurrentHashMap<>();
+    private Map<String, Object> models = new ConcurrentHashMap<>();
 
     public HandlerContext context;
 
     private ServerCookieEncoder encoder;
 
     public HttpHandlerResponse(FullHttpResponse response, HandlerContext context, Channel channel) throws IOException {
-        init(response,context,channel);
+        init(response, context, channel);
     }
 
     private void init(FullHttpResponse response, HandlerContext context, Channel channel) throws IOException {
         this.context = context;
         this.response = response;
         this.tmpParser = new TemplateParser(context);
-        if (response == null){
+        if (response == null) {
             this.headers = new DefaultHttpHeaders();
-        }else {
+        } else {
             this.headers = this.response.headers();
         }
         this.charset = "UTF-8";
@@ -70,6 +69,7 @@ public class HttpHandlerResponse implements HandlerResponse {
     public HandlerContext getContext() {
         return context;
     }
+
     @Override
     public void setContext(HandlerContext context) {
         this.context = context;
@@ -92,7 +92,7 @@ public class HttpHandlerResponse implements HandlerResponse {
 
     @Override
     public void addHeader(String name, String value) {
-        this.headers.add(name,value);
+        this.headers.add(name, value);
     }
 
     @Override
@@ -140,6 +140,7 @@ public class HttpHandlerResponse implements HandlerResponse {
     public void setCharacterEncoding(String charset) {
         this.charset = charset;
     }
+
     @Override
     public Object getModel(String name) {
         return models.get(name);
@@ -157,31 +158,34 @@ public class HttpHandlerResponse implements HandlerResponse {
 
     @Override
     public void addModel(String name, Object value) {
-        System.out.println("name:"+ models +",value:"+value);
-        models.put(name,value);
+        System.out.println("name:" + models + ",value:" + value);
+        models.put(name, value);
     }
 
     @Override
     public void removeModel(String name) {
         models.remove(name);
     }
+
     @Override
     public void setContentLength(int len) {
         this.headers.set(HttpHeaderNames.CONTENT_LENGTH, len);
     }
+
     @Override
     public void setContentType(String type) {
         this.headers.set(HttpHeaderNames.CONTENT_TYPE, type);
     }
 
     @Override
-    public void write(byte[] content, String contentType,int statusCode) {
-        setHeader(HttpHeaderName.CONTENT_TYPE ,contentType);
+    public void write(byte[] content, String contentType, int statusCode) {
+        setHeader(HttpHeaderName.CONTENT_TYPE, contentType);
         setHeader(HttpHeaderName.CONTENT_LENGTH, String.valueOf(content.length));
         response = response.copy(ByteKits.toByteBuf(content));
         response.setStatus(HttpResponseStatus.valueOf(statusCode));
         channel.writeAndFlush(response);
     }
+
     @Override
     public void write(byte[] content, String contentType) {
         setHeader(HttpHeaderName.CONTENT_TYPE, contentType);
@@ -209,87 +213,126 @@ public class HttpHandlerResponse implements HandlerResponse {
 
     @Override
     public void json(byte[] json) {
-        write(json,HttpHeaderValue.APPLICATION_JSON);
+        write(json, HttpHeaderValue.APPLICATION_JSON);
     }
+
     @Override
     public void json(String json) {
         write(json.getBytes(), HttpHeaderValue.APPLICATION_JSON);
     }
+
     @Override
-    public void json(Map<String,Object> json) {
+    public void json(Map<String, Object> json) {
         json(encode(Json.stringify(json)));
     }
+
     @Override
     public void json(Json json) {
         json(json.getJsonMap());
     }
 
     /**
-     * 视图返回对应code的页面,
-     * 404如果不存在，检查默认路径，
-     * 若默认路径还不存在则只能报错
+     * 先检查resource或jar包内有没有资源。
+     * 存在则读取；若不存在则进一步检查根目录+前缀+资源名存不存在
+     * 存在则读取；若不存在，则金玉不检查根目录+资源名存不存在
+     * 存在则读取；若不存在则看当前请求是否是200,
+     * 是则认为找不到资源，报错；否则根据code返回系统自定义404页面
+     *
      * @param view
      * @param statusCode
      */
-    @Override
-    public void html(String view,int statusCode) throws Exception {
+    private void html(String view, int statusCode) throws Exception {
         StringBuffer pathBuffer = new StringBuffer();
         pathBuffer.append(view).append(Const.POINT)
                 .append(context.getViewSuffix());
-        String wholePath = context.getWebView()+context.getViewPrefix()+pathBuffer.toString();
-        if (!FileKits.exists(wholePath)){
+        String wholePath = context.getWebView() + context.getViewPrefix() + pathBuffer.toString();
+        tmpParser.addParam(models);
+        byte[] content = null;
+        InputStream errorStream = this.getClass().getResourceAsStream(
+                context.getViewPrefix()+pathBuffer.toString());
+        if (errorStream != null){
+            content = tmpParser.getTemplate(errorStream).getBytes();
+            write(content, HttpHeaderValue.TEXT_HTML, statusCode);
+            System.out.println("in resource or jar");
+            return;
+        }else if (!FileKits.exists(wholePath)) {
             wholePath = context.getWebView()+pathBuffer.toString();
+            System.out.println("wholePath with out prefix:"+wholePath);
             if (!FileKits.exists(wholePath)){
-                throw new FileNotFoundException(wholePath+" not exists");
+                HttpResponseStatus status = null;
+                if (statusCode != 200){
+                    status = HttpResponseStatus.valueOf(statusCode);
+                }else{
+                    status = HttpResponseStatus.NOT_FOUND;
+                }
+                content = getErrorPageContent(status.code()
+                        ,status.reasonPhrase()
+                        ,"")
+                        .getBytes();
+                write(content, HttpHeaderValue.TEXT_HTML, statusCode);
+                System.out.println("in server code");
+                return ;
             }
         }
-        tmpParser.addParam(models);
-        byte[] content = tmpParser.getTemplate(pathBuffer.toString()).getBytes();
-        write(content,HttpHeaderValue.TEXT_HTML,statusCode);
+        content = tmpParser.getTemplate(wholePath).getBytes();
+        System.out.println("wholePath:"+wholePath);
+        write(content, HttpHeaderValue.TEXT_HTML, statusCode);
     }
 
     @Override
     public void error(int statusCode) throws Exception {
-        html(context.getErrorPage(),statusCode);
+        if (StringKits.isEmpty(context.getErrorPage())){
+            HttpResponseStatus status = HttpResponseStatus.valueOf(statusCode);
+            String content = getErrorPageContent(status.code(),status.reasonPhrase(),"");
+            write(content.getBytes(),HttpHeaderValue.TEXT_HTML,statusCode);
+            return ;
+        }
+        html(context.getErrorPage(), statusCode);
     }
 
     @Override
     public void html(String view) throws Exception {
-        html(view,HttpResponseStatus.OK.code());
+        html(view, HttpResponseStatus.OK.code());
     }
 
     @Override
-    public void notFound(String view) throws Exception {
-        html(view, HttpStatus.NOT_FOUND);
+    public void notFound() throws Exception {
+        if (StringKits.isEmpty(context.getErrorPage())){
+            HttpResponseStatus status = HttpResponseStatus.NOT_FOUND;
+            String content = getErrorPageContent(status.code(),status.reasonPhrase(),"");
+            write(content.getBytes(),HttpHeaderValue.TEXT_HTML,status.code());
+            return ;
+        }
+        html(context.getNotFound(), HttpStatus.NOT_FOUND);
     }
 
     @Override
-    public void serverError(String view) throws Exception {
-        html(view,HttpStatus.INTERNAL_SERVER_ERROR);
+    public void serverError() throws Exception {
+        html(context.getServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
-    public void image(byte[] bytes){
-        write(bytes,HttpHeaderValue.IMAGE);
+    public void image(byte[] bytes) {
+        write(bytes, HttpHeaderValue.IMAGE);
     }
 
     @Override
-    public void redirect(String url){
+    public void redirect(String url) {
         response.setStatus(HttpResponseStatus.FOUND);
-        setHeader(HttpHeaderNames.LOCATION.toString(),url);
+        setHeader(HttpHeaderNames.LOCATION.toString(), url);
         write();
     }
 
     @Override
-    public void download(byte[] bytes,String filename,String contentType){
+    public void download(byte[] bytes, String filename, String contentType) {
         String fn = filename;
         try {
-            fn = new String(filename.getBytes("GB2312"),"ISO8859-1");
+            fn = new String(filename.getBytes("GB2312"), "ISO8859-1");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        setHeader(HttpHeaderNames.CONTENT_DISPOSITION.toString(),HttpHeaderValue.ATTACHMENT + fn);
-        write(bytes,contentType.toString());
+        setHeader(HttpHeaderNames.CONTENT_DISPOSITION.toString(), HttpHeaderValue.ATTACHMENT + fn);
+        write(bytes, contentType.toString());
     }
 
     private String encode(String content) {
@@ -304,18 +347,11 @@ public class HttpHandlerResponse implements HandlerResponse {
         }
     }
 
-    private void notFound() throws Exception {
-        int statusCode = HttpResponseStatus.NOT_FOUND.code();
-        StringBuffer pathBuffer = new StringBuffer();
-        pathBuffer.append(context.getErrorPage())
-                .append(POINT)
-                .append(context.getViewSuffix());
-        addModel(HTTPSTATUS,statusCode);
-        addModel(REASONPHASE, HttpResponseStatus.NOT_FOUND.reasonPhrase());
-        addModel(MESSAGE,"");
-        TemplateParser parser = new TemplateParser(HandlerContext.DEFAULT_RESOURCE);
-        parser.addParam(models);
-        byte[] content = parser.getTemplate(pathBuffer.toString()).getBytes();
-        write(content,HttpHeaderValue.TEXT_HTML,statusCode);
+    private String getErrorPageContent(int code,String reasonPhrase,String message){
+        StringBuffer errorBuffer = new StringBuffer();
+        errorBuffer.append("<h1 align='center'>"+code+" "+reasonPhrase+"</h1>");
+        errorBuffer.append("<p>"+message+"</p><hr/>");
+        errorBuffer.append("<div align='center'><span>netcat/1.0 inner</span></div>");
+        return errorBuffer.toString();
     }
 }

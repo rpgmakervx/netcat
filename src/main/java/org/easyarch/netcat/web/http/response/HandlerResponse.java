@@ -76,12 +76,11 @@ public interface HandlerResponse {
     public void json(Json json);
 
     public void html(String view) throws Exception;
-    public void html(String view,int statusCode) throws Exception;
     public void error(int statusCode) throws Exception;
 
-    public void notFound(String view) throws Exception;
+    public void notFound() throws Exception;
 
-    public void serverError(String view) throws Exception;
+    public void serverError() throws Exception;
 
     public void image(byte[] bytes);
 

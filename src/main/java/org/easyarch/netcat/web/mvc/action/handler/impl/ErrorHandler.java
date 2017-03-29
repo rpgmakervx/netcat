@@ -1,6 +1,6 @@
 package org.easyarch.netcat.web.mvc.action.handler.impl;
 
-import org.easyarch.netcat.web.context.HandlerContext;
+import org.easyarch.netcat.web.http.protocol.HttpStatus;
 import org.easyarch.netcat.web.http.request.HandlerRequest;
 import org.easyarch.netcat.web.http.response.HandlerResponse;
 import org.easyarch.netcat.web.mvc.action.handler.HttpHandler;
@@ -14,8 +14,6 @@ import static org.easyarch.netcat.web.http.Const.*;
  */
 
 public class ErrorHandler implements HttpHandler {
-
-
 
     private int code;
 
@@ -36,10 +34,17 @@ public class ErrorHandler implements HttpHandler {
 
     @Override
     public void handle(HandlerRequest request, HandlerResponse response) throws Exception {
-        HandlerContext context = new HandlerContext();
         response.addModel(HTTPSTATUS,code);
         response.addModel(REASONPHASE,reasonPhase);
         response.addModel(MESSAGE,message);
+        switch (code){
+            case HttpStatus.NOT_FOUND:
+                response.notFound();
+                return;
+            case HttpStatus.INTERNAL_SERVER_ERROR:
+                response.serverError();
+                return;
+        }
         response.error(code);
     }
 }

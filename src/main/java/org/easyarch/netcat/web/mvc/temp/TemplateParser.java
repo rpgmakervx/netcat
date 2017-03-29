@@ -3,11 +3,8 @@ package org.easyarch.netcat.web.mvc.temp;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import org.easyarch.netcat.web.context.HandlerContext;
-import org.easyarch.netcat.web.http.Const;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,27 +35,27 @@ public class TemplateParser {
     public TemplateParser(HandlerContext context) throws IOException {
         this.context = context;
         this.params = new ConcurrentHashMap<>();
-//        File file = new File(context.getWebView()+context.getViewPrefix());
-        String errorPagePath = context.getWebView()+context.getViewPrefix()
-                +context.getErrorPage()
-                +Const.POINT
-                +HandlerContext.DEFAULT_SUFFIX;
-        File errorPage = new File(errorPagePath);
-        if (!errorPage.exists()){
-            hasErrorPage = false;
-        }
-//        if (!file.exists()){
+////        File file = new File(context.getWebView()+context.getViewPrefix());
+//        String errorPagePath = context.getWebView()+context.getViewPrefix()
+//                +context.getErrorPage()
+//                +Const.POINT
+//                +HandlerContext.DEFAULT_SUFFIX;
+//        File errorPage = new File(errorPagePath);
+//        if (!errorPage.exists()){
+//            hasErrorPage = false;
 //        }
-        File file = new File(HandlerContext.DEFAULT_RESOURCE);
-        configuration.setDirectoryForTemplateLoading(file);
+////        if (!file.exists()){
+////        }
+//        File file = new File(HandlerContext.DEFAULT_RESOURCE);
+//        configuration.setDirectoryForTemplateLoading(file);
     }
     public TemplateParser(String path) throws IOException {
         this.params = new HashMap();
-        File file = new File(path);
-        if (!file.exists()){
-            file = new File(HandlerContext.DEFAULT_RESOURCE);
-        }
-        configuration.setDirectoryForTemplateLoading(file);
+//        File file = new File(path);
+//        if (!file.exists()){
+//            file = new File(HandlerContext.DEFAULT_RESOURCE);
+//        }
+//        configuration.setDirectoryForTemplateLoading(file);
     }
 
     public void addParam(String name,Object value){
@@ -71,20 +68,36 @@ public class TemplateParser {
 
     /**
      * error page再prefix中不存在时。读取默认的error.html
-     * @param tmpName
+     * @param tmpPath
      * @return
      * @throws Exception
      */
-    public String getTemplate(String tmpName) throws Exception {
-        if (!hasErrorPage&&tmpName.contains(context.getErrorPage())){
-            temp = configuration.getTemplate(
-                    HandlerContext.DEFAULT_ERRORPAGE
-                            +Const.POINT
-                            +HandlerContext.DEFAULT_SUFFIX);
-        }else{
-            temp = configuration.getTemplate(context.getViewPrefix()+tmpName);
-        }
+//    public String getTemplate(String tmpName) throws Exception {
+//        if (!hasErrorPage&&tmpName.contains(context.getErrorPage())){
+//            temp = configuration.getTemplate(
+//                    HandlerContext.DEFAULT_ERRORPAGE
+//                            +Const.POINT
+//                            +HandlerContext.DEFAULT_SUFFIX);
+//        }else{
+//            temp = configuration.getTemplate(context.getViewPrefix()+tmpName);
+//        }
+//        StringWriter writer = new StringWriter();
+//        temp.process(this.params,writer);
+//        return writer.toString();
+//    }
+
+    public String getTemplate(String tmpPath) throws Exception {
+        System.out.println("template path:"+tmpPath);
         StringWriter writer = new StringWriter();
+        BufferedReader reader = new BufferedReader(new FileReader(tmpPath));
+        temp = new Template(null,reader,null);
+        temp.process(this.params,writer);
+        return writer.toString();
+    }
+    public String getTemplate(InputStream tmpStream) throws Exception {
+        StringWriter writer = new StringWriter();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(tmpStream));
+        temp = new Template(null,reader,null);
         temp.process(this.params,writer);
         return writer.toString();
     }
