@@ -34,7 +34,7 @@ public class DefaultHttpSession implements HttpSession {
         }
         return sessionMap.get(name);
     }
-    public void setAttr(String name,String value){
+    public void setAttr(String name,Object value){
         sessionMap.put(name,value);
     }
 

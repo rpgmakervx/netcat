@@ -68,6 +68,19 @@ public class Json<V> {
         return jsonObject.toJSONString();
     }
 
+    public static<T> String stringify(T entity){
+        if (entity == null){
+            return "{}";
+        }
+        return JSON.toJSONString(entity, true);
+    }
+
+    public static<T> T parse(String json,Class<T> cls){
+        if (StringKits.isEmpty(json))
+            return null;
+        return JSONObject.parseObject(json,cls);
+    }
+
     public static Json parse(String str){
         Json json = new Json(toMap(str));
         return json;

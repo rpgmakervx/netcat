@@ -250,6 +250,7 @@ public class HttpHandlerResponse implements HandlerResponse {
         byte[] content = null;
         InputStream errorStream = this.getClass().getResourceAsStream(
                 context.getViewPrefix()+pathBuffer.toString());
+        System.out.println("errorStream path:"+(context.getViewPrefix()+pathBuffer.toString()));
         if (errorStream != null){
             content = tmpParser.getTemplate(errorStream).getBytes();
             write(content, HttpHeaderValue.TEXT_HTML, statusCode);

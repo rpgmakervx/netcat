@@ -12,7 +12,7 @@ import java.io.Serializable;
 public interface HttpSession extends Serializable{
 
     public Object getAttr(String name);
-    public void setAttr(String name,String value);
+    public void setAttr(String name,Object value);
     public String getSessionId();
     public void setSessionId(String sessionId);
     public Object remove(String name);

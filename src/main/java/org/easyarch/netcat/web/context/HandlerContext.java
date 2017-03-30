@@ -1,10 +1,11 @@
 package org.easyarch.netcat.web.context;
 
 
-import org.easyarch.netcat.web.http.session.HttpSession;
 import org.easyarch.netcat.kits.file.FileKits;
+import org.easyarch.netcat.web.http.session.HttpSession;
 
 import java.io.File;
+import java.net.URL;
 
 /**
  * Description :
@@ -53,7 +54,7 @@ public class HandlerContext {
     /**
      * web资源路径
      */
-    public String webView = DEFAULT_RESOURCE;
+    public String webView;
     /**
      * 视图资源路径前缀
      */
@@ -66,6 +67,12 @@ public class HandlerContext {
     public SessionHolder sessionHolder;
 
     public HandlerContext(){
+        URL resourceUrl = HandlerContext.class.getResource("/");
+        if (resourceUrl == null){
+            webView = DEFAULT_RESOURCE;
+        }else {
+            webView = resourceUrl.getPath();
+        }
         sessionHolder = new SessionHolder();
     }
 
