@@ -22,7 +22,7 @@ public class Application {
                 .get("/redirect",new RedirectHandler())
                 .get("/user/login",new LoginPageHandler())
                 .post("/user/login",new LoginHandler())
-                .filter("*.html",new DemoFilter())
+                .filter("/*",new DemoFilter())
 //                .post("/user/index",new IndexHandler())
                 .start(8800);
     }
