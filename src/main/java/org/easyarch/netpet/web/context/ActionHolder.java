@@ -5,6 +5,7 @@ import org.easyarch.netpet.kits.StringKits;
 import org.easyarch.netpet.web.mvc.action.Action;
 import org.easyarch.netpet.web.mvc.action.ActionWrapper;
 import org.easyarch.netpet.web.mvc.action.filter.HttpFilter;
+import org.easyarch.netpet.web.mvc.action.handler.HttpHandler;
 import org.easyarch.netpet.web.mvc.router.Router;
 import org.easyarch.netpet.web.mvc.action.ActionType;
 
@@ -25,6 +26,7 @@ public class ActionHolder {
      * 顺序的连式结构
      */
     private static List<ActionWrapper> actions = new CopyOnWriteArrayList<>();
+    private static List<ActionWrapper> filters = new CopyOnWriteArrayList<>();
 
     /**
      * 1.遍历所有的router和action映射
@@ -65,19 +67,39 @@ public class ActionHolder {
      * @return
      */
     public List<HttpFilter> getFilters(Router router) {
-        List<HttpFilter> filters = new ArrayList<>();
-        for (ActionWrapper wrp : actions) {
+        List<HttpFilter> fs = new ArrayList<>();
+        for (ActionWrapper wrp : filters) {
             Router r = wrp.getRouter();
             boolean equals = eq(r, router);
             if (equals) {
                 Action action = wrp.getAction();
                 if (ActionType.FILTER.equals(wrp.getType())){
-                    filters.add((HttpFilter) action);
+                    fs.add((HttpFilter) action);
                 }
             }
         }
-        return filters;
+        return fs;
     }
+//    /**
+//     * 获取拦截这个请求的所有拦截器
+//     * 便利顺序的action集合，如果命中router则说明
+//     * @param router
+//     * @return
+//     */
+//    public List<HttpFilter> getFilters(Router router) {
+//        List<HttpFilter> filters = new ArrayList<>();
+//        for (ActionWrapper wrp : actions) {
+//            Router r = wrp.getRouter();
+//            boolean equals = eq(r, router);
+//            if (equals) {
+//                Action action = wrp.getAction();
+//                if (ActionType.FILTER.equals(wrp.getType())){
+//                    filters.add((HttpFilter) action);
+//                }
+//            }
+//        }
+//        return filters;
+//    }
 //    public List<HttpFilter> getFilters(Router router) {
 //        List<HttpFilter> filters = new ArrayList<>();
 //        ActionWrapper wrapper = null;
@@ -103,9 +125,22 @@ public class ActionHolder {
 
     public void addAction(Router router, Action action) {
         int currentIndex = actions.size();
+        if (!(action instanceof HttpHandler)){
+            return;
+        }
         ActionWrapper wrapper = new ActionWrapper(action,router, currentIndex);
         actions.add(wrapper);
         System.out.println("add Router:" + router + ", actionsize:" + actions.size());
+    }
+
+    public void addFilter(Router router, Action action){
+        int currentIndex = filters.size();
+        if (!(action instanceof HttpFilter)){
+            return;
+        }
+        ActionWrapper wrapper = new ActionWrapper(action,router, currentIndex);
+        filters.add(wrapper);
+        System.out.println("add Router:" + router + ", actionsize:" + filters.size());
     }
 //    public void addAction(Router router, Action action) {
 //        int currentIndex = actions.size();

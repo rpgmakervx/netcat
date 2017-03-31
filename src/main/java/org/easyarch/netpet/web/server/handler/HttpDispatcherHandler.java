@@ -63,17 +63,20 @@ public class HttpDispatcherHandler extends BaseDispatcherHandler {
         HttpHandlerRequest req = new HttpHandlerRequest(request, router, context, ctx.channel());
         HttpHandlerResponse resp = new HttpHandlerResponse(response, context, ctx.channel());
         System.out.println("404 ? :"+(filters == null || filters.isEmpty() && action == null));
-        if (filters == null || filters.isEmpty() && action == null) {
+
+        if (action == null) {
             this.errorHandler = new ErrorHandler(HttpResponseStatus.NOT_FOUND.code(), HttpResponseStatus.NOT_FOUND.reasonPhrase());
             errorHandler.handle(req, resp);
             return;
         }
-        System.out.println("method not allowd?"+wrapper.getStatus() );
-        if (wrapper.getStatus() == HttpStatus.METHOD_NOT_ALLOWED) {
+        if (wrapper != null&&wrapper.getStatus() == HttpStatus.METHOD_NOT_ALLOWED) {
+            System.out.println("method not allowd");
             this.errorHandler = new ErrorHandler(HttpResponseStatus.METHOD_NOT_ALLOWED.code(), HttpResponseStatus.METHOD_NOT_ALLOWED.reasonPhrase());
             errorHandler.handle(req, resp);
             return;
         }
+        SessionHandler sessionHandler = new SessionHandler(ctx);
+        HttpHandler handler = (HttpHandler) action;
         if (!filters.isEmpty()) {
             for (HttpFilter filter : filters) {
                 if (!filter.before(req, resp)) {
@@ -81,13 +84,8 @@ public class HttpDispatcherHandler extends BaseDispatcherHandler {
                 }
             }
         }
-        SessionHandler sessionHandler = new SessionHandler(ctx);
         sessionHandler.handle(req,resp);
-        //有可能取到的filter
-        if (wrapper.getType().equals(ActionType.HANDLER)){
-            HttpHandler handler = (HttpHandler) action;
-            handler.handle(req, resp);
-        }
+        handler.handle(req, resp);
         if (!filters.isEmpty()) {
             for (HttpFilter filter : filters) {
                 filter.after(req, resp);

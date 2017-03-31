@@ -75,7 +75,10 @@ public interface HandlerResponse {
 
     public void json(Json json);
 
+    public void json(Json json,int statusCode);
+
     public void html(String view) throws Exception;
+
     public void error(int statusCode) throws Exception;
 
     public void notFound() throws Exception;

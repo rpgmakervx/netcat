@@ -45,7 +45,7 @@ final public class App {
         if (filter == null){
             return this;
         }
-        holder.addAction(new Router(path, ActionType.FILTER),filter);
+        holder.addFilter(new Router(path, ActionType.FILTER),filter);
         return this;
     }
 

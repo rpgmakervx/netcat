@@ -231,6 +231,15 @@ public class HttpHandlerResponse implements HandlerResponse {
         json(json.getJsonMap());
     }
 
+    @Override
+    public void json(Json json, int statusCode) {
+        String jsonString = "";
+        if (json!=null){
+            jsonString = Json.stringify(json);
+        }
+        write(jsonString.getBytes(), HttpHeaderValue.APPLICATION_JSON,statusCode);
+    }
+
     /**
      * 先检查resource或jar包内有没有资源。
      * 存在则读取；若不存在则进一步检查根目录+前缀+资源名存不存在

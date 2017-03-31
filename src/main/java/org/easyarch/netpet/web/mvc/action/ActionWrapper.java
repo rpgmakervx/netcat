@@ -59,7 +59,7 @@ public class ActionWrapper {
         this.pre = null;
     }
 
-    public Action getAction() {
+    public Action  getAction() {
         return self;
     }
 
@@ -136,5 +136,16 @@ public class ActionWrapper {
         }
         Collections.reverse(filter);
         return filter;
+    }
+
+    @Override
+    public String toString() {
+        return "ActionWrapper{" +
+                "self=" + self +
+                ", router=" + router +
+                ", index=" + index +
+                ", status=" + status +
+                ", type=" + type +
+                '}';
     }
 }
