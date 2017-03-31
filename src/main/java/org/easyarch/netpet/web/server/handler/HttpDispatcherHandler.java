@@ -74,8 +74,6 @@ public class HttpDispatcherHandler extends BaseDispatcherHandler {
             errorHandler.handle(req, resp);
             return;
         }
-        SessionHandler sessionHandler = new SessionHandler(ctx);
-        HttpHandler handler = (HttpHandler) action;
         if (!filters.isEmpty()) {
             for (HttpFilter filter : filters) {
                 if (!filter.before(req, resp)) {
@@ -83,8 +81,13 @@ public class HttpDispatcherHandler extends BaseDispatcherHandler {
                 }
             }
         }
+        SessionHandler sessionHandler = new SessionHandler(ctx);
         sessionHandler.handle(req,resp);
-        handler.handle(req, resp);
+        //有可能取到的filter
+        if (wrapper.getType().equals(ActionType.HANDLER)){
+            HttpHandler handler = (HttpHandler) action;
+            handler.handle(req, resp);
+        }
         if (!filters.isEmpty()) {
             for (HttpFilter filter : filters) {
                 filter.after(req, resp);
