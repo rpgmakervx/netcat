@@ -80,48 +80,6 @@ public class ActionHolder {
         }
         return fs;
     }
-//    /**
-//     * 获取拦截这个请求的所有拦截器
-//     * 便利顺序的action集合，如果命中router则说明
-//     * @param router
-//     * @return
-//     */
-//    public List<HttpFilter> getFilters(Router router) {
-//        List<HttpFilter> filters = new ArrayList<>();
-//        for (ActionWrapper wrp : actions) {
-//            Router r = wrp.getRouter();
-//            boolean equals = eq(r, router);
-//            if (equals) {
-//                Action action = wrp.getAction();
-//                if (ActionType.FILTER.equals(wrp.getType())){
-//                    filters.add((HttpFilter) action);
-//                }
-//            }
-//        }
-//        return filters;
-//    }
-//    public List<HttpFilter> getFilters(Router router) {
-//        List<HttpFilter> filters = new ArrayList<>();
-//        ActionWrapper wrapper = null;
-//        for (ActionWrapper wrp : actions) {
-//            Router r = wrp.getRouter();
-//            boolean equals = eq(r, router);
-//            if (equals) {
-//                if (r.getPath().equals(router.getPath())) {
-//                    wrapper = wrp;
-//                    if (wrapper == null) {
-//                        return null;
-//                    }
-//                    return wrapper.getFilters();
-//                }
-//                wrapper = wrp;
-//            }
-//        }
-//        if (wrapper == null) {
-//            return null;
-//        }
-//        return wrapper.getFilters();
-//    }
 
     public void addAction(Router router, Action action) {
         int currentIndex = actions.size();
@@ -142,20 +100,6 @@ public class ActionHolder {
         filters.add(wrapper);
         System.out.println("add Router:" + router + ", actionsize:" + filters.size());
     }
-//    public void addAction(Router router, Action action) {
-//        int currentIndex = actions.size();
-//        ActionWrapper wrapper = new ActionWrapper(action,router, currentIndex);
-//        int index = 0;
-//        for (ActionWrapper rw : actions) {
-//            if (index == currentIndex - 1) {
-//                wrapper.setPreAction(rw);
-//                break;
-//            }
-//            index++;
-//        }
-//        actions.add(wrapper);
-//        System.out.println("add Router:" + router + ", actionsize:" + actions.size());
-//    }
 
     /**
      * 1.路由层级不同，不相等
@@ -168,33 +112,6 @@ public class ActionHolder {
      * @param cmpRouter
      * @return
      */
-//    private boolean eq(Router router1, Router router2) {
-//        if (router1 == null || router2 == null) {
-//            return false;
-//        }
-//        if (router1.getLevel() != router2.getLevel()) {
-//            return false;
-//        }
-//        if (router1.getPath().equals(router2.getPath())) {
-//            return true;
-//        } else if (router1.isParameterize() || router2.isParameterize()) {
-//            for (int index = 0; index < router1.getLevel(); index++) {
-//                String seg1 = router1.getSegements().get(index);
-//                String seg2 = router2.getSegements().get(index);
-//                String paramSeg1 = router1.getParameterizeUrl().get(index);
-//                //两个片段不相等，或当前片段不是参数化的,则不相等
-//                if (!seg1.equals(seg2) && paramSeg1 == null) {
-//                    return false;
-//                }
-//                if (paramSeg1 != null) {
-//                    String name = StringKits.strip(paramSeg1, LEFT, RIGHT);
-//                    router2.getPathParams().put(name, seg2);
-//                }
-//            }
-//            return true;
-//        }
-//        return false;
-//    }
     /**
      * 1.路由地址相同必定相等
      * 2.路由包括参数化片段，则进一步匹配;如果不包括，不相等
@@ -270,31 +187,4 @@ public class ActionHolder {
         }
         return false;
     }
-//    private boolean eq(Router storeRouter, Router cmpRouter) {
-//        if (storeRouter == null || cmpRouter == null) {
-//            return false;
-//        }
-//        if (storeRouter.getLevel() != cmpRouter.getLevel()) {
-//            return false;
-//        }
-//        if (strPath.equals(cmpPath)) {
-//            return true;
-//        } else if (storeRouter.isParameterize() || cmpRouter.isParameterize()) {
-//            for (int index = 0; index < storeRouter.getLevel(); index++) {
-//                String seg1 = storeRouter.getSegements().get(index);
-//                String seg2 = cmpRouter.getSegements().get(index);
-//                String paramSeg1 = storeRouter.getParameterizeUrl().get(index);
-//                //两个片段不相等，或当前片段不是参数化的,则不相等
-//                if (!seg1.equals(seg2) && paramSeg1 == null) {
-//                    return false;
-//                }
-//                if (paramSeg1 != null) {
-//                    String name = StringKits.strip(paramSeg1, LEFT, RIGHT);
-//                    cmpRouter.getPathParams().put(name, seg2);
-//                }
-//            }
-//            return true;
-//        }
-//        return false;
-//    }
 }
