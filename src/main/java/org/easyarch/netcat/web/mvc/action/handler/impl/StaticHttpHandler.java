@@ -1,13 +1,13 @@
 package org.easyarch.netcat.web.mvc.action.handler.impl;
 
+import org.easyarch.netcat.kits.TimeKits;
+import org.easyarch.netcat.kits.file.FileKits;
 import org.easyarch.netcat.web.context.HandlerContext;
 import org.easyarch.netcat.web.http.protocol.HttpHeaderName;
 import org.easyarch.netcat.web.http.protocol.HttpHeaderValue;
 import org.easyarch.netcat.web.http.protocol.HttpStatus;
 import org.easyarch.netcat.web.http.request.HandlerRequest;
 import org.easyarch.netcat.web.http.response.HandlerResponse;
-import org.easyarch.netcat.kits.TimeKits;
-import org.easyarch.netcat.kits.file.FileKits;
 import org.easyarch.netcat.web.mvc.action.handler.HttpHandler;
 
 import java.io.File;
@@ -49,14 +49,14 @@ public class StaticHttpHandler implements HttpHandler {
                 response.write();
                 return;
             }
-            response.write(FileKits.read(resourcePath.toString())
+            response.write(FileKits.readx(resourcePath.toString())
                     , HttpHeaderValue.getContentType(suffix));
         }else if (suffix.endsWith(DOCX)||suffix.endsWith(DOC)){
-            response.download(FileKits.read(resourcePath.toString()),filename,HttpHeaderValue.DOC);
+            response.download(FileKits.readx(resourcePath.toString()),filename,HttpHeaderValue.DOC);
         }else if (suffix.endsWith(XLS)||suffix.endsWith(XLSX)){
-            response.download(FileKits.read(resourcePath.toString()),filename,HttpHeaderValue.XLS);
+            response.download(FileKits.readx(resourcePath.toString()),filename,HttpHeaderValue.XLS);
         }else if (suffix.endsWith(PDF)){
-            response.download(FileKits.read(resourcePath.toString()),filename,HttpHeaderValue.PDF);
+            response.download(FileKits.readx(resourcePath.toString()),filename,HttpHeaderValue.PDF);
         }else{
             response.write(FileKits.read(resourcePath.toString()));
         }

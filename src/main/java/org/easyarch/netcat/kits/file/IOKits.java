@@ -9,6 +9,7 @@ import org.easyarch.netcat.kits.HashKits;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.*;
 import java.nio.charset.Charset;
 
@@ -385,6 +386,23 @@ public class IOKits {
         return copyln(reader, new OutputStreamWriter(os));
     }
 
+    public static long bigCopy(FileChannel readChannel,OutputStream os) throws Exception {
+        try {
+            WritableByteChannel writeChannel = Channels.newChannel(os);
+            MappedByteBuffer buffer = readChannel.map(
+                    FileChannel.MapMode.READ_ONLY, 0, readChannel.size());
+            int length = buffer.capacity();
+            while (buffer.hasRemaining()) {
+                writeChannel.write(buffer);
+            }
+//            buffer.clear();
+            return length;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
     public static boolean equals(InputStream is1, InputStream is2) {
         String hashStr1 = HashKits.sha1(toByteArray(is1));
         String hashStr2 = HashKits.sha1(toByteArray(is2));
@@ -452,4 +470,11 @@ public class IOKits {
         return count;
     }
 
+
+    public static void main(String[] args) throws Exception {
+        FileOutputStream fos = new FileOutputStream("/home/code4j/es.tar.gz");
+        FileChannel readChannel = new RandomAccessFile(new File("/home/code4j/util/elasticsearch-5.0.1.tar.gz"),"r").getChannel();
+        long length = bigCopy(readChannel,fos);
+        System.out.println("length:"+length);
+    }
 }

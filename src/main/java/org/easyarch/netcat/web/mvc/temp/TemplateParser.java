@@ -2,6 +2,7 @@ package org.easyarch.netcat.web.mvc.temp;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import org.easyarch.netcat.kits.file.FileKits;
 import org.easyarch.netcat.web.context.HandlerContext;
 
 import java.io.*;
@@ -89,7 +90,8 @@ public class TemplateParser {
     public String getTemplate(String tmpPath) throws Exception {
         System.out.println("template path:"+tmpPath);
         StringWriter writer = new StringWriter();
-        BufferedReader reader = new BufferedReader(new FileReader(tmpPath));
+        byte[] bytes = FileKits.readx(tmpPath);
+        BufferedReader reader = new BufferedReader(new StringReader(new String(bytes)));
         temp = new Template(null,reader,null);
         temp.process(this.params,writer);
         return writer.toString();

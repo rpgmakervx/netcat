@@ -8,10 +8,7 @@ import org.easyarch.netcat.kits.HashKits;
 
 import java.io.*;
 import java.io.FileFilter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Description :
@@ -163,6 +160,19 @@ public class FileKits {
         IOKits.closeIO(baos);
         IOKits.closeIO(fis);
         return baos.toByteArray();
+    }
+
+    public static byte[] readx(String path){
+        File file = new File(path);
+        try {
+            RandomAccessFile raf = new RandomAccessFile(file,"r");
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            IOKits.bigCopy(raf.getChannel(),baos);
+            return baos.toByteArray();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static File vim(File file, String str) throws Exception {
@@ -351,6 +361,8 @@ public class FileKits {
 
     public static void main(String[] args) {
         System.out.println(Short.MAX_VALUE);
+        byte[] bytes = readx("/home/code4j/es.tar.gz");
+        System.out.println("bytes.length:"+bytes.length);
 //        System.out.println(getBottomDir("/home/code4j/IDEAWorkspace/myutils/myutils-db/target/classes/mapper/sqlmapper.js"));;
     }
 
