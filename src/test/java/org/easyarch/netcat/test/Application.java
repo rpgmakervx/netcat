@@ -1,6 +1,6 @@
 package org.easyarch.netcat.test;
 
-import org.easyarch.netcat.web.server.App;
+import org.easyarch.netpet.web.server.App;
 import org.easyarch.netcat.test.filter.DemoFilter;
 import org.easyarch.netcat.test.handler.*;
 

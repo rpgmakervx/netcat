@@ -1,10 +1,10 @@
 package org.easyarch.netcat.test;
 
-import org.easyarch.netcat.web.http.request.HandlerRequest;
-import org.easyarch.netcat.web.http.response.HandlerResponse;
-import org.easyarch.netcat.web.mvc.action.handler.HttpHandler;
-import org.easyarch.netcat.web.mvc.entity.Json;
-import org.easyarch.netcat.web.server.App;
+import org.easyarch.netpet.web.http.request.HandlerRequest;
+import org.easyarch.netpet.web.http.response.HandlerResponse;
+import org.easyarch.netpet.web.mvc.action.handler.HttpHandler;
+import org.easyarch.netpet.web.mvc.entity.Json;
+import org.easyarch.netpet.web.server.App;
 
 /**
  * Created by xingtianyu on 17-3-28

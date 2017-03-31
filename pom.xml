@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.easyarch</groupId>
-    <artifactId>netcat</artifactId>
+    <artifactId>netpet</artifactId>
     <version>1.0</version>
     <build>
         <plugins>
