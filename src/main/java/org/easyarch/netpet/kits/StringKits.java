@@ -541,7 +541,8 @@ public class StringKits {
     }
 
     public static String uuid() {
-        return UUID.randomUUID().toString();
+        String uuid = UUID.randomUUID().toString();
+        return HashKits.sha1(uuid.replaceAll("-",""));
     }
 
     public static void main(String[] args) {

@@ -113,6 +113,7 @@ class ClientLauncher {
             b.group(workerGroup)
                     .channel(NioSocketChannel.class)
                     .option(ChannelOption.SO_KEEPALIVE, true)
+                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 8000)
                     .handler(new BaseClientChildHandler());
             future = b.connect(ip,port);
             future.sync();

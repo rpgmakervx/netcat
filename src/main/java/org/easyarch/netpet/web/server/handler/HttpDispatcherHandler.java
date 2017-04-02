@@ -63,7 +63,6 @@ public class HttpDispatcherHandler extends BaseDispatcherHandler {
         HttpHandlerRequest req = new HttpHandlerRequest(request, router, context, ctx.channel());
         HttpHandlerResponse resp = new HttpHandlerResponse(response, context, ctx.channel());
         System.out.println("404 ? :"+(filters == null || filters.isEmpty() && action == null));
-
         if (action == null) {
             this.errorHandler = new ErrorHandler(HttpResponseStatus.NOT_FOUND.code(), HttpResponseStatus.NOT_FOUND.reasonPhrase());
             errorHandler.handle(req, resp);
