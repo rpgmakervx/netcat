@@ -1,10 +1,10 @@
 package org.easyarch.netpet.asynclient.handler;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpResponse;
 import org.easyarch.netpet.asynclient.future.ResponseFuture;
+import org.easyarch.netpet.asynclient.handler.callback.AsyncResponseHandler;
 import org.easyarch.netpet.asynclient.manager.HttpResponseManager;
 
 
@@ -16,13 +16,19 @@ import org.easyarch.netpet.asynclient.manager.HttpResponseManager;
 
 public class HttpClientHandler extends ChannelInboundHandlerAdapter {
 
+    private AsyncResponseHandler handler;
+
+    public HttpClientHandler(AsyncResponseHandler handler){
+        this.handler = handler;
+    }
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         FullHttpResponse response = (FullHttpResponse) msg;
         channelRead0(ctx, response);
-        ByteBuf buf = response.content();
-        byte[] bytes = new byte[buf.readableBytes()];
-        buf.readBytes(bytes);
+//        ByteBuf buf = response.content();
+//        byte[] bytes = new byte[buf.readableBytes()];
+//        buf.readBytes(bytes);
     }
 
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpResponse response) throws Exception {
@@ -38,13 +44,6 @@ public class HttpClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
-//        DefaultFullHttpRequest request =
-//                new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/");
-//        HttpHeaders headers = new DefaultHttpHeaders();
-//        headers.set(HttpHeaderNames.CONTENT_TYPE,"text/html;charset=utf-8");
-//        headers.set(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
-//        request.headers().set(headers);
-//        ctx.channel().writeAndFlush(request);
     }
 
     @Override
@@ -55,6 +54,7 @@ public class HttpClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();
+        handler.onFailure(500);
     }
 
 }

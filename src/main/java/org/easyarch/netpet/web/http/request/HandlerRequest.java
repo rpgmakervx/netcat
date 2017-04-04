@@ -1,5 +1,7 @@
 package org.easyarch.netpet.web.http.request;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.handler.codec.http.HttpHeaders;
 import org.easyarch.netpet.web.context.HandlerContext;
 import org.easyarch.netpet.web.http.cookie.HttpCookie;
 import org.easyarch.netpet.web.http.session.HttpSession;
@@ -26,11 +28,13 @@ public interface HandlerRequest {
 
     public String getHeader(String name);
 
-    public Collection<String> getHeaderNames();
+    public HttpHeaders getHeaders();
 
+    public Collection<String> getHeaderNames();
 
     public Long getDateHeader(String name);
 
+    public ByteBuf getContent();
 
     public String getMethod();
 

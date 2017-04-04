@@ -4,6 +4,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
+import org.easyarch.netpet.web.http.request.impl.HttpHandlerRequest;
 import org.easyarch.netpet.web.mvc.entity.Json;
 
 import java.net.MalformedURLException;
@@ -31,6 +32,10 @@ public class AsyncHttpClient {
     public void send(FullHttpRequest request) throws Exception {
         launcher.doRequest(request.method()
                 , request.headers(), request.content());
+    }
+    public void send(HttpHandlerRequest request) throws Exception {
+        launcher.doRequest(HttpMethod.valueOf(request.getMethod())
+                , request.getHeaders(), request.getContent());
     }
 
     public void get(HttpHeaders headers) throws Exception {
@@ -62,7 +67,8 @@ public class AsyncHttpClient {
         if (bytes == null||bytes.length == 0) {
             bytes = new byte[0];
         }
-        launcher.doRequest(HttpMethod.POST, null, Unpooled.wrappedBuffer(bytes));
+        System.out.println("post json data:"+bytes.length);
+        launcher.doRequest(HttpMethod.POST,null , Unpooled.wrappedBuffer(bytes));
     }
 
     public byte[] postc(HttpHeaders headers, byte[] bytes) throws Exception {

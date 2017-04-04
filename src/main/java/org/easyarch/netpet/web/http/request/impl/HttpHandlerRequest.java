@@ -1,5 +1,6 @@
 package org.easyarch.netpet.web.http.request.impl;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -7,20 +8,20 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
+import org.easyarch.netpet.kits.HashKits;
+import org.easyarch.netpet.kits.StringKits;
 import org.easyarch.netpet.web.context.HandlerContext;
+import org.easyarch.netpet.web.http.Const;
 import org.easyarch.netpet.web.http.cookie.HttpCookie;
+import org.easyarch.netpet.web.http.protocol.HttpHeaderName;
 import org.easyarch.netpet.web.http.request.BodyWrapper;
 import org.easyarch.netpet.web.http.request.HandlerRequest;
 import org.easyarch.netpet.web.http.request.ParamParser;
 import org.easyarch.netpet.web.http.session.HttpSession;
 import org.easyarch.netpet.web.http.session.impl.DefaultHttpSession;
-import org.easyarch.netpet.kits.HashKits;
-import org.easyarch.netpet.kits.StringKits;
 import org.easyarch.netpet.web.mvc.entity.Json;
 import org.easyarch.netpet.web.mvc.entity.UploadFile;
 import org.easyarch.netpet.web.mvc.router.Router;
-import org.easyarch.netpet.web.http.protocol.HttpHeaderName;
-import org.easyarch.netpet.web.http.Const;
 
 import java.io.UnsupportedEncodingException;
 import java.net.SocketAddress;
@@ -38,6 +39,8 @@ public class HttpHandlerRequest implements HandlerRequest {
 
     private FullHttpRequest request;
     private HttpHeaders headers;
+
+    private ByteBuf buf;
     private Channel channel;
 
     private Router router;
@@ -55,12 +58,13 @@ public class HttpHandlerRequest implements HandlerRequest {
         this.context = context;
         this.router = router;
         this.channel = channel;
-        checkRequest(request);
-        this.decoder = ServerCookieDecoder.LAX;
-        this.charset = "UTF-8";
         this.paramParser = new ParamParser(request);
         this.params = paramParser.parse();
         this.params.putAll(router.getPathParams());
+        this.buf = request.content();
+        checkRequest(request);
+        this.decoder = ServerCookieDecoder.LAX;
+        this.charset = "UTF-8";
 
     }
 
@@ -130,6 +134,11 @@ public class HttpHandlerRequest implements HandlerRequest {
     }
 
     @Override
+    public HttpHeaders getHeaders() {
+        return request.headers();
+    }
+
+    @Override
     public Collection<String> getHeaderNames() {
         if (this.headers == null){
             return new ArrayList<>();
@@ -143,6 +152,11 @@ public class HttpHandlerRequest implements HandlerRequest {
             return null;
         }
         return this.headers.getTimeMillis(name);
+    }
+
+    @Override
+    public ByteBuf getContent() {
+        return this.buf;
     }
 
     @Override

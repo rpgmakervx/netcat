@@ -32,7 +32,8 @@ public class ActionHolder {
      * 1.遍历所有的router和action映射
      * 2.做eq对比，参数化url和真正url对比出结果
      * 3.不相等的继续遍历比较，相等的进行下一个逻辑
-     * 4.如果是path完全相等，则直接返回action,返回前检查method是否匹配，否则返回405；
+     * 4.如果是path完全相等，检查method是否匹配，否则返回405,但有可能有合适的action还没便利出来，记录结果，继续遍历;
+     * 后期如果遍历出合适的action，将status设置为200
      * 5.否则是参数化匹配的结果，记录结果，继续遍历（因为path完全相等优先级最高）
      *
      * @param router
@@ -48,8 +49,11 @@ public class ActionHolder {
                     wrapper = wrp;
                     if (!r.getMethod().equals(router.getMethod())){
                         wrapper.setStatus(HttpStatus.METHOD_NOT_ALLOWED);
+                    }else{
+                        wrapper.setStatus(HttpStatus.OK);
+                        return wrapper;
                     }
-                    return wrapper;
+                    continue;
                 }
                 wrapper = wrp;
                 if (!r.getMethod().equals(router.getMethod())){

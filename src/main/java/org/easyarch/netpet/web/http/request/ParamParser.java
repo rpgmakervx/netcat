@@ -1,9 +1,12 @@
 package org.easyarch.netpet.web.http.request;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.multipart.*;
+import org.easyarch.netpet.kits.ByteKits;
+import org.easyarch.netpet.web.mvc.entity.Json;
 import org.easyarch.netpet.web.mvc.entity.UploadFile;
 
 import java.io.IOException;
@@ -25,11 +28,12 @@ public class ParamParser {
      * @param req
      */
     public ParamParser(FullHttpRequest req) {
-        this.fullReq = req;
+        this.fullReq = req.copy();
     }
 
     /**
      * 解析请求参数
+     * post请求先解析json
      * @return 包含所有请求参数的键值对, 如果没有参数, 则返回空Map
      * @throws IOException
      */
@@ -45,12 +49,21 @@ public class ParamParser {
             // 是GET请求
             parmMap = decodeQueryString();
         } else if (HttpMethod.POST == method) {
+            ByteBuf copyBuf = fullReq.content().copy();
+            String requestData = ByteKits.toString(copyBuf);
+            System.out.println("content length:"+requestData.length());
+            System.out.println("content data:"+requestData);
+            System.out.println("uri param:"+fullReq.uri());
+            if (Json.isJson(requestData)){
+                System.out.println("is json data");
+                Json json = Json.parse(requestData);
+                parmMap.putAll(json.getJsonMap());
+            }
             // 是POST请求
-            parmMap = decodeQueryString();
+            parmMap.putAll(decodeQueryString());
             HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(
                     new DefaultHttpDataFactory(false),fullReq);
             List<InterfaceHttpData> paramlist = decoder.getBodyHttpDatas();
-            System.out.println("paramlist:"+paramlist);
             for (InterfaceHttpData param : paramlist) {
                 System.out.println("data type:"+param.getHttpDataType());
                 if (param.getHttpDataType() == InterfaceHttpData.HttpDataType.Attribute) {
@@ -59,6 +72,7 @@ public class ParamParser {
                 }
             }
         }
+        System.out.println("result request data:"+parmMap);
         return parmMap;
     }
 

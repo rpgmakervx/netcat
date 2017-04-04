@@ -22,16 +22,24 @@ public class ByteKits {
         return toByteBuf(content.getBytes());
     }
     public static byte[] toByteArray(ByteBuf buf){
-        if (buf == null||buf.readableBytes() == 0){
+        if (buf == null){
             return new byte[0];
         }
-        int readable = buf.readableBytes();
+        ByteBuf copyBuf = buf.copy();
+        if (copyBuf == null||copyBuf.readableBytes() == 0){
+            return new byte[0];
+        }
+        int readable = copyBuf.readableBytes();
         byte[] bytes = new byte[readable];
-        buf.readBytes(bytes);
+        copyBuf.readBytes(bytes);
         return bytes;
     }
 
-    public static String toString(ByteBuf buf){
-        return new String(toByteArray(buf));
+    public static String toString(final ByteBuf buf){
+        if (buf == null){
+            return "";
+        }
+        ByteBuf copyBuf = buf.copy();
+        return new String(toByteArray(copyBuf));
     }
 }

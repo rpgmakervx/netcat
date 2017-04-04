@@ -40,12 +40,12 @@ public class StaticDispatcherHandler extends BaseDispatcherHandler {
                 HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         Router router = new Router(request.uri(), ActionType.HANDLER, org.easyarch.netpet.web.http.protocol.HttpMethod.getMethod(request.method()));
         List<HttpFilter> filters = holder.getFilters(router);
-        HttpHandlerRequest req = new HttpHandlerRequest(request, router, context, ctx.channel());
-        HttpHandlerResponse resp = new HttpHandlerResponse(response, context, ctx.channel());
-        if (!Kits.hasResource(context,req.getRequestURI())){
+        if (!Kits.hasResource(context,router.getPath())){
             ctx.fireChannelRead(msg);
             return;
         }
+        HttpHandlerRequest req = new HttpHandlerRequest(request, router, context, ctx.channel());
+        HttpHandlerResponse resp = new HttpHandlerResponse(response, context, ctx.channel());
         if (!filters.isEmpty()) {
             for (HttpFilter filter : filters) {
                 if (!filter.before(req, resp)) {

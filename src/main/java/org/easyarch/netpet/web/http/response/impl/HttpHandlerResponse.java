@@ -47,6 +47,7 @@ public class HttpHandlerResponse implements HandlerResponse {
 
     private ServerCookieEncoder encoder;
 
+
     public HttpHandlerResponse(FullHttpResponse response, HandlerContext context, Channel channel) throws IOException {
         init(response, context, channel);
     }

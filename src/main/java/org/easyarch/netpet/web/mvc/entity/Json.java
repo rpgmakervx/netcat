@@ -49,6 +49,18 @@ public class Json<V> {
         }
     }
 
+    public static boolean isJson(String json){
+        try {
+            if (StringKits.isEmpty(json)){
+                return false;
+            }
+            JSON.parseObject(json);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private static Map<String,Object> toMap(String json){
         if (StringKits.isEmpty(json)){
             return null;
@@ -195,4 +207,8 @@ public class Json<V> {
         return jsonMap.merge(key, value, remappingFunction);
     }
 
+    @Override
+    public String toString() {
+        return this.stringify(jsonMap);
+    }
 }

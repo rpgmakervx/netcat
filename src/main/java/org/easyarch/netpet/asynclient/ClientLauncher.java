@@ -13,6 +13,7 @@ import io.netty.handler.codec.http.*;
 import org.easyarch.netpet.asynclient.future.ResponseFuture;
 import org.easyarch.netpet.asynclient.handler.BaseClientChildHandler;
 import org.easyarch.netpet.asynclient.manager.HttpResponseManager;
+import org.easyarch.netpet.kits.ByteKits;
 import org.easyarch.netpet.kits.StringKits;
 
 import java.io.File;
@@ -116,7 +117,6 @@ class ClientLauncher {
                     .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 8000)
                     .handler(new BaseClientChildHandler());
             future = b.connect(ip,port);
-            future.sync();
             channel = future.channel();
         } catch (Exception e) {
             e.printStackTrace();
@@ -143,7 +143,10 @@ class ClientLauncher {
 
     public void doRequest(HttpMethod method, HttpHeaders headers, ByteBuf buf) {
         String uri = StringKits.isEmpty(remoteURL.getPath())? File.separator:remoteURL.getPath();
-        System.out.println("uri:"+uri);
+        System.out.println("uri:"+uri+",buf:"+ ByteKits.toString(buf));
+        if (StringKits.isNotEmpty(remoteURL.getQuery())){
+            uri += "?"+ remoteURL.getQuery();
+        }
         DefaultFullHttpRequest request;
         if(buf == null){
             request  = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, method, uri);
@@ -154,6 +157,7 @@ class ClientLauncher {
             headers = new DefaultHttpHeaders();
             headers.set(HttpHeaderNames.HOST, remoteURL.getHost());
             headers.set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+            headers.set(HttpHeaderNames.CONTENT_LENGTH, buf==null?0:buf.readableBytes());
         }
         request.headers().set(headers);
         HttpResponseManager.setAttr(channel, new ResponseFuture<FullHttpResponse>());
@@ -176,6 +180,7 @@ class ClientLauncher {
             e.printStackTrace();
             return null;
         } finally {
+            channel.close();
         }
     }
 
