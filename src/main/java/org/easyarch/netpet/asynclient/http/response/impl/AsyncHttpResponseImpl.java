@@ -1,10 +1,12 @@
 package org.easyarch.netpet.asynclient.http.response.impl;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
 import org.easyarch.netpet.asynclient.http.response.AsyncHttpResponse;
 import org.easyarch.netpet.kits.ByteKits;
+import org.easyarch.netpet.kits.StringKits;
 import org.easyarch.netpet.web.mvc.entity.Json;
 
 import java.io.ByteArrayOutputStream;
@@ -20,15 +22,15 @@ import java.util.Map;
 
 public class AsyncHttpResponseImpl implements AsyncHttpResponse {
 
-    private FullHttpRequest request;
+    private FullHttpResponse response;
     private HttpHeaders headers;
 
     private ByteBuf buf;
 
-    public AsyncHttpResponseImpl(FullHttpRequest request){
-        this.request = request;
-        this.headers = request.headers();
-        this.buf = request.content().copy();
+    public AsyncHttpResponseImpl(FullHttpResponse response){
+        this.response = response;
+        this.headers = response.headers();
+        this.buf = response.content().copy();
     }
 
     @Override
@@ -85,11 +87,16 @@ public class AsyncHttpResponseImpl implements AsyncHttpResponse {
 
     @Override
     public int getStatusCode() {
-        return 0;
+        return response.status().code();
     }
 
     @Override
     public int getContentLength() {
-        return 0;
+        String contentLength = getHeader(
+                HttpHeaderNames.CONTENT_LENGTH.toString());
+        if (StringKits.isEmpty(contentLength)){
+            return 0;
+        }
+        return Integer.parseInt(contentLength);
     }
 }
