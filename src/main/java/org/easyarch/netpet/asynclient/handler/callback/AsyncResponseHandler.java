@@ -1,6 +1,6 @@
 package org.easyarch.netpet.asynclient.handler.callback;
 
-import org.easyarch.netpet.web.http.response.impl.HttpHandlerResponse;
+import org.easyarch.netpet.asynclient.http.response.AsyncHttpResponse;
 
 /**
  * Created by xingtianyu on 17-4-4
@@ -10,7 +10,7 @@ import org.easyarch.netpet.web.http.response.impl.HttpHandlerResponse;
 
 public interface AsyncResponseHandler<T> {
 
-    public void onSuccess(HttpHandlerResponse response);
+    public void onSuccess(AsyncHttpResponse response);
 
     public void onSuccess(T t);
 

@@ -36,6 +36,9 @@ public class Json<V> {
         this.jsonMap = map;
     }
 
+    public Json(String string){
+        this.jsonMap = (Map<String, V>) toMap(string);
+    }
 
     private void init(Object ... datas){
         int index = 0;
@@ -62,8 +65,8 @@ public class Json<V> {
     }
 
     private static Map<String,Object> toMap(String json){
-        if (StringKits.isEmpty(json)){
-            return null;
+        if (StringKits.isEmpty(json)||!isJson(json)){
+            return new HashMap<>();
         }
         JSONObject object = JSON.parseObject(json);
         Map<String,Object> jsonMap = new HashMap<String,Object>();
@@ -91,6 +94,13 @@ public class Json<V> {
         if (StringKits.isEmpty(json))
             return null;
         return JSONObject.parseObject(json,cls);
+    }
+    public static<T> Json parse(T bean){
+        String json = stringify(bean);
+        if (!isJson(json)){
+            return new Json();
+        }
+        return parse(json);
     }
 
     public static Json parse(String str){

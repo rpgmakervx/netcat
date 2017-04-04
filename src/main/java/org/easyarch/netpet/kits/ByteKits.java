@@ -6,7 +6,7 @@ import io.netty.buffer.Unpooled;
 /**
  * Created by xingtianyu on 17-3-9
  * 下午12:02
- * description:
+ * description:对ByteBuf的所有操作一律先拷贝
  */
 
 public class ByteKits {

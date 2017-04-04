@@ -54,7 +54,7 @@ public class HttpClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();
-        handler.onFailure(500);
+        handler.onFailure(500,"internal error:"+cause.getMessage());
     }
 
 }
