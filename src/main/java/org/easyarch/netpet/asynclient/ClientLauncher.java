@@ -78,7 +78,7 @@ class ClientLauncher {
                     .channel(NioSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG,256)
                     .option(ChannelOption.SO_KEEPALIVE, true)
-                    .handler(new BaseClientChildHandler());
+                    .handler(new BaseClientChildHandler(workerGroup,null));
             connect(InetAddress.getByName(ip).getHostAddress(),port);
         } catch (Exception e) {
             e.printStackTrace();
@@ -115,7 +115,7 @@ class ClientLauncher {
                     .channel(NioSocketChannel.class)
                     .option(ChannelOption.SO_KEEPALIVE, true)
                     .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 8000)
-                    .handler(new BaseClientChildHandler());
+                    .handler(new BaseClientChildHandler(workerGroup,null));
             future = b.connect(ip,port);
             channel = future.channel();
         } catch (Exception e) {

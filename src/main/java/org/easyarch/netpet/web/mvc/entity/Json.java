@@ -64,7 +64,7 @@ public class Json<V> {
         }
     }
 
-    private static Map<String,Object> toMap(String json){
+    public static Map<String,Object> toMap(String json){
         if (StringKits.isEmpty(json)||!isJson(json)){
             return new HashMap<>();
         }
@@ -75,6 +75,7 @@ public class Json<V> {
         }
         return jsonMap;
     }
+
     public static String stringify(Map<String,Object> jsonMap){
         if (jsonMap ==null||jsonMap.size()== 0){
             return "";

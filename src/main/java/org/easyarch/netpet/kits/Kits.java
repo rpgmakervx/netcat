@@ -35,10 +35,12 @@ public class Kits {
             String[] segement = uri.split("/");
             prefix = "/" + segement[1] + "/";
         }
+        System.out.println("resourcePath.toString():"+resourcePath.toString());
         if (HandlerContext.WEB_INF.equals(prefix)) {
             return false;
         }
-        if (!FileKits.exists(resourcePath.toString())){
+        if (!FileKits.exists(resourcePath.toString())
+                ||FileKits.isDir(resourcePath.toString())){
             return false;
         }
         return true;

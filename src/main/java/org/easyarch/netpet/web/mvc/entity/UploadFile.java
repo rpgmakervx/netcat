@@ -1,5 +1,9 @@
 package org.easyarch.netpet.web.mvc.entity;
 
+import org.easyarch.netpet.kits.file.FileKits;
+
+import java.io.File;
+
 /**
  * Created by xingtianyu on 17-3-21
  * 下午3:48
@@ -17,6 +21,10 @@ public class UploadFile {
     public UploadFile(String fileName, byte[] content) {
         this.fileName = fileName;
         this.content = content;
+    }
+    public UploadFile(String fileName) {
+        this.fileName = fileName;
+        this.content = FileKits.readx(fileName);
     }
 
     public String getFileName() {
@@ -43,6 +51,9 @@ public class UploadFile {
         this.content = content;
     }
 
+    public File getFile(){
+        return new File(fileName);
+    }
     @Override
     public String toString() {
         return "fileName='" + fileName + '\'' +

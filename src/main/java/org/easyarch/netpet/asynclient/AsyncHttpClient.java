@@ -123,10 +123,6 @@ public class AsyncHttpClient {
     public byte[] getContent(){
         return launcher.getContentAsStream();
     }
-//    public static void main(String[] args) throws Exception {
-//        AsyncHttpClient client = new AsyncHttpClient("http://www.baidu.com");
-//        client.get("http://www.baidu.com/",null);
-//        String content = new String(client.getContentAsStream());
-//        System.out.println(content);
-//    }
+    public static void main(String[] args) throws Exception {
+    }
 }

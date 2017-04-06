@@ -30,6 +30,16 @@ public class FileKits {
      */
     public static final long ONE_GB = ONE_KB * ONE_MB;
 
+    public static boolean isDir(String path) {
+        if (path == null)
+            return false;
+        return isDir(new File(path));
+    }
+    public static boolean isDir(File file) {
+        if (file == null)
+            return false;
+        return file.isDirectory();
+    }
     public static boolean exists(String path) {
         if (path == null)
             return false;

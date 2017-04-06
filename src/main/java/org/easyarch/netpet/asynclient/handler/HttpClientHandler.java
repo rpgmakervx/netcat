@@ -2,10 +2,12 @@ package org.easyarch.netpet.asynclient.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.EventLoopGroup;
 import io.netty.handler.codec.http.FullHttpResponse;
-import org.easyarch.netpet.asynclient.future.ResponseFuture;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import org.easyarch.netpet.asynclient.handler.callback.AsyncResponseHandler;
-import org.easyarch.netpet.asynclient.manager.HttpResponseManager;
+import org.easyarch.netpet.asynclient.http.response.AsyncHttpResponse;
+import org.easyarch.netpet.asynclient.http.response.impl.AsyncHttpResponseImpl;
 
 
 /**
@@ -14,41 +16,37 @@ import org.easyarch.netpet.asynclient.manager.HttpResponseManager;
  * 上午2:03
  */
 
-public class HttpClientHandler extends ChannelInboundHandlerAdapter {
+public class HttpClientHandler<T> extends ChannelInboundHandlerAdapter {
 
-    private AsyncResponseHandler handler;
+    private AsyncResponseHandler<T> handler;
 
-    public HttpClientHandler(AsyncResponseHandler handler){
+    private EventLoopGroup workerGroup;
+
+    public HttpClientHandler(EventLoopGroup workerGroup,AsyncResponseHandler handler){
         this.handler = handler;
+        this.workerGroup = workerGroup;
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         FullHttpResponse response = (FullHttpResponse) msg;
         channelRead0(ctx, response);
-//        ByteBuf buf = response.content();
-//        byte[] bytes = new byte[buf.readableBytes()];
-//        buf.readBytes(bytes);
+        workerGroup.shutdownGracefully();
     }
 
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpResponse response) throws Exception {
-        ResponseFuture<FullHttpResponse> future =
-                HttpResponseManager.getAttr(ctx.channel());
-        if (future == null) {
-            future = new ResponseFuture<FullHttpResponse>();
-            HttpResponseManager.setAttr(ctx.channel(), future);
+        AsyncHttpResponse resp = new AsyncHttpResponseImpl(response);
+        System.out.println("收到服务器消息");
+        if (!response.status().equals(HttpResponseStatus.OK)){
+            handler.onFailure(resp.getStatusCode(),resp.getBytes());
+        }else{
+            handler.onSuccess(resp);
         }
-        future.set(response);
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        super.channelActive(ctx);
-    }
-
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        super.channelReadComplete(ctx);
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("read end");
     }
 
     @Override
