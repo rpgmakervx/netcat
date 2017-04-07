@@ -12,6 +12,7 @@ import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.multipart.HttpPostRequestEncoder;
 import org.easyarch.netpet.asynclient.handler.BaseClientChildHandler;
 import org.easyarch.netpet.asynclient.handler.callback.AsyncResponseHandler;
+import org.easyarch.netpet.asynclient.http.entity.FileParam;
 import org.easyarch.netpet.asynclient.http.entity.RequestEntity;
 import org.easyarch.netpet.kits.ByteKits;
 import org.easyarch.netpet.kits.StringKits;
@@ -21,6 +22,7 @@ import org.easyarch.netpet.web.mvc.entity.UploadFile;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -60,7 +62,8 @@ public class Launcher {
     private void doRequest(HttpMethod method, HttpHeaders headers, ByteBuf buf) throws HttpPostRequestEncoder.ErrorDataEncoderException {
         doRequest(remoteURL.getPath(),method,headers,buf);
     }
-    private void doRequest(String path,HttpMethod method, HttpHeaders headers, Map<String,UploadFile> files) throws HttpPostRequestEncoder.ErrorDataEncoderException {
+
+    private void doRequest(String path,HttpMethod method, HttpHeaders headers, List<FileParam> files) throws HttpPostRequestEncoder.ErrorDataEncoderException {
         String uri = checkURI(path);
         DefaultFullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, method, uri);
         headers = checkHeaders(headers,files);
@@ -100,13 +103,16 @@ public class Launcher {
         headers.set(HttpHeaderNames.CONTENT_LENGTH, buf==null?0:buf.readableBytes());
         return headers;
     }
-    private HttpHeaders checkHeaders(HttpHeaders headers,Map<String,UploadFile> files){
+    private HttpHeaders checkHeaders(HttpHeaders headers,List<FileParam> fileParams){
         if (headers == null) {
             headers = new DefaultHttpHeaders();
         }
         int contentLength = 0;
-        for (Map.Entry<String,UploadFile> entry:files.entrySet()){
-            contentLength += entry.getValue().getContent().length;
+        for (FileParam param:fileParams){
+            UploadFile file = param.getFile();
+            if (file != null){
+                contentLength += file.getContent().length;
+            }
         }
         headers.set(HttpHeaderNames.HOST, remoteURL.getHost());
         headers.set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
@@ -131,13 +137,14 @@ public class Launcher {
         }
     }
 
-    private void addFileParam(DefaultFullHttpRequest request,HttpHeaders headers,Map<String,UploadFile> files) throws HttpPostRequestEncoder.ErrorDataEncoderException {
+    private void addFileParam(DefaultFullHttpRequest request,HttpHeaders headers,List<FileParam> fileParams) throws HttpPostRequestEncoder.ErrorDataEncoderException {
         String contentType = headers.get(HttpHeaderNames.CONTENT_TYPE);
         HttpPostRequestEncoder encoder = new HttpPostRequestEncoder(request,false);
-        if (HttpHeaderValues.MULTIPART_FORM_DATA.equals(contentType)){
-            for (Map.Entry<String,UploadFile> entry:files.entrySet()){
-                UploadFile file = entry.getValue();
-                encoder.addBodyFileUpload(entry.getKey(),file.getFile(),file.getContentType(),false);
+        if (HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.equals(contentType)
+                ||HttpHeaderValues.MULTIPART_FORM_DATA.equals(contentType)){
+            for (FileParam param:fileParams){
+                UploadFile file = param.getFile();
+                encoder.addBodyFileUpload(param.getParamName(),file.getFile(),file.getContentType(),false);
             }
         }
     }

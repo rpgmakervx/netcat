@@ -3,10 +3,9 @@ package org.easyarch.netpet.asynclient.http.entity;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
-import org.easyarch.netpet.web.mvc.entity.UploadFile;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by xingtianyu on 17-4-5
@@ -23,7 +22,7 @@ public class RequestEntity {
 
     private ByteBuf buf;
 
-    private Map<String,UploadFile> files = new HashMap<>();
+    private List<FileParam> files = new ArrayList<>();
 
     public RequestEntity(String path, HttpMethod method, HttpHeaders headers, ByteBuf buf) {
         this.path = path;
@@ -31,17 +30,17 @@ public class RequestEntity {
         this.headers = headers;
         this.buf = buf;
     }
-    public RequestEntity(String path, HttpMethod method, HttpHeaders headers, Map<String,UploadFile> files) {
+    public RequestEntity(String path, HttpMethod method, HttpHeaders headers, FileParam param) {
         this.path = path;
         this.method = method;
         this.headers = headers;
-        this.files.putAll(files);
+        this.files.add(param);
     }
-    public RequestEntity(String path, HttpMethod method, HttpHeaders headers, String name,UploadFile file) {
+    public RequestEntity(String path, HttpMethod method, HttpHeaders headers, List<FileParam> params) {
         this.path = path;
         this.method = method;
         this.headers = headers;
-        this.files.put(name,file);
+        this.files.addAll(params);
     }
 
     public String getPath() {
@@ -76,11 +75,14 @@ public class RequestEntity {
         this.buf = buf;
     }
 
-    public Map<String, UploadFile> getFiles() {
-        return files;
+    public void addFile(FileParam param){
+        files.add(param);
+    }
+    public void addFiles(List<FileParam> params){
+        files.addAll(params);
     }
 
-    public void setFiles(Map<String, UploadFile> files) {
-        this.files = files;
+    public List<FileParam> getFiles(){
+        return files;
     }
 }

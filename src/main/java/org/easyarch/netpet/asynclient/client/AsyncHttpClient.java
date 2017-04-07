@@ -3,12 +3,13 @@ package org.easyarch.netpet.asynclient.client;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.*;
 import org.easyarch.netpet.asynclient.handler.callback.AsyncResponseHandler;
+import org.easyarch.netpet.asynclient.http.entity.FileParam;
 import org.easyarch.netpet.asynclient.http.entity.RequestEntity;
 import org.easyarch.netpet.kits.ByteKits;
 import org.easyarch.netpet.web.http.protocol.HttpHeaderValue;
 import org.easyarch.netpet.web.mvc.entity.Json;
-import org.easyarch.netpet.web.mvc.entity.UploadFile;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -73,8 +74,37 @@ public class AsyncHttpClient {
         requestEntity(uri,HttpMethod.DELETE,null,handler);
     }
 
-    public void fileUpload(UploadFile file){
+    public void fileUpload(String uri, FileParam param, AsyncResponseHandler handler) throws Exception {
+        HttpHeaders httpHeaders = new DefaultHttpHeaders();
+        httpHeaders.add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.MULTIPART_FORM_DATA);
+        RequestEntity entity = new RequestEntity(uri, HttpMethod.POST,httpHeaders,param);
+        launcher.execute(entity,handler);
+    }
+    public void fileUpload(String uri, Map<String,String> headers ,FileParam param, AsyncResponseHandler handler) throws Exception {
+        HttpHeaders httpHeaders = new DefaultHttpHeaders();
+        httpHeaders.add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.MULTIPART_FORM_DATA);
+        for (Map.Entry<String,String> entry:headers.entrySet()){
+            httpHeaders.add(entry.getKey(),entry.getValue());
+        }
+        RequestEntity entity = new RequestEntity(uri, HttpMethod.POST,httpHeaders,param);
+        launcher.execute(entity,handler);
+    }
 
+    public void multipartFileUpload(String uri, List<FileParam> params, AsyncResponseHandler handler) throws Exception {
+        HttpHeaders httpHeaders = new DefaultHttpHeaders();
+        httpHeaders.add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.MULTIPART_FORM_DATA);
+        RequestEntity entity = new RequestEntity(uri, HttpMethod.POST,httpHeaders,params);
+        launcher.execute(entity,handler);
+    }
+
+    public void multipartFileUpload(String uri, Map<String,String> headers , List<FileParam> params, AsyncResponseHandler handler) throws Exception {
+        HttpHeaders httpHeaders = new DefaultHttpHeaders();
+        httpHeaders.add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.MULTIPART_FORM_DATA);
+        for (Map.Entry<String,String> entry:headers.entrySet()){
+            httpHeaders.add(entry.getKey(),entry.getValue());
+        }
+        RequestEntity entity = new RequestEntity(uri, HttpMethod.POST,httpHeaders,params);
+        launcher.execute(entity,handler);
     }
 
     private void requestEntity(String uri,HttpMethod method,Map<String,String> params,AsyncResponseHandler handler) throws Exception {

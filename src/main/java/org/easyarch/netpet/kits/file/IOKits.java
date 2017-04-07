@@ -395,7 +395,6 @@ public class IOKits {
             while (buffer.hasRemaining()) {
                 writeChannel.write(buffer);
             }
-//            buffer.clear();
             return length;
         } catch (IOException e) {
             e.printStackTrace();
