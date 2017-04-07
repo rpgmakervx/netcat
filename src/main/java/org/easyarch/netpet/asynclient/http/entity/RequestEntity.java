@@ -3,6 +3,10 @@ package org.easyarch.netpet.asynclient.http.entity;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
+import org.easyarch.netpet.web.mvc.entity.UploadFile;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by xingtianyu on 17-4-5
@@ -19,11 +23,25 @@ public class RequestEntity {
 
     private ByteBuf buf;
 
+    private Map<String,UploadFile> files = new HashMap<>();
+
     public RequestEntity(String path, HttpMethod method, HttpHeaders headers, ByteBuf buf) {
         this.path = path;
         this.method = method;
         this.headers = headers;
         this.buf = buf;
+    }
+    public RequestEntity(String path, HttpMethod method, HttpHeaders headers, Map<String,UploadFile> files) {
+        this.path = path;
+        this.method = method;
+        this.headers = headers;
+        this.files.putAll(files);
+    }
+    public RequestEntity(String path, HttpMethod method, HttpHeaders headers, String name,UploadFile file) {
+        this.path = path;
+        this.method = method;
+        this.headers = headers;
+        this.files.put(name,file);
     }
 
     public String getPath() {
@@ -56,5 +74,13 @@ public class RequestEntity {
 
     public void setBuf(ByteBuf buf) {
         this.buf = buf;
+    }
+
+    public Map<String, UploadFile> getFiles() {
+        return files;
+    }
+
+    public void setFiles(Map<String, UploadFile> files) {
+        this.files = files;
     }
 }

@@ -41,23 +41,31 @@ public class ActionHolder {
      */
     public ActionWrapper getAction(Router router) {
         ActionWrapper wrapper = null;
+        //参数化或通配符方式匹配到router时，若方法也匹配，则记录下来，后面再有method不匹配的情况也不记录了
+        boolean methodAccurate = false;
         for (ActionWrapper wrp : actions) {
             Router r = wrp.getRouter();
             boolean equals = eq(r, router);
             if (equals) {
                 if (r.getPath().equals(router.getPath())) {
-                    wrapper = wrp;
+                    wrapper = new ActionWrapper(wrp.getAction(),wrp.getRouter());
                     if (!r.getMethod().equals(router.getMethod())){
                         wrapper.setStatus(HttpStatus.METHOD_NOT_ALLOWED);
                     }else{
                         wrapper.setStatus(HttpStatus.OK);
                         return wrapper;
                     }
-                    continue;
-                }
-                wrapper = wrp;
-                if (!r.getMethod().equals(router.getMethod())){
-                    wrapper.setStatus(HttpStatus.METHOD_NOT_ALLOWED);
+                }else{
+                    if (!r.getMethod().equals(router.getMethod())){
+                        if (!methodAccurate){
+                            wrapper = new ActionWrapper(wrp.getAction(),wrp.getRouter());
+                            wrapper.setStatus(HttpStatus.METHOD_NOT_ALLOWED);
+                        }
+                    }else{
+                        wrapper = new ActionWrapper(wrp.getAction(),wrp.getRouter());
+                        wrapper.setStatus(HttpStatus.OK);
+                        methodAccurate = true;
+                    }
                 }
             }
         }

@@ -16,9 +16,9 @@ import org.easyarch.netpet.asynclient.http.response.impl.AsyncHttpResponseImpl;
  * 上午2:03
  */
 
-public class HttpClientHandler<T> extends ChannelInboundHandlerAdapter {
+public class HttpClientHandler extends ChannelInboundHandlerAdapter {
 
-    private AsyncResponseHandler<T> handler;
+    private AsyncResponseHandler handler;
 
     private EventLoopGroup workerGroup;
 

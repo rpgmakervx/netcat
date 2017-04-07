@@ -57,12 +57,18 @@ public class Launcher {
         }
     }
 
-    private <T>void connect(AsyncResponseHandler<T> handler) {
-
-    }
-
     private void doRequest(HttpMethod method, HttpHeaders headers, ByteBuf buf) throws HttpPostRequestEncoder.ErrorDataEncoderException {
         doRequest(remoteURL.getPath(),method,headers,buf);
+    }
+    private void doRequest(String path,HttpMethod method, HttpHeaders headers, Map<String,UploadFile> files) throws HttpPostRequestEncoder.ErrorDataEncoderException {
+        String uri = checkURI(path);
+        DefaultFullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, method, uri);
+        headers = checkHeaders(headers,files);
+        if (HttpMethod.POST.equals(method)){
+            addFileParam(request,headers,files);
+        }
+        request.headers().set(headers);
+        future.channel().writeAndFlush(request);
     }
 
     private void doRequest(String path,HttpMethod method, HttpHeaders headers, ByteBuf buf) throws HttpPostRequestEncoder.ErrorDataEncoderException {
@@ -74,10 +80,10 @@ public class Launcher {
             request  = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, method, uri, buf);
         }
         headers = checkHeaders(headers,buf);
-        checkParam(request,headers,buf);
-        System.out.println("content length:"+headers.get(HttpHeaderNames.CONTENT_LENGTH));
+        if (HttpMethod.POST.equals(method)){
+            checkParam(request,headers,buf);
+        }
         request.headers().set(headers);
-        System.out.println("发起请求writeAndFlush");
         future.channel().writeAndFlush(request);
     }
 
@@ -94,13 +100,26 @@ public class Launcher {
         headers.set(HttpHeaderNames.CONTENT_LENGTH, buf==null?0:buf.readableBytes());
         return headers;
     }
+    private HttpHeaders checkHeaders(HttpHeaders headers,Map<String,UploadFile> files){
+        if (headers == null) {
+            headers = new DefaultHttpHeaders();
+        }
+        int contentLength = 0;
+        for (Map.Entry<String,UploadFile> entry:files.entrySet()){
+            contentLength += entry.getValue().getContent().length;
+        }
+        headers.set(HttpHeaderNames.HOST, remoteURL.getHost());
+        headers.set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+        headers.set(HttpHeaderNames.CONTENT_LENGTH, contentLength);
+        return headers;
+    }
 
     private void checkParam(DefaultFullHttpRequest request,HttpHeaders headers,ByteBuf buf) throws HttpPostRequestEncoder.ErrorDataEncoderException {
         String contentType = headers.get(HttpHeaderNames.CONTENT_TYPE);
+        HttpPostRequestEncoder encoder = new HttpPostRequestEncoder(request,false);
         if (HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.equals(contentType)){
             String data = ByteKits.toString(buf);
             Map<String,Object> map = Json.toMap(data);
-            HttpPostRequestEncoder encoder = new HttpPostRequestEncoder(request,false);
             for (Map.Entry<String,Object> entry:map.entrySet()){
                 if (entry.getValue() instanceof String){
                     encoder.addBodyAttribute(entry.getKey(),String.valueOf(entry.getValue()));
@@ -112,7 +131,18 @@ public class Launcher {
         }
     }
 
-    public <T>void execute(RequestEntity entity, AsyncResponseHandler<T> handler) throws Exception {
+    private void addFileParam(DefaultFullHttpRequest request,HttpHeaders headers,Map<String,UploadFile> files) throws HttpPostRequestEncoder.ErrorDataEncoderException {
+        String contentType = headers.get(HttpHeaderNames.CONTENT_TYPE);
+        HttpPostRequestEncoder encoder = new HttpPostRequestEncoder(request,false);
+        if (HttpHeaderValues.MULTIPART_FORM_DATA.equals(contentType)){
+            for (Map.Entry<String,UploadFile> entry:files.entrySet()){
+                UploadFile file = entry.getValue();
+                encoder.addBodyFileUpload(entry.getKey(),file.getFile(),file.getContentType(),false);
+            }
+        }
+    }
+
+    public <T>void execute(RequestEntity entity, AsyncResponseHandler handler) throws Exception {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
             b = new Bootstrap();
@@ -121,14 +151,15 @@ public class Launcher {
                     .option(ChannelOption.SO_KEEPALIVE, true)
                     .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000)
                     .option(ChannelOption.SO_KEEPALIVE, true)
-                    .handler(new BaseClientChildHandler<T>(workerGroup,handler));
+                    .handler(new BaseClientChildHandler(workerGroup,handler));
             future = b.connect(ip,port).sync();
-            doRequest(entity.getPath(),entity.getMethod(),entity.getHeaders(),entity.getBuf());
-//            future.channel().closeFuture().sync();
+            if (entity.getFiles().isEmpty()){
+                doRequest(entity.getPath(),entity.getMethod(),entity.getHeaders(),entity.getBuf());
+            }else{
+                doRequest(entity.getPath(),entity.getMethod(),entity.getHeaders(),entity.getFiles());
+            }
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-//            workerGroup.shutdownGracefully();
         }
     }
 

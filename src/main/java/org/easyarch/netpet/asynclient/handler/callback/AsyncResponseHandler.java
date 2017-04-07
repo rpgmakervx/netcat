@@ -8,7 +8,7 @@ import org.easyarch.netpet.asynclient.http.response.AsyncHttpResponse;
  * description:
  */
 
-public interface AsyncResponseHandler<T> {
+public interface AsyncResponseHandler {
 
     public void onSuccess(AsyncHttpResponse response);
 

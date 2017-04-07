@@ -1,24 +1,14 @@
 package org.easyarch.netpet.asynclient.client;
 
-import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.*;
-import io.netty.handler.stream.ChunkedWriteHandler;
-import org.easyarch.netpet.asynclient.handler.HttpClientHandler;
 import org.easyarch.netpet.asynclient.handler.callback.AsyncResponseHandler;
 import org.easyarch.netpet.asynclient.http.entity.RequestEntity;
 import org.easyarch.netpet.kits.ByteKits;
 import org.easyarch.netpet.web.http.protocol.HttpHeaderValue;
 import org.easyarch.netpet.web.mvc.entity.Json;
+import org.easyarch.netpet.web.mvc.entity.UploadFile;
 
-import java.net.URI;
 import java.util.Map;
 
 /**
@@ -36,7 +26,7 @@ public class AsyncHttpClient {
     }
 
     public void get(String uri, AsyncResponseHandler handler) throws Exception {
-        RequestEntity entity = new RequestEntity(uri, HttpMethod.GET,null,null);
+        RequestEntity entity = new RequestEntity(uri, HttpMethod.GET,null,(ByteBuf) null);
         launcher.execute(entity,handler);
     }
 
@@ -45,70 +35,88 @@ public class AsyncHttpClient {
         for (Map.Entry<String,Object> entry:headers.entrySet()){
             header.add(entry.getKey(),entry.getValue());
         }
-        RequestEntity entity = new RequestEntity(uri, HttpMethod.GET,header,null);
+        RequestEntity entity = new RequestEntity(uri, HttpMethod.GET,header,(ByteBuf)null);
         launcher.execute(entity,handler);
     }
 
     public void postEntity(String uri,Map<String,String> params,AsyncResponseHandler handler) throws Exception {
-        ByteBuf buf = ByteKits.toByteBuf(Json.stringify(params));
-        HttpHeaders headers = new DefaultHttpHeaders();
-        headers.add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED);
-        RequestEntity entity = new RequestEntity(uri, HttpMethod.POST,headers,buf);
-        launcher.execute(entity,handler);
+        requestEntity(uri,HttpMethod.POST,params,handler);
+    }
+    public void postEntity(String uri,Map<String,String> params,Map<String,String> headers,AsyncResponseHandler handler) throws Exception {
+        requestEntity(uri,HttpMethod.POST,params,headers,handler);
     }
 
     public void postJson(String uri,Json json,AsyncResponseHandler handler) throws Exception {
+        requestJson(uri,HttpMethod.POST,json,handler);
+    }
+    public void postJson(String uri,Json json,Map<String,String> headers,AsyncResponseHandler handler) throws Exception {
+        requestJson(uri,HttpMethod.POST,json,headers,handler);
+    }
+
+    public void putEntity(String uri,Map<String,String> params,Map<String,String> headers,AsyncResponseHandler handler) throws Exception {
+        requestEntity(uri,HttpMethod.PUT,params,headers,handler);
+    }
+    public void putEntity(String uri,Map<String,String> params,AsyncResponseHandler handler) throws Exception {
+        requestEntity(uri,HttpMethod.PUT,params,handler);
+    }
+    public void putJson(String uri,Json json,AsyncResponseHandler handler) throws Exception {
+        requestJson(uri,HttpMethod.PUT,json,handler);
+    }
+    public void putJson(String uri,Json json,Map<String,String> headers,AsyncResponseHandler handler) throws Exception {
+        requestJson(uri,HttpMethod.PUT,json,headers,handler);
+    }
+    public void deleteEntity(String uri,Map<String,String> headers,AsyncResponseHandler handler) throws Exception {
+        requestEntity(uri,HttpMethod.DELETE,null,headers,handler);
+    }
+
+    public void deleteEntity(String uri,AsyncResponseHandler handler) throws Exception {
+        requestEntity(uri,HttpMethod.DELETE,null,handler);
+    }
+
+    public void fileUpload(UploadFile file){
+
+    }
+
+    private void requestEntity(String uri,HttpMethod method,Map<String,String> params,AsyncResponseHandler handler) throws Exception {
+        ByteBuf buf = ByteKits.toByteBuf(Json.stringify(params));
+        HttpHeaders headers = new DefaultHttpHeaders();
+        headers.add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED);
+        RequestEntity entity = new RequestEntity(uri, method,headers,buf);
+        launcher.execute(entity,handler);
+    }
+
+    public void requestEntity(String uri,HttpMethod method,Map<String,String> params,Map<String,String> headers,AsyncResponseHandler handler) throws Exception {
+        ByteBuf buf = ByteKits.toByteBuf(Json.stringify(params));
+        HttpHeaders httpHeaders = new DefaultHttpHeaders();
+        httpHeaders.add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED);
+        for (Map.Entry<String,String> entry:headers.entrySet()){
+            httpHeaders.add(entry.getKey(),entry.getValue());
+        }
+        RequestEntity entity = new RequestEntity(uri, method,httpHeaders,buf);
+        launcher.execute(entity,handler);
+    }
+
+    private void requestJson(String uri,HttpMethod method,Json json, AsyncResponseHandler handler) throws Exception {
         ByteBuf buf = ByteKits.toByteBuf(Json.stringify(json));
         HttpHeaders headers = new DefaultHttpHeaders();
         headers.add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValue.APPLICATION_JSON);
-        RequestEntity entity = new RequestEntity(uri, HttpMethod.POST,null,buf);
+        RequestEntity entity = new RequestEntity(uri, method,null,buf);
+        launcher.execute(entity,handler);
+    }
+
+    private void requestJson(String uri,HttpMethod method,Json json,Map<String,String> headers,AsyncResponseHandler handler) throws Exception {
+        ByteBuf buf = ByteKits.toByteBuf(Json.stringify(json));
+        HttpHeaders httpHeaders = new DefaultHttpHeaders();
+        httpHeaders.add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValue.APPLICATION_JSON);
+        for (Map.Entry<String,String> entry:headers.entrySet()){
+            httpHeaders.add(entry.getKey(),entry.getValue());
+        }
+        RequestEntity entity = new RequestEntity(uri, method,null,buf);
         launcher.execute(entity,handler);
     }
 
     public void close(){
         launcher.close();
     }
-
-    public void connect(String host, int port,AsyncResponseHandler handler) throws Exception {
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
-
-        try {
-            Bootstrap b = new Bootstrap();
-            b.group(workerGroup);
-            b.channel(NioSocketChannel.class);
-            b.option(ChannelOption.SO_KEEPALIVE, true);
-            b.handler(new ChannelInitializer<SocketChannel>() {
-                @Override
-                public void initChannel(SocketChannel ch) throws Exception {
-                    // 客户端接收到的是httpResponse响应，所以要使用HttpResponseDecoder进行解码
-                    ch.pipeline().addLast(new HttpResponseDecoder());
-                    // 客户端发送的是httprequest，所以要使用HttpRequestEncoder进行编码
-                    ch.pipeline().addLast(new HttpRequestEncoder());
-                    ch.pipeline().addLast(new HttpObjectAggregator(1024000));
-                    ch.pipeline().addLast(new ChunkedWriteHandler());
-                    ch.pipeline().addLast(new HttpClientHandler(workerGroup,handler));
-                }
-            });
-
-            // Start the client.
-            ChannelFuture f = b.connect(host, port).sync();
-
-            URI uri = new URI("http://127.0.0.1:8800");
-            DefaultFullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET,
-                    "/index/xingtianyu");
-            // 构建http请求
-            request.headers().set(HttpHeaders.Names.HOST, host);
-            request.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
-            request.headers().set(HttpHeaders.Names.CONTENT_LENGTH, request.content().readableBytes());
-            // 发送http请求
-            f.channel().write(request);
-            f.channel().flush();
-            f.channel().closeFuture().sync();
-        } finally {
-            workerGroup.shutdownGracefully();
-        }
-
-    }
-
 
 }

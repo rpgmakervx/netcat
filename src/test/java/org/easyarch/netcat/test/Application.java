@@ -17,7 +17,7 @@ public class Application {
         app.post("/index/{username}", new ParameterizeHandler())
                 .get("/download",new DownLoadHandler())
                 .get("/index/{username}",new JsonHandler())
-                .get("/image",new ImageHandler())
+                .get("/index/xingtianyu",new ImageHandler())
                 .get("/redirect",new RedirectHandler())
                 .get("/user/login",new LoginPageHandler())
                 .post("/user/login",new LoginHandler())

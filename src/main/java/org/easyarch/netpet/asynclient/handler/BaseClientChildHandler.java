@@ -20,9 +20,9 @@ import org.easyarch.netpet.asynclient.handler.callback.AsyncResponseHandler;
  * 下午10:28
  */
 
-public class BaseClientChildHandler<T> extends ChannelInitializer<SocketChannel> {
+public class BaseClientChildHandler extends ChannelInitializer<SocketChannel> {
 
-    private AsyncResponseHandler<T> handler;
+    private AsyncResponseHandler handler;
 
     private EventLoopGroup workerGroup;
     public BaseClientChildHandler(EventLoopGroup workerGroup,AsyncResponseHandler handler) {
