@@ -149,7 +149,7 @@ public class Launcher {
         }
     }
 
-    public <T>void execute(RequestEntity entity, AsyncResponseHandler handler) throws Exception {
+    public void execute(RequestEntity entity, AsyncResponseHandler handler) throws Exception {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
             b = new Bootstrap();
