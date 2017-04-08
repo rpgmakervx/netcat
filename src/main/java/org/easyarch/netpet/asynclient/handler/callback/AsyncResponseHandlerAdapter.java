@@ -11,7 +11,7 @@ import org.easyarch.netpet.asynclient.http.response.AsyncHttpResponse;
 abstract public class AsyncResponseHandlerAdapter implements AsyncResponseHandler {
 
     @Override
-    public void onFinally(AsyncHttpResponse response) {
+    public void onFinally(AsyncHttpResponse response) throws Exception {
 
     }
 }
