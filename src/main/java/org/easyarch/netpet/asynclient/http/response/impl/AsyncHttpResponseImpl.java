@@ -99,4 +99,9 @@ public class AsyncHttpResponseImpl implements AsyncHttpResponse {
         }
         return Integer.parseInt(contentLength);
     }
+
+    @Override
+    public FullHttpResponse getResponse() {
+        return response;
+    }
 }

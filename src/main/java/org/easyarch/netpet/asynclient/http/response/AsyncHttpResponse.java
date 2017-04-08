@@ -1,6 +1,7 @@
 package org.easyarch.netpet.asynclient.http.response;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders;
 import org.easyarch.netpet.web.mvc.entity.Json;
 
@@ -34,6 +35,8 @@ public interface AsyncHttpResponse {
     public int getStatusCode();
 
     public int getContentLength();
+
+    public FullHttpResponse getResponse();
 
 
 }

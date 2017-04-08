@@ -9,6 +9,7 @@ import org.easyarch.netpet.kits.ByteKits;
 import org.easyarch.netpet.web.http.protocol.HttpHeaderValue;
 import org.easyarch.netpet.web.mvc.entity.Json;
 
+import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,9 @@ public class AsyncHttpClient {
 
     public AsyncHttpClient(String host) throws Exception {
         launcher = new Launcher(host);
+    }
+    public AsyncHttpClient(String protocel,InetSocketAddress host) throws Exception {
+        launcher = new Launcher(protocel,host);
     }
 
     public void get(String uri, AsyncResponseHandler handler) throws Exception {
@@ -105,6 +109,10 @@ public class AsyncHttpClient {
         }
         RequestEntity entity = new RequestEntity(uri, HttpMethod.POST,httpHeaders,params);
         launcher.execute(entity,handler);
+    }
+
+    public void send(FullHttpRequest request,AsyncResponseHandler handler) throws Exception {
+        launcher.execute(request,handler);
     }
 
     private void requestEntity(String uri,HttpMethod method,Map<String,String> params,AsyncResponseHandler handler) throws Exception {

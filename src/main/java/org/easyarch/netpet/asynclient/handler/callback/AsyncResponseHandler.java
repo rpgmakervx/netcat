@@ -13,4 +13,6 @@ public interface AsyncResponseHandler {
     public void onSuccess(AsyncHttpResponse response);
 
     public void onFailure(int statusCode,Object message);
+
+    public void onFinally(AsyncHttpResponse response);
 }

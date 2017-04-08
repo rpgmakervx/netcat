@@ -42,6 +42,7 @@ public class HttpClientHandler extends ChannelInboundHandlerAdapter {
         }else{
             handler.onSuccess(resp);
         }
+        handler.onFinally(resp);
     }
 
     @Override

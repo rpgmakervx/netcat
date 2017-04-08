@@ -20,6 +20,7 @@ import org.easyarch.netpet.web.mvc.entity.Json;
 import org.easyarch.netpet.web.mvc.entity.UploadFile;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -39,8 +40,10 @@ public class Launcher {
 
     private ChannelFuture future;
     private Bootstrap b;
-    private Channel channel;
 
+    public Launcher(String protocol,InetSocketAddress remoteAddress) throws MalformedURLException {
+        this(new URL(protocol,remoteAddress.getHostString(),remoteAddress.getPort(),"/"));
+    }
     public Launcher(String remoteAddress) throws MalformedURLException {
         this(new URL(remoteAddress));
     }
@@ -57,6 +60,19 @@ public class Launcher {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void doRequest(FullHttpRequest request){
+        Channel channel = future.channel();
+        HttpHeaders headers = request.headers();
+        ByteBuf buf = request.content();
+        if (headers == null){
+            headers = new DefaultHttpHeaders();
+            headers.set(HttpHeaderNames.CONTENT_TYPE, "text/html;charset=utf-8");
+            headers.set(HttpHeaderNames.HOST, channel.localAddress());
+        }
+        headers.set(HttpHeaderNames.CONTENT_LENGTH,buf.readableBytes());
+        channel.writeAndFlush(request);
     }
 
     private void doRequest(HttpMethod method, HttpHeaders headers, ByteBuf buf) throws HttpPostRequestEncoder.ErrorDataEncoderException {
@@ -150,6 +166,20 @@ public class Launcher {
     }
 
     public void execute(RequestEntity entity, AsyncResponseHandler handler) throws Exception {
+        connect(handler);
+        if (entity.getFiles().isEmpty()){
+            doRequest(entity.getPath(),entity.getMethod(),entity.getHeaders(),entity.getBuf());
+        }else{
+            doRequest(entity.getPath(),entity.getMethod(),entity.getHeaders(),entity.getFiles());
+        }
+    }
+
+    public void execute(FullHttpRequest request, AsyncResponseHandler handler) throws Exception {
+        connect(handler);
+        doRequest(request);
+    }
+
+    private void connect(AsyncResponseHandler handler){
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
             b = new Bootstrap();
@@ -160,14 +190,10 @@ public class Launcher {
                     .option(ChannelOption.SO_KEEPALIVE, true)
                     .handler(new BaseClientChildHandler(workerGroup,handler));
             future = b.connect(ip,port).sync();
-            if (entity.getFiles().isEmpty()){
-                doRequest(entity.getPath(),entity.getMethod(),entity.getHeaders(),entity.getBuf());
-            }else{
-                doRequest(entity.getPath(),entity.getMethod(),entity.getHeaders(),entity.getFiles());
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     public void close(){
