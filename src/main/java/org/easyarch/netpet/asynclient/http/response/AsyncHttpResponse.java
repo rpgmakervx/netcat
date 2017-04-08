@@ -18,7 +18,7 @@ public interface AsyncHttpResponse {
 
     public String getHeader(String name);
 
-    public Map<String,String> getAllHeaders();
+    public Map<String,Object> getAllHeaders();
 
     public HttpHeaders getHeaders();
 

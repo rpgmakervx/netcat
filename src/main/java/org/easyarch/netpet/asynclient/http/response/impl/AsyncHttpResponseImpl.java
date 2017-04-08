@@ -39,8 +39,8 @@ public class AsyncHttpResponseImpl implements AsyncHttpResponse {
     }
 
     @Override
-    public Map<String, String> getAllHeaders() {
-        Map<String,String> headers = new HashMap<>();
+    public Map<String, Object> getAllHeaders() {
+        Map<String,Object> headers = new HashMap<>();
         for (String name:this.headers.names()){
             String value = this.headers.get(name);
             headers.put(name,value);

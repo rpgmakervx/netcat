@@ -10,9 +10,9 @@ import org.easyarch.netpet.asynclient.http.response.AsyncHttpResponse;
 
 public interface AsyncResponseHandler {
 
-    public void onSuccess(AsyncHttpResponse response);
+    public void onSuccess(AsyncHttpResponse response) throws Exception;
 
-    public void onFailure(int statusCode,Object message);
+    public void onFailure(int statusCode,Object message) throws Exception;
 
-    public void onFinally(AsyncHttpResponse response);
+    public void onFinally(AsyncHttpResponse response) throws Exception;
 }

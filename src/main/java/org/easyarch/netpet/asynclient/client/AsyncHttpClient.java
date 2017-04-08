@@ -64,26 +64,73 @@ public class AsyncHttpClient {
     public void putEntity(String uri,Map<String,String> params,AsyncResponseHandler handler) throws Exception {
         requestEntity(uri,HttpMethod.PUT,params,handler);
     }
+
+    /**
+     * 带Json参数的put请求
+     * @param uri
+     * @param json
+     * @param handler
+     * @throws Exception
+     */
     public void putJson(String uri,Json json,AsyncResponseHandler handler) throws Exception {
         requestJson(uri,HttpMethod.PUT,json,handler);
     }
+
+    /**
+     * 带header和Json参数的put请求
+     * @param uri
+     * @param json
+     * @param headers
+     * @param handler
+     * @throws Exception
+     */
     public void putJson(String uri,Json json,Map<String,String> headers,AsyncResponseHandler handler) throws Exception {
         requestJson(uri,HttpMethod.PUT,json,headers,handler);
     }
+
+    /**
+     * 带header的delete请求
+     * @param uri
+     * @param headers
+     * @param handler
+     * @throws Exception
+     */
     public void deleteEntity(String uri,Map<String,String> headers,AsyncResponseHandler handler) throws Exception {
         requestEntity(uri,HttpMethod.DELETE,null,headers,handler);
     }
 
+    /**
+     * delete请求
+     * @param uri
+     * @param handler
+     * @throws Exception
+     */
     public void deleteEntity(String uri,AsyncResponseHandler handler) throws Exception {
         requestEntity(uri,HttpMethod.DELETE,null,handler);
     }
 
+    /**
+     * 单文件上传
+     * @param uri
+     * @param param
+     * @param handler
+     * @throws Exception
+     */
     public void fileUpload(String uri, FileParam param, AsyncResponseHandler handler) throws Exception {
         HttpHeaders httpHeaders = new DefaultHttpHeaders();
         httpHeaders.add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.MULTIPART_FORM_DATA);
         RequestEntity entity = new RequestEntity(uri, HttpMethod.POST,httpHeaders,param);
         launcher.execute(entity,handler);
     }
+
+    /**
+     * 带header的单文件上传
+     * @param uri
+     * @param headers
+     * @param param
+     * @param handler
+     * @throws Exception
+     */
     public void fileUpload(String uri, Map<String,String> headers ,FileParam param, AsyncResponseHandler handler) throws Exception {
         HttpHeaders httpHeaders = new DefaultHttpHeaders();
         httpHeaders.add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.MULTIPART_FORM_DATA);
@@ -94,6 +141,13 @@ public class AsyncHttpClient {
         launcher.execute(entity,handler);
     }
 
+    /**
+     * 多文件上传请求
+     * @param uri
+     * @param params
+     * @param handler
+     * @throws Exception
+     */
     public void multipartFileUpload(String uri, List<FileParam> params, AsyncResponseHandler handler) throws Exception {
         HttpHeaders httpHeaders = new DefaultHttpHeaders();
         httpHeaders.add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.MULTIPART_FORM_DATA);
@@ -101,6 +155,14 @@ public class AsyncHttpClient {
         launcher.execute(entity,handler);
     }
 
+    /**
+     * 带header的多文件上传请求
+     * @param uri
+     * @param headers
+     * @param params
+     * @param handler
+     * @throws Exception
+     */
     public void multipartFileUpload(String uri, Map<String,String> headers , List<FileParam> params, AsyncResponseHandler handler) throws Exception {
         HttpHeaders httpHeaders = new DefaultHttpHeaders();
         httpHeaders.add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.MULTIPART_FORM_DATA);
@@ -111,6 +173,12 @@ public class AsyncHttpClient {
         launcher.execute(entity,handler);
     }
 
+    /**
+     * 用来直接转发底层netty提供的请求
+     * @param request
+     * @param handler
+     * @throws Exception
+     */
     public void send(FullHttpRequest request,AsyncResponseHandler handler) throws Exception {
         launcher.execute(request,handler);
     }
