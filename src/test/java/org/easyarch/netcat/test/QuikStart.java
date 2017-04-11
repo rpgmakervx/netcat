@@ -20,7 +20,6 @@ public class QuikStart {
         FileParam param = new FileParamBuilder()
                 .buildFileParam("file","/home/code4j/util/elasticsearch-5.0.1.tar.gz")
                 .build();
-
         client.postJson("/user/login", new Json("username", "xingtianyu"), new AsyncResponseHandlerAdapter() {
             @Override
             public void onSuccess(AsyncHttpResponse response) {
@@ -32,7 +31,6 @@ public class QuikStart {
 
             }
         });
-
         client.fileUpload("/upload", param,new AsyncResponseHandlerAdapter() {
             @Override
             public void onSuccess(AsyncHttpResponse response) {
