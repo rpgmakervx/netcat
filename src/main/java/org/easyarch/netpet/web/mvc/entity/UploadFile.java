@@ -65,7 +65,7 @@ public class UploadFile {
     }
 
     public File getFile(){
-        return new File(fileName);
+        return new File(path);
     }
 
     public String getPath() {
