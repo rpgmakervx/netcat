@@ -18,7 +18,7 @@ public class UpLoadHandler implements HttpHandler {
     @Override
     public void handle(HandlerRequest request, HandlerResponse response) throws Exception {
         UploadFile file = request.file("file");
-        FileKits.write("/home/code4j/58daojia",file.getContent());
+        FileKits.write("/home/code4j/58daojia/"+file.getFileName(),file.getContent());
         response.json(new Json("code",200,"message","file saved complete!"));
     }
 }

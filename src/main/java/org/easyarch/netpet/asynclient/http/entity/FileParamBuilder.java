@@ -19,18 +19,17 @@ public class FileParamBuilder {
 
 
     public FileParamBuilder buildFileParam(String paramName,String path){
-        return buildFileParam(paramName,new File(path).getName(), FileKits.readx(path));
+        return buildFileParam(paramName,new File(path).getPath(), FileKits.readx(path));
     }
 
     /**
      * 如果已经构造过fileParam，后续再次调用这个方法
      * @param paramName
-     * @param fileName
      * @param content
      * @return
      */
-    public FileParamBuilder buildFileParam(String paramName,String fileName,byte[] content){
-        this.file = new UploadFile(fileName, content);
+    public FileParamBuilder buildFileParam(String paramName,String filePath,byte[] content){
+        this.file = new UploadFile(filePath, content,true);
         this.paramName = paramName;
         return this;
     }

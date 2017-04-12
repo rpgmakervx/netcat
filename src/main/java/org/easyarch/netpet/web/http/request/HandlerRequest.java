@@ -11,6 +11,7 @@ import org.easyarch.netpet.web.mvc.entity.UploadFile;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketAddress;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,7 +25,6 @@ public interface HandlerRequest {
     public HandlerContext getContext();
 
     public Set<HttpCookie> getCookies();
-
 
     public String getHeader(String name);
 
@@ -41,6 +41,8 @@ public interface HandlerRequest {
     public String getContextPath();
 
     public UploadFile file(String name);
+
+    public List<UploadFile> files();
 
     public<T> T body(Class<T> cls) throws Exception;
 

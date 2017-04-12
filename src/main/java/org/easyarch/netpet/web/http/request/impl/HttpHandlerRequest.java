@@ -171,7 +171,12 @@ public class HttpHandlerRequest implements HandlerRequest {
 
     @Override
     public UploadFile file(String name) {
-        return paramParser.getFile(name);
+        return paramParser.parseFile(name);
+    }
+
+    @Override
+    public List<UploadFile> files() {
+        return paramParser.parseFiles();
     }
 
     @Override

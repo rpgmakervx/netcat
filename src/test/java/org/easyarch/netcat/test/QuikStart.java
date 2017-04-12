@@ -5,7 +5,6 @@ import org.easyarch.netpet.asynclient.handler.callback.AsyncResponseHandlerAdapt
 import org.easyarch.netpet.asynclient.http.entity.FileParam;
 import org.easyarch.netpet.asynclient.http.entity.FileParamBuilder;
 import org.easyarch.netpet.asynclient.http.response.AsyncHttpResponse;
-import org.easyarch.netpet.web.mvc.entity.Json;
 
 /**
  * Created by xingtianyu on 17-3-28
@@ -20,17 +19,17 @@ public class QuikStart {
         FileParam param = new FileParamBuilder()
                 .buildFileParam("file","/home/code4j/util/elasticsearch-5.0.1.tar.gz")
                 .build();
-        client.postJson("/user/login", new Json("username", "xingtianyu"), new AsyncResponseHandlerAdapter() {
-            @Override
-            public void onSuccess(AsyncHttpResponse response) {
-                System.out.println("on success:\n"+response.getString());
-            }
-
-            @Override
-            public void onFailure(int statusCode, Object message) {
-
-            }
-        });
+//        client.postJson("/user/login", new Json("username", "xingtianyu"), new AsyncResponseHandlerAdapter() {
+//            @Override
+//            public void onSuccess(AsyncHttpResponse response) {
+//                System.out.println("on success:\n"+response.getString());
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Object message) {
+//
+//            }
+//        });
         client.fileUpload("/upload", param,new AsyncResponseHandlerAdapter() {
             @Override
             public void onSuccess(AsyncHttpResponse response) {

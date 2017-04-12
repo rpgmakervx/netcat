@@ -14,17 +14,30 @@ public class UploadFile {
 
     private String fileName;
 
+    private String path;
+
     private String contentType;
 
     private byte[] content = new byte[0];
 
-    public UploadFile(String fileName, byte[] content) {
-        this.fileName = fileName;
+    public UploadFile(String fileName, byte[] content,boolean isPath) {
+        if (isPath){
+            this.path = fileName;
+            this.fileName = FileKits.getName(fileName);
+        }else{
+            this.fileName = fileName;
+        }
         this.content = content;
     }
-    public UploadFile(String fileName) {
+    public UploadFile(String fileName,boolean isPath) {
+        if (isPath){
+            this.path = fileName;
+            this.fileName = FileKits.getName(fileName);
+        }else{
+            this.fileName = fileName;
+        }
         this.fileName = fileName;
-        this.content = FileKits.readx(fileName);
+        this.content = FileKits.readx(this.path);
     }
 
     public String getFileName() {
@@ -54,6 +67,15 @@ public class UploadFile {
     public File getFile(){
         return new File(fileName);
     }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
     @Override
     public String toString() {
         return "fileName='" + fileName + '\'' +

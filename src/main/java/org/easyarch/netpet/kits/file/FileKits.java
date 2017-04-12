@@ -185,6 +185,11 @@ public class FileKits {
         return null;
     }
 
+    public static String getName(String filePath){
+        String[] seg = filePath.split(File.separator);
+        return seg[seg.length - 1];
+    }
+
     public static File vim(File file, String str) throws Exception {
         return write(file, str.getBytes());
     }
@@ -371,8 +376,8 @@ public class FileKits {
 
     public static void main(String[] args) {
         System.out.println(Short.MAX_VALUE);
-        byte[] bytes = readx("/home/code4j/es.tar.gz");
-        System.out.println("bytes.length:"+bytes.length);
+        String filename = getName("/home/code4j/es.tar.gz");
+        System.out.println("bytes.length:"+filename);
 //        System.out.println(getBottomDir("/home/code4j/IDEAWorkspace/myutils/myutils-db/target/classes/mapper/sqlmapper.js"));;
     }
 
