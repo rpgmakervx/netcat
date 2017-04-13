@@ -9,6 +9,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.multipart.DefaultHttpDataFactory;
 import io.netty.handler.codec.http.multipart.HttpPostRequestEncoder;
 import org.easyarch.netpet.asynclient.handler.BaseClientChildHandler;
 import org.easyarch.netpet.asynclient.handler.callback.AsyncResponseHandler;
@@ -132,8 +133,10 @@ public class Launcher {
                 contentLength += file.getContent().length;
             }
         }
+        System.out.println("add conentLength:"+contentLength);
         headers.set(HttpHeaderNames.HOST, remoteURL.getHost());
         headers.set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+        headers.set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.MULTIPART_FORM_DATA);
         headers.set(HttpHeaderNames.CONTENT_LENGTH, contentLength);
         return headers;
     }
@@ -157,19 +160,19 @@ public class Launcher {
 
     private void addFileParam(DefaultFullHttpRequest request,HttpHeaders headers,List<FileParam> fileParams) throws HttpPostRequestEncoder.ErrorDataEncoderException {
         String contentType = headers.get(HttpHeaderNames.CONTENT_TYPE);
-        long contentLength = 0l;
-        HttpPostRequestEncoder encoder = new HttpPostRequestEncoder(request,false);
+        HttpPostRequestEncoder encoder = new HttpPostRequestEncoder(new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE) ,request,true);
         if (HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString().equals(contentType)
                 ||HttpHeaderValues.MULTIPART_FORM_DATA.toString().equals(contentType)){
             for (FileParam param:fileParams){
                 UploadFile file = param.getFile();
-                contentLength += file.getContent().length;
                 System.out.println("file:"+file.getFile().getPath());
                 encoder.addBodyFileUpload(param.getParamName(),file.getFile(),file.getContentType(),false);
             }
+            encoder.finalizeRequest();
         }
-        headers.add(HttpHeaderNames.CONTENT_LENGTH,contentLength);
-        System.out.println("add conentLength:"+contentLength);
+//        List<InterfaceHttpData> bodylist = encoder.getBodyListAttributes();
+//        HttpRequest req = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, request.uri());
+//        HttpPostRequestEncoder bodyRequestEncoder2 = new HttpPostRequestEncoder(factory, request2, true);
     }
 
     public void execute(RequestEntity entity, AsyncResponseHandler handler) throws Exception {

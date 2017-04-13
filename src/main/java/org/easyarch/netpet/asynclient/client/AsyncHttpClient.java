@@ -118,7 +118,6 @@ public class AsyncHttpClient {
      */
     public void fileUpload(String uri, FileParam param, AsyncResponseHandler handler) throws Exception {
         HttpHeaders httpHeaders = new DefaultHttpHeaders();
-        httpHeaders.add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.MULTIPART_FORM_DATA);
         RequestEntity entity = new RequestEntity(uri, HttpMethod.POST,httpHeaders,param);
         launcher.execute(entity,handler);
     }
@@ -133,7 +132,6 @@ public class AsyncHttpClient {
      */
     public void fileUpload(String uri, Map<String,String> headers ,FileParam param, AsyncResponseHandler handler) throws Exception {
         HttpHeaders httpHeaders = new DefaultHttpHeaders();
-        httpHeaders.add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.MULTIPART_FORM_DATA);
         for (Map.Entry<String,String> entry:headers.entrySet()){
             httpHeaders.add(entry.getKey(),entry.getValue());
         }

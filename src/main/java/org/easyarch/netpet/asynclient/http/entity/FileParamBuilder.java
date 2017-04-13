@@ -30,6 +30,7 @@ public class FileParamBuilder {
      */
     public FileParamBuilder buildFileParam(String paramName,String filePath,byte[] content){
         this.file = new UploadFile(filePath, content,true);
+        this.file.setContentType("application/x-zip-compressed");
         this.paramName = paramName;
         return this;
     }
