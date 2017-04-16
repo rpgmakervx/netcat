@@ -19,6 +19,7 @@ public class LoginHandler implements HttpHandler {
 //        System.out.println(uploadFile);
         System.out.println("request json:"+request.getJson());
         System.out.println("request map:"+request.getParamMap());
+        System.out.println("contentType:"+request.getContentType());
         response.json(request.getJson());
     }
 }

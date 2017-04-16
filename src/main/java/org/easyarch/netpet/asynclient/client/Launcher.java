@@ -85,12 +85,22 @@ public class Launcher {
         String uri = checkURI(path);
         DefaultFullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, method, uri);
         headers = checkHeaders(headers,files);
-        if (HttpMethod.POST.equals(method)){
-            addFileParam(request,headers,files);
-        }
+        HttpPostRequestEncoder encoder = null;
         request.headers().set(headers);
-        System.out.println("写请求");
-        future.channel().writeAndFlush(request);
+        if (HttpMethod.POST.equals(method)){
+            encoder = addFileParam(request,headers,files);
+        }
+        if (encoder == null){
+            System.out.println("写请求request");
+            future.channel().writeAndFlush(request);
+        }else{
+            future.channel().writeAndFlush(request);
+            if (encoder.isChunked()){
+                System.out.println("写请求encoder");
+                future.channel().writeAndFlush(encoder);
+                encoder.cleanFiles();
+            }
+        }
     }
 
     private void doRequest(String path,HttpMethod method, HttpHeaders headers, ByteBuf buf) throws HttpPostRequestEncoder.ErrorDataEncoderException {
@@ -101,7 +111,7 @@ public class Launcher {
         }else{
             request  = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, method, uri, buf);
         }
-        headers = checkHeaders(headers,buf);
+        checkHeaders(headers,buf);
         if (HttpMethod.POST.equals(method)){
             checkParam(request,headers,buf);
         }
@@ -134,17 +144,19 @@ public class Launcher {
             }
         }
         System.out.println("add conentLength:"+contentLength);
+        headers.set(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
+        headers.set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.MULTIPART_FORM_DATA);
         headers.set(HttpHeaderNames.HOST, remoteURL.getHost());
         headers.set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-        headers.set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.MULTIPART_FORM_DATA);
-        headers.set(HttpHeaderNames.CONTENT_LENGTH, contentLength);
+//        headers.set(HttpHeaderNames.CONTENT_LENGTH, contentLength);
         return headers;
     }
 
     private void checkParam(DefaultFullHttpRequest request,HttpHeaders headers,ByteBuf buf) throws HttpPostRequestEncoder.ErrorDataEncoderException {
         String contentType = headers.get(HttpHeaderNames.CONTENT_TYPE);
         HttpPostRequestEncoder encoder = new HttpPostRequestEncoder(request,false);
-        if (HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.equals(contentType)){
+        if (HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString()
+                .equals(contentType)){
             String data = ByteKits.toString(buf);
             Map<String,Object> map = Json.toMap(data);
             for (Map.Entry<String,Object> entry:map.entrySet()){
@@ -158,11 +170,14 @@ public class Launcher {
         }
     }
 
-    private void addFileParam(DefaultFullHttpRequest request,HttpHeaders headers,List<FileParam> fileParams) throws HttpPostRequestEncoder.ErrorDataEncoderException {
+    private HttpPostRequestEncoder addFileParam(DefaultFullHttpRequest request,HttpHeaders headers,List<FileParam> fileParams) throws HttpPostRequestEncoder.ErrorDataEncoderException {
         String contentType = headers.get(HttpHeaderNames.CONTENT_TYPE);
-        HttpPostRequestEncoder encoder = new HttpPostRequestEncoder(new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE) ,request,true);
+
+        HttpPostRequestEncoder encoder = null;
         if (HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString().equals(contentType)
                 ||HttpHeaderValues.MULTIPART_FORM_DATA.toString().equals(contentType)){
+            encoder = new HttpPostRequestEncoder(new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE) ,request,true);
+            encoder.addBodyAttribute("getform", "POST");
             for (FileParam param:fileParams){
                 UploadFile file = param.getFile();
                 System.out.println("file:"+file.getFile().getPath());
@@ -170,6 +185,7 @@ public class Launcher {
             }
             encoder.finalizeRequest();
         }
+        return encoder;
 //        List<InterfaceHttpData> bodylist = encoder.getBodyListAttributes();
 //        HttpRequest req = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, request.uri());
 //        HttpPostRequestEncoder bodyRequestEncoder2 = new HttpPostRequestEncoder(factory, request2, true);

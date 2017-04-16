@@ -11,7 +11,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestEncoder;
 import io.netty.handler.codec.http.HttpResponseDecoder;
-import io.netty.handler.stream.ChunkedWriteHandler;
 import org.easyarch.netpet.asynclient.handler.callback.AsyncResponseHandler;
 
 /**
@@ -38,7 +37,7 @@ public class BaseClientChildHandler extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(new HttpResponseDecoder());
         pipeline.addLast(new HttpRequestEncoder());
         pipeline.addLast(new HttpObjectAggregator(1024000));
-        pipeline.addLast(new ChunkedWriteHandler());
+//        pipeline.addLast(new ChunkedWriteHandler());
         pipeline.addLast(new HttpClientHandler(workerGroup,handler));
     }
 

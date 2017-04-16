@@ -204,7 +204,7 @@ public class AsyncHttpClient {
         ByteBuf buf = ByteKits.toByteBuf(Json.stringify(json));
         HttpHeaders headers = new DefaultHttpHeaders();
         headers.add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValue.APPLICATION_JSON);
-        RequestEntity entity = new RequestEntity(uri, method,null,buf);
+        RequestEntity entity = new RequestEntity(uri, method,headers,buf);
         launcher.execute(entity,handler);
     }
 
@@ -215,7 +215,7 @@ public class AsyncHttpClient {
         for (Map.Entry<String,String> entry:headers.entrySet()){
             httpHeaders.add(entry.getKey(),entry.getValue());
         }
-        RequestEntity entity = new RequestEntity(uri, method,null,buf);
+        RequestEntity entity = new RequestEntity(uri, method,httpHeaders,buf);
         launcher.execute(entity,handler);
     }
 

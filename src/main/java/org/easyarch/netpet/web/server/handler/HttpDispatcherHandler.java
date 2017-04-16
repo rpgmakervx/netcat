@@ -40,6 +40,7 @@ public class HttpDispatcherHandler extends BaseDispatcherHandler {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("请求被触发 active");
         super.channelActive(ctx);
     }
 

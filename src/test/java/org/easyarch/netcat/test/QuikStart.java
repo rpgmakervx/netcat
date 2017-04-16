@@ -30,6 +30,7 @@ public class QuikStart {
 //
 //            }
 //        });
+//        client.close();
         client.fileUpload("/upload", param,new AsyncResponseHandlerAdapter() {
             @Override
             public void onSuccess(AsyncHttpResponse response) {

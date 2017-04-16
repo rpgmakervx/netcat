@@ -62,7 +62,7 @@ public class ParamParser {
             parmMap.putAll(decodeQueryString());
             HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(
                     new DefaultHttpDataFactory(false),fullReq);
-            if (contentType.equals(HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
+            if (HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString().equals(contentType)
                     ||decoder.isMultipart()){
                 return parmMap;
             }
@@ -120,7 +120,7 @@ public class ParamParser {
         if (HttpMethod.POST == method){
             HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(
                     new DefaultHttpDataFactory(false),fullReq);
-            if (!contentType.equals(HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
+            if (!HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString().equals(contentType)
                     &&!decoder.isMultipart()){
                 return uploadFile;
             }
