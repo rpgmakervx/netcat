@@ -49,6 +49,8 @@ public class Application {
 
 打开浏览器，地址栏输入： [localhost:9000](https://localhost:9000) 能够看见你的html页面
 
+注意start若不传递端口号默认为8080（约定由于配置）
+
 ### 其他几种响应客户端方式
 
 针对web开发常用的几个功能，`HandlerResponse` 类包含如下api方便开发：
