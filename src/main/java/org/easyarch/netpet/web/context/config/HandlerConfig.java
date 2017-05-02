@@ -4,6 +4,8 @@ import org.easyarch.netpet.web.context.HandlerContext;
 import org.easyarch.netpet.kits.StringKits;
 
 import java.io.File;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by xingtianyu on 17-3-14
@@ -14,6 +16,8 @@ import java.io.File;
 public class HandlerConfig {
 
     private HandlerContext context;
+
+    private static Map<String,Object> globalAttr = new ConcurrentHashMap<>();
 
     public HandlerConfig(HandlerContext context){
         this.context = context;
@@ -89,5 +93,14 @@ public class HandlerConfig {
     public HandlerConfig serverError(String view){
         context.setServerError(view);
         return this;
+    }
+
+    public HandlerConfig globalConfig(String name,String value){
+        globalAttr.put(name,value);
+        return this;
+    }
+
+    public Object globalConfig(String name){
+        return globalAttr.get(name);
     }
 }
