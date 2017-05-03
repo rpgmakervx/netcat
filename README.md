@@ -1,5 +1,7 @@
 netpet high performance http server
 =====================================
+[![Build Status](https://travis-ci.org/rpgmakervx/netpet.svg?branch=master)](https://travis-ci.org/rpgmakervx/netpet)
+
 netpet 是基于开源nio框架netty开发的一个web服务器，支持基本http协议，采用嵌入式开发，仅仅需要依赖jar包，
 无需容器部署，即可完成一个web应用。
 
