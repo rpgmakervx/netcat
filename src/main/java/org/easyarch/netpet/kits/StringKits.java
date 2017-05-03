@@ -18,8 +18,7 @@ public class StringKits {
 
     /**
      * 字符串是否是空
-     *
-     * @param src
+     * @param src 来源
      * @return
      */
     public static boolean isEmpty(final String src) {
@@ -31,8 +30,7 @@ public class StringKits {
 
     /**
      * 字符串是否是空白的
-     *
-     * @param src
+     * @param src 来源
      * @return
      */
     public static boolean isBlank(final String src) {
@@ -42,9 +40,9 @@ public class StringKits {
     /**
      * 字符串头部添加省略符
      *
-     * @param src
-     * @param begin
-     * @param ellipsisLength
+     * @param src 来源
+     * @param begin 起始索引
+     * @param ellipsisLength 省略符长度
      * @return
      */
     public static String headAbbreviate(final String src, int begin, int ellipsisLength) {
@@ -109,8 +107,8 @@ public class StringKits {
     /**
      * 给字符串追加内容
      *
-     * @param src
-     * @param plugin
+     * @param src 来源
+     * @param plugin 追加的内容
      * @return
      */
     public static String append(final String src, String plugin) {
@@ -120,8 +118,8 @@ public class StringKits {
     /**
      * 给字符串前面添加内容
      *
-     * @param src
-     * @param plugin
+     * @param src 来源
+     * @param plugin 追加的内容
      * @return
      */
     public static String preAppend(final String src, String plugin) {
@@ -139,9 +137,9 @@ public class StringKits {
     /**
      * 用指定的标识符将字符串居中
      *
-     * @param src
-     * @param pad
-     * @param symbol
+     * @param src 来源
+     * @param pad 字符串边距
+     * @param symbol 标识符
      * @return
      */
     public static String center(final String src, int pad, String symbol) {
@@ -158,8 +156,8 @@ public class StringKits {
     /**
      * 将字符串居中
      *
-     * @param src
-     * @param pad
+     * @param src 来源
+     * @param pad 字符串边距
      * @return
      */
     public static String center(final String src, int pad) {
@@ -183,7 +181,6 @@ public class StringKits {
 
     /**
      * 去除字符串中所有空白符
-     *
      * @param src 字符串不能为null
      * @return
      */
@@ -198,8 +195,7 @@ public class StringKits {
 
     /**
      * 去除字符串中所有的空白符（包括null）
-     *
-     * @param src
+     * @param src 来源
      * @return
      */
     public static String trimToEmpty(final String src) {
@@ -209,9 +205,9 @@ public class StringKits {
     /**
      * 在源字符串指定位置插入字符串
      *
-     * @param src
-     * @param plugin
-     * @param index
+     * @param src 来源
+     * @param plugin 目标字符串
+     * @param index 插入位置
      * @return
      */
     public static String insert(final String src, String plugin, int index) {
@@ -229,8 +225,8 @@ public class StringKits {
     }
 
     /**
-     * @param str1
-     * @param str2
+     * @param str1 来源1
+     * @param str2 来源2
      * @return
      */
     public static String difference(final String str1, String str2) {
@@ -254,8 +250,8 @@ public class StringKits {
     /**
      * 两个字符串开始出现不同的临界点
      *
-     * @param src1
-     * @param src2
+     * @param src1 来源1
+     * @param src2 来源2
      * @return
      */
     private static int indexOfDifference(final String src1, final String src2) {
@@ -280,7 +276,7 @@ public class StringKits {
     /**
      * 字符串翻转
      *
-     * @param str
+     * @param str 来源
      * @return
      */
     public static String reverse(final String str) {
@@ -293,7 +289,7 @@ public class StringKits {
     /**
      * 是否是回文
      *
-     * @param src
+     * @param src 来源
      * @return
      */
     public static boolean isPalindrom(final String src) {
@@ -304,7 +300,7 @@ public class StringKits {
     /**
      * 是否是回文（忽略大小写）
      *
-     * @param src
+     * @param src 来源
      * @return
      */
     public static boolean isPalindromIgnoreCase(final String src) {
@@ -315,7 +311,7 @@ public class StringKits {
     /**
      * 配合kmp算法获取下一个数组
      *
-     * @param t
+     * @param t 字符源
      * @return
      */
     private static int[] next(char[] t) {
@@ -367,8 +363,8 @@ public class StringKits {
     /**
      * 用分隔符把字符串数组拼接成按分隔符分割的字符串
      *
-     * @param srcs
-     * @param separator
+     * @param srcs      来源字符串数组
+     * @param separator 分隔符
      * @param edge      是否把分隔符添加到边界
      * @return
      */
@@ -391,8 +387,8 @@ public class StringKits {
     /**
      * 用分隔符把字符串数组拼接成按分隔符分割的字符串
      *
-     * @param srcs
-     * @param separator
+     * @param srcs      来源字符串数组
+     * @param separator 分隔符
      * @return
      */
     public static String join(final String[] srcs, String separator) {
@@ -402,11 +398,10 @@ public class StringKits {
     /**
      * 关键字打标签
      *
-     * @param src
-     * @param key
-     * @param frontTag
-     * @param backTag
-     * @return
+     * @param src       来源
+     * @param key       关键字
+     * @param frontTag  前标签
+     * @param backTag   后标签
      */
     public static String tagKeyWord(final String src, String key, String frontTag, String backTag) {
         StringBuffer buffer = new StringBuffer();
@@ -432,9 +427,9 @@ public class StringKits {
 
     /**
      * 按模式将字符串剥去出来，仅限开头结尾被包裹的字符串
-     * @param src
-     * @param beginToken
-     * @param endToken
+     * @param src           来源
+     * @param beginToken    起始符
+     * @param endToken      结束符
      * @return
      */
     public static String strip(final String src,final String beginToken,final String endToken){

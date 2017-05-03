@@ -6,7 +6,6 @@ package org.easyarch.netpet.kits;/**
 
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
-import sun.security.provider.MD5;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -94,7 +93,6 @@ public class HashKits {
      * BASE64 解密
      * @param key 需要解密的字符串
      * @return 字节数组
-     * @throws Exception
      */
     public static byte[] decodeBase64(String key) {
         try {

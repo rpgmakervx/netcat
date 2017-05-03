@@ -69,24 +69,9 @@ public class TemplateParser {
 
     /**
      * error page再prefix中不存在时。读取默认的error.html
-     * @param tmpPath
-     * @return
-     * @throws Exception
+     * @param tmpPath 模板路径
+     * @return 返回模板内容
      */
-//    public String getTemplate(String tmpName) throws Exception {
-//        if (!hasErrorPage&&tmpName.contains(context.getErrorPage())){
-//            temp = configuration.getTemplate(
-//                    HandlerContext.DEFAULT_ERRORPAGE
-//                            +Const.POINT
-//                            +HandlerContext.DEFAULT_SUFFIX);
-//        }else{
-//            temp = configuration.getTemplate(context.getViewPrefix()+tmpName);
-//        }
-//        StringWriter writer = new StringWriter();
-//        temp.process(this.params,writer);
-//        return writer.toString();
-//    }
-
     public String getTemplate(String tmpPath) throws Exception {
         System.out.println("template path:"+tmpPath);
         StringWriter writer = new StringWriter();

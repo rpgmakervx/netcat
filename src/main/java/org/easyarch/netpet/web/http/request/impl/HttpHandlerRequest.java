@@ -221,7 +221,7 @@ public class HttpHandlerRequest implements HandlerRequest {
 
     /**
      * session不存在则直接创建
-     * @return
+     * @return 返回session
      */
     @Override
     public HttpSession getSession() {

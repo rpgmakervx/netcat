@@ -6,6 +6,8 @@ import org.easyarch.netpet.web.http.session.HttpSession;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Description :
@@ -30,6 +32,8 @@ public class HandlerContext {
     private static final int DEFAULT_PORT = 8080;
 
     public static final String DEFAULT_RESOURCE = System.getProperty("netcat.home");
+
+    private static Map<String,Object> globalAttr = new ConcurrentHashMap<>();
 
     private int remotePort = DEFAULT_PORT;
 
@@ -189,5 +193,13 @@ public class HandlerContext {
 
     public void setMaxFileUpload(long maxFileUpload) {
         this.maxFileUpload = maxFileUpload;
+    }
+
+    public void globalConfig(String name, String value){
+        globalAttr.put(name,value);
+    }
+
+    public Object globalConfig(String name){
+        return globalAttr.get(name);
     }
 }

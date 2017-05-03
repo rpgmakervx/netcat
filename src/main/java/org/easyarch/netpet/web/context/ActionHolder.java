@@ -28,7 +28,7 @@ public class ActionHolder {
     private static List<ActionWrapper> actions = new CopyOnWriteArrayList<>();
     private static List<ActionWrapper> filters = new CopyOnWriteArrayList<>();
 
-    /**
+    /**根据router获取指定的action
      * 1.遍历所有的router和action映射
      * 2.做eq对比，参数化url和真正url对比出结果
      * 3.不相等的继续遍历比较，相等的进行下一个逻辑
@@ -36,7 +36,7 @@ public class ActionHolder {
      * 后期如果遍历出合适的action，将status设置为200
      * 5.否则是参数化匹配的结果，记录结果，继续遍历（因为path完全相等优先级最高）
      *
-     * @param router
+     * @param router 路由
      * @return
      */
     public ActionWrapper getAction(Router router) {
@@ -75,8 +75,8 @@ public class ActionHolder {
     /**
      * 获取拦截这个请求的所有拦截器
      * 便利顺序的action集合，如果命中router则说明
-     * @param router
-     * @return
+     * @param router 路由
+     * @return 返回filter
      */
     public List<HttpFilter> getFilters(Router router) {
         List<HttpFilter> fs = new ArrayList<>();

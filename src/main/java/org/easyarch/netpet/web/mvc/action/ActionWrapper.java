@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by xingtianyu on 17-3-3
  * 下午6:12
- * description:ActionWrapper是一个链表结构，持有一个指向前面的指针
+ * description:ActionWrapper是一个链表结构，持有一个指向前面的指针，是Action的包装
  */
 
 public class ActionWrapper {
@@ -114,8 +114,9 @@ public class ActionWrapper {
      * 否则继续存储到返回结果，继续遍历，直到不是filter为止。
      * 返回时做一次结果翻转，保证先声明的filter先被获取并执行。
      * 该方法不会返回空指针
-     * @return
+     * @return 返回所有符合的filter
      */
+    @Deprecated
     public List<HttpFilter> getFilters(){
         List<HttpFilter> filter = new ArrayList<>();
         ActionWrapper wrapper = this;

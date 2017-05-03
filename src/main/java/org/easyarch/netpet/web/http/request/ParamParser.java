@@ -7,7 +7,6 @@ import org.easyarch.netpet.kits.ByteKits;
 import org.easyarch.netpet.web.mvc.entity.Json;
 import org.easyarch.netpet.web.mvc.entity.UploadFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +23,7 @@ public class ParamParser {
 
     /**
      * 构造一个解析器
-     * @param req
+     * @param req 要解析的请求
      */
     public ParamParser(FullHttpRequest req) {
         this.fullReq = req.copy();
@@ -34,7 +33,6 @@ public class ParamParser {
      * 解析请求参数
      * post请求先解析json
      * @return 包含所有请求参数的键值对, 如果没有参数, 则返回空Map
-     * @throws IOException
      */
     public Map<String, String> parse() {
         if (this.fullReq == null){

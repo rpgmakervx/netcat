@@ -42,7 +42,8 @@ public class Router {
 
     /**
      * 地址最后一个不带分隔符
-     * @param router
+     * @param router router路径地址
+     * @param type action类型(handler或filter)
      */
     public Router(String router, ActionType type){
         this.path = checkURL(router);

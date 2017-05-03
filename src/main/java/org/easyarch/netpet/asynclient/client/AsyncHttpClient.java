@@ -30,6 +30,11 @@ public class AsyncHttpClient {
         launcher = new Launcher(protocel,host);
     }
 
+    /**
+     * get请求
+     * @param uri 请求路径
+     * @param handler 处理器
+     */
     public void get(String uri, AsyncResponseHandler handler) throws Exception {
         RequestEntity entity = new RequestEntity(uri, HttpMethod.GET,null,(ByteBuf) null);
         launcher.execute(entity,handler);
@@ -67,10 +72,9 @@ public class AsyncHttpClient {
 
     /**
      * 带Json参数的put请求
-     * @param uri
-     * @param json
-     * @param handler
-     * @throws Exception
+     * @param uri 请求路径
+     * @param json 请求json参数
+     * @param handler 处理器
      */
     public void putJson(String uri,Json json,AsyncResponseHandler handler) throws Exception {
         requestJson(uri,HttpMethod.PUT,json,handler);
@@ -78,11 +82,10 @@ public class AsyncHttpClient {
 
     /**
      * 带header和Json参数的put请求
-     * @param uri
-     * @param json
-     * @param headers
-     * @param handler
-     * @throws Exception
+     * @param uri 请求路径
+     * @param json 请求json参数
+     * @param headers 请求headers
+     * @param handler 处理器
      */
     public void putJson(String uri,Json json,Map<String,String> headers,AsyncResponseHandler handler) throws Exception {
         requestJson(uri,HttpMethod.PUT,json,headers,handler);
@@ -90,10 +93,9 @@ public class AsyncHttpClient {
 
     /**
      * 带header的delete请求
-     * @param uri
-     * @param headers
-     * @param handler
-     * @throws Exception
+     * @param uri 请求路径
+     * @param headers 请求headers
+     * @param handler 处理器
      */
     public void deleteEntity(String uri,Map<String,String> headers,AsyncResponseHandler handler) throws Exception {
         requestEntity(uri,HttpMethod.DELETE,null,headers,handler);
@@ -101,9 +103,8 @@ public class AsyncHttpClient {
 
     /**
      * delete请求
-     * @param uri
-     * @param handler
-     * @throws Exception
+     * @param uri 请求路径
+     * @param handler 处理器
      */
     public void deleteEntity(String uri,AsyncResponseHandler handler) throws Exception {
         requestEntity(uri,HttpMethod.DELETE,null,handler);
@@ -111,10 +112,9 @@ public class AsyncHttpClient {
 
     /**
      * 单文件上传
-     * @param uri
-     * @param param
-     * @param handler
-     * @throws Exception
+     * @param uri 请求路径
+     * @param param 文件参数
+     * @param handler 处理器
      */
     public void fileUpload(String uri, FileParam param, AsyncResponseHandler handler) throws Exception {
         HttpHeaders httpHeaders = new DefaultHttpHeaders();
@@ -124,11 +124,10 @@ public class AsyncHttpClient {
 
     /**
      * 带header的单文件上传
-     * @param uri
-     * @param headers
-     * @param param
-     * @param handler
-     * @throws Exception
+     * @param uri 请求路径
+     * @param headers 请求headers
+     * @param param 文件参数
+     * @param handler 处理器
      */
     public void fileUpload(String uri, Map<String,String> headers ,FileParam param, AsyncResponseHandler handler) throws Exception {
         HttpHeaders httpHeaders = new DefaultHttpHeaders();
@@ -141,10 +140,9 @@ public class AsyncHttpClient {
 
     /**
      * 多文件上传请求
-     * @param uri
-     * @param params
-     * @param handler
-     * @throws Exception
+     * @param uri 请求路径
+     * @param params 多个文件参数
+     * @param handler 处理器
      */
     public void multipartFileUpload(String uri, List<FileParam> params, AsyncResponseHandler handler) throws Exception {
         HttpHeaders httpHeaders = new DefaultHttpHeaders();
@@ -155,11 +153,10 @@ public class AsyncHttpClient {
 
     /**
      * 带header的多文件上传请求
-     * @param uri
-     * @param headers
-     * @param params
-     * @param handler
-     * @throws Exception
+     * @param uri 请求路径
+     * @param headers 请求headers
+     * @param params 多个文件参数
+     * @param handler 处理器
      */
     public void multipartFileUpload(String uri, Map<String,String> headers , List<FileParam> params, AsyncResponseHandler handler) throws Exception {
         HttpHeaders httpHeaders = new DefaultHttpHeaders();
@@ -173,9 +170,8 @@ public class AsyncHttpClient {
 
     /**
      * 用来直接转发底层netty提供的请求
-     * @param request
-     * @param handler
-     * @throws Exception
+     * @param request 请求体
+     * @param handler 处理器
      */
     public void send(FullHttpRequest request,AsyncResponseHandler handler) throws Exception {
         launcher.execute(request,handler);

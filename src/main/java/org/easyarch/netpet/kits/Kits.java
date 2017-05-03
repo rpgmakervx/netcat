@@ -1,8 +1,7 @@
 package org.easyarch.netpet.kits;
 
-import org.easyarch.netpet.web.context.HandlerContext;
-import org.easyarch.netpet.web.http.request.impl.HttpHandlerRequest;
 import org.easyarch.netpet.kits.file.FileKits;
+import org.easyarch.netpet.web.context.HandlerContext;
 
 /**
  * Created by xingtianyu on 17-3-14
@@ -14,8 +13,8 @@ public class Kits {
 
     /**
      * 检查视图是否存在
-     * @param context
-     * @param viewName
+     * @param context 上下文
+     * @param viewName 视图名
      * @return
      */
     public static boolean hasView(HandlerContext context, String viewName){
@@ -49,8 +48,8 @@ public class Kits {
     /**
      * 确保正确得到错误页面
      * 默认错误页面在jar包中
-     * @param context
-     * @return
+     * @param context 上下文
+     * @return 得到错误页面路径
      */
     public static String getErrorView(HandlerContext context){
         if (hasView(context,context.getErrorPage())){
@@ -64,7 +63,4 @@ public class Kits {
         return path.toString();
     }
 
-    public static String getErrorView(HttpHandlerRequest request){
-        return getErrorView(request.getContext());
-    }
 }
