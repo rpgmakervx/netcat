@@ -3,6 +3,8 @@ package org.easyarch.netpet.kits;
 import org.easyarch.netpet.kits.file.FileKits;
 import org.easyarch.netpet.web.context.HandlerContext;
 
+import java.io.InputStream;
+
 /**
  * Created by xingtianyu on 17-3-14
  * 下午4:45
@@ -38,7 +40,10 @@ public class Kits {
         if (HandlerContext.WEB_INF.equals(prefix)) {
             return false;
         }
-        if (!FileKits.exists(resourcePath.toString())
+        InputStream stream = Kits.class.getResourceAsStream(
+                context.getViewPrefix()+uri);
+
+        if (stream == null&&!FileKits.exists(resourcePath.toString())
                 ||FileKits.isDir(resourcePath.toString())){
             return false;
         }
