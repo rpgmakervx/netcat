@@ -18,19 +18,19 @@ public class Application {
 
     public static void main(String[] args) {
         App app = new App();
-        app.config().contextPath("/shopping")
-                .webView("/home/code4j/project/demo/static/page")
-                .viewPrefix("page")
-                .viewSuffix("html")
-                .maxFileUpload(1024*1024*4)
-                .errorPage("myerror")
-                .useCache()
-                .cacheMaxAge(1024);
+//        app.config().contextPath("/shopping")
+//                .webView("/home/code4j/project/demo/static/page")
+//                .viewPrefix("page")
+//                .viewSuffix("html")
+//                .maxFileUpload(1024*1024*4)
+//                .errorPage("myerror")
+//                .useCache()
+//                .cacheMaxAge(1024);
 
         app.get("/index", new HttpHandler() {
             @Override
             public void handle(HandlerRequest request, HandlerResponse response) throws Exception {
-
+                response.html("login");
             }
         }).filter("/get", new HttpFilter() {
             @Override
@@ -42,7 +42,7 @@ public class Application {
             public void after(HttpHandlerRequest request, HttpHandlerResponse response) throws Exception {
 
             }
-        }).start();
+        }).start(8888);
 //        app.post("/index/{username}", new ParameterizeHandler())
 //                .get("/download",new DownLoadHandler())
 //                .get("/index/{username}",new JsonHandler())

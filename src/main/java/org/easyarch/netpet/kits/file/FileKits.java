@@ -153,19 +153,15 @@ public class FileKits {
         return file;
     }
 
-    public static byte[] read(String path){
+    public static byte[] read(String path) throws Exception {
         if (path == null)
             return null;
         return read(new File(path));
     }
-    public static byte[] read(File path){
+    public static byte[] read(File path) throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(path);
-        } catch (FileNotFoundException e) {
-            return null;
-        }
+        fis = new FileInputStream(path);
         IOKits.transferTo(fis, baos);
         IOKits.closeIO(baos);
         IOKits.closeIO(fis);
@@ -184,6 +180,30 @@ public class FileKits {
         }
         return null;
     }
+
+    /**
+     * 根据分隔符统计文本文件被分成多少块
+     * @param file 文件
+     * @param separator 分隔符
+     * @return 返回被切分的块数
+     */
+    public static int statistic(File file,String separator) throws Exception {
+        String content = cat(file);
+        String[] segements = content.split(separator);
+        return segements.length;
+    }
+
+    /**
+     * 根据分隔符统计文本文件被分成多少块
+     * @param path 文件路径
+     * @param separator 分隔符
+     * @return 返回被切分的块数
+     */
+    public static int statistic(String path,String separator) throws Exception {
+        return statistic(new File(path),separator);
+    }
+
+
 
     public static String getName(String filePath){
         String[] seg = filePath.split(File.separator);
@@ -351,11 +371,11 @@ public class FileKits {
         return filter(new File(path),filter);
     }
 
-    public static String md5(String path){
+    public static String md5(String path) throws Exception {
         return HashKits.md5(read(path));
     }
 
-    public static String md5(File file){
+    public static String md5(File file) throws Exception {
         return md5(file.getPath());
     }
 

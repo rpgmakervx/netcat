@@ -3,6 +3,7 @@ package org.easyarch.netpet.web.mvc.action.handler.impl;
 import org.easyarch.netpet.kits.TimeKits;
 import org.easyarch.netpet.kits.file.FileFilter;
 import org.easyarch.netpet.kits.file.FileKits;
+import org.easyarch.netpet.kits.file.IOKits;
 import org.easyarch.netpet.web.context.HandlerContext;
 import org.easyarch.netpet.web.http.protocol.HttpHeaderName;
 import org.easyarch.netpet.web.http.protocol.HttpHeaderValue;
@@ -12,6 +13,7 @@ import org.easyarch.netpet.web.http.response.HandlerResponse;
 import org.easyarch.netpet.web.mvc.action.handler.HttpHandler;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.regex.Pattern;
 
 /**
@@ -41,6 +43,14 @@ public class StaticHttpHandler implements HttpHandler {
         } else {
             filename = uri.substring(uri.lastIndexOf(File.separator), uri.length());
         }
+        InputStream stream = this.getClass().getResourceAsStream(
+                context.getViewPrefix()+uri);
+        byte[]content = null;
+        if (stream == null){
+            content = FileKits.readx(resourcePath.toString());
+        }else{
+            content = IOKits.toByteArray(stream);
+        }
         if (cachedPattern.matcher(suffix).matches()){
             checkStrongCache(request,response);
             boolean cached = checkNagoCache(request,response,resourcePath.toString());
@@ -48,16 +58,15 @@ public class StaticHttpHandler implements HttpHandler {
                 response.write();
                 return;
             }
-            response.write(FileKits.readx(resourcePath.toString())
-                    , HttpHeaderValue.getContentType(suffix));
+            response.write(content, HttpHeaderValue.getContentType(suffix));
         }else if (suffix.endsWith(FileFilter.DOCX)||suffix.endsWith(FileFilter.DOC)){
-            response.download(FileKits.readx(resourcePath.toString()),filename,HttpHeaderValue.DOC);
+            response.download(content,filename,HttpHeaderValue.DOC);
         }else if (suffix.endsWith(FileFilter.XLS)||suffix.endsWith(FileFilter.XLSX)){
-            response.download(FileKits.readx(resourcePath.toString()),filename,HttpHeaderValue.XLS);
+            response.download(content,filename,HttpHeaderValue.XLS);
         }else if (suffix.endsWith(FileFilter.PDF)){
-            response.download(FileKits.readx(resourcePath.toString()),filename,HttpHeaderValue.PDF);
+            response.download(content,filename,HttpHeaderValue.PDF);
         }else{
-            response.write(FileKits.read(resourcePath.toString()));
+            response.write(content);
         }
     }
 
@@ -69,7 +78,7 @@ public class StaticHttpHandler implements HttpHandler {
                 HttpHeaderValue.MAXAGE+String.valueOf(request.getContext().getMaxAge()));
     }
 
-    private boolean checkNagoCache(HandlerRequest request, HandlerResponse response,String resourcePath){
+    private boolean checkNagoCache(HandlerRequest request, HandlerResponse response,String resourcePath) throws Exception {
         if (!request.getContext().isNegoCache()){
             return false;
         }
