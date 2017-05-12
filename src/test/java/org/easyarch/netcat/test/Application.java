@@ -1,11 +1,11 @@
 package org.easyarch.netcat.test;
 
-import org.easyarch.netpet.web.http.request.HandlerRequest;
+import org.easyarch.netcat.test.handler.IndexHandler;
+import org.easyarch.netcat.test.handler.LoginHandler;
+import org.easyarch.netcat.test.handler.LoginPageHandler;
 import org.easyarch.netpet.web.http.request.impl.HttpHandlerRequest;
-import org.easyarch.netpet.web.http.response.HandlerResponse;
 import org.easyarch.netpet.web.http.response.impl.HttpHandlerResponse;
 import org.easyarch.netpet.web.mvc.action.filter.HttpFilter;
-import org.easyarch.netpet.web.mvc.action.handler.HttpHandler;
 import org.easyarch.netpet.web.server.App;
 
 /**
@@ -16,43 +16,35 @@ import org.easyarch.netpet.web.server.App;
 
 public class Application {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+//        AsyncHttpClient client = new AsyncHttpClient("http://localhost:8080");
+//        client.get("/", new AsyncResponseHandlerAdapter() {
+//            @Override
+//            public void onSuccess(AsyncHttpResponse response) throws Exception {
+//                System.out.println(response.getString());
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Object message) throws Exception {
+//
+//            }
+//        });
         App app = new App();
-//        app.config().contextPath("/shopping")
-//                .webView("/home/code4j/project/demo/static/page")
-//                .viewPrefix("page")
-//                .viewSuffix("html")
-//                .maxFileUpload(1024*1024*4)
-//                .errorPage("myerror")
-//                .useCache()
-//                .cacheMaxAge(1024);
+//        app.config().contextPath("/shopping");
+        app.get("/user/login.html", new LoginPageHandler())
+                .get("/user/{username}",new IndexHandler())
+                .post("/user/*",new LoginHandler())
+                .filter("/user/*", new HttpFilter() {
+                    @Override
+                    public boolean before(HttpHandlerRequest request, HttpHandlerResponse response) throws Exception {
+                        return true;
+                    }
 
-        app.get("/index", new HttpHandler() {
-            @Override
-            public void handle(HandlerRequest request, HandlerResponse response) throws Exception {
-                response.html("login");
-            }
-        }).filter("/get", new HttpFilter() {
-            @Override
-            public boolean before(HttpHandlerRequest request, HttpHandlerResponse response) throws Exception {
-                return false;
-            }
+                    @Override
+                    public void after(HttpHandlerRequest request, HttpHandlerResponse response) throws Exception {
 
-            @Override
-            public void after(HttpHandlerRequest request, HttpHandlerResponse response) throws Exception {
-
-            }
-        }).start(8888);
-//        app.post("/index/{username}", new ParameterizeHandler())
-//                .get("/download",new DownLoadHandler())
-//                .get("/index/{username}",new JsonHandler())
-//                .get("/index/xingtianyu",new ImageHandler())
-//                .get("/redirect",new RedirectHandler())
-//                .get("/user/login",new LoginPageHandler())
-//                .post("/user/login",new LoginHandler())
-//                .post("/upload",new UpLoadHandler())
-//                .filter("/*",new DemoFilter())
-//                .post("/user/index",new IndexHandler())
-//                .start(8800);
+                    }
+                })
+        .start(7001);
     }
 }

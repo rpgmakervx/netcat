@@ -17,6 +17,7 @@ import org.easyarch.netpet.asynclient.http.entity.FileParam;
 import org.easyarch.netpet.asynclient.http.entity.RequestEntity;
 import org.easyarch.netpet.kits.ByteKits;
 import org.easyarch.netpet.kits.StringKits;
+import org.easyarch.netpet.web.http.Const;
 import org.easyarch.netpet.web.mvc.entity.Json;
 import org.easyarch.netpet.web.mvc.entity.UploadFile;
 
@@ -35,6 +36,7 @@ import java.util.Map;
 
 public class Launcher {
 
+    private static final String USERAGENT = Const.NETPETID + "-ASYNCLIENT";
     private String ip;
     private int port;
     private URL remoteURL;
@@ -130,6 +132,7 @@ public class Launcher {
         }
         headers.set(HttpHeaderNames.HOST, remoteURL.getHost());
         headers.set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+        headers.set(HttpHeaderNames.USER_AGENT, USERAGENT);
         headers.set(HttpHeaderNames.CONTENT_LENGTH, buf == null ? 0 : buf.readableBytes());
         return headers;
     }
@@ -146,6 +149,7 @@ public class Launcher {
             }
         }
         System.out.println("add conentLength:" + contentLength);
+        headers.set(HttpHeaderNames.USER_AGENT, USERAGENT);
         headers.set(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
         headers.set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.MULTIPART_FORM_DATA);
         headers.set(HttpHeaderNames.HOST, remoteURL.getHost());

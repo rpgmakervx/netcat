@@ -8,7 +8,7 @@ package org.easyarch.netpet.web.http;
 
 public class Const {
 
-    public static final String NETCATID = "NETCATID";
+    public static final String NETPETID = "NETPETID";
 
     public static final String POINT = ".";
 

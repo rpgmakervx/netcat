@@ -16,7 +16,8 @@ public class IndexHandler implements HttpHandler{
     @Override
     public void handle(HandlerRequest request, HandlerResponse response) throws Exception {
         HttpSession session = request.getSession();
-        System.out.println(request.getParamMap());
-        response.html("index-v1");
+        String username = request.getParam("username");
+        session.setAttr("username",username);
+        response.html("index");
     }
 }

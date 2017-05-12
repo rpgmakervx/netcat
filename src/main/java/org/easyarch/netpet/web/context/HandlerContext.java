@@ -47,7 +47,7 @@ public class HandlerContext {
     public boolean strongCache = true;
 
 
-    public String contextPath = File.separator;
+    public String contextPath = "/";
 
     public String errorPage = "error";
 

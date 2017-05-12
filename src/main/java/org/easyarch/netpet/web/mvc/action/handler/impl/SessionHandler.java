@@ -33,7 +33,7 @@ public class SessionHandler implements HttpHandler {
             createCookie(sessionId,response);
         }
         for (HttpCookie cookie:request.getCookies()){
-            if (cookie.name().equals(Const.NETCATID)
+            if (cookie.name().equals(Const.NETPETID)
                     &&!sessionId.equals(cookie.value())){
                 System.out.println("重建cookie");
                 createCookie(sessionId,response);
@@ -43,7 +43,7 @@ public class SessionHandler implements HttpHandler {
 
     private void createCookie(String sessionId, HandlerResponse response){
         HandlerContext context = response.getContext();
-        HttpCookie cookie = new HttpCookie(Const.NETCATID,sessionId);
+        HttpCookie cookie = new HttpCookie(Const.NETPETID,sessionId);
         InetSocketAddress hostAddress =
                 (InetSocketAddress) ctx.channel().remoteAddress();
         cookie.setDomain(hostAddress.getHostName());

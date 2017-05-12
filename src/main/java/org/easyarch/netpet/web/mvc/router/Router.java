@@ -197,6 +197,7 @@ public class Router {
                 ", method=" + method +
                 ", level=" + level +
                 ", segements=" + segements +
+                ", parameterizeUrl=" + parameterizeUrl +
                 '}';
     }
 

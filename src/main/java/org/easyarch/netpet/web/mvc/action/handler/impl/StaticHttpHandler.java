@@ -43,8 +43,7 @@ public class StaticHttpHandler implements HttpHandler {
         } else {
             filename = uri.substring(uri.lastIndexOf(File.separator), uri.length());
         }
-        InputStream stream = this.getClass().getResourceAsStream(
-                context.getViewPrefix()+uri);
+        InputStream stream = this.getClass().getResourceAsStream(uri);
         byte[]content = null;
         if (stream == null){
             content = FileKits.readx(resourcePath.toString());

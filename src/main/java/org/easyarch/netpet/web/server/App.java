@@ -63,6 +63,7 @@ final public class App {
         return receive(path,httpHandler,HttpMethod.DELETE);
     }
     public App receive(String path,HttpHandler httpHandler,HttpMethod method){
+        //"/shopping/user/login"
         if (StringKits.isEmpty(path)||httpHandler == null){
             return this;
         }

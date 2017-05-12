@@ -14,12 +14,7 @@ public class LoginHandler implements HttpHandler {
 
     @Override
     public void handle(HandlerRequest request, HandlerResponse response) throws Exception {
-//        System.out.println("login param:"+request.body(User.class));
-//        UploadFile uploadFile = request.file("file");
-//        System.out.println(uploadFile);
-        System.out.println("request json:"+request.getJson());
-        System.out.println("request map:"+request.getParamMap());
-        System.out.println("contentType:"+request.getContentType());
+        request.getSession();
         response.json(request.getJson());
     }
 }

@@ -202,7 +202,7 @@ public class HttpHandlerRequest implements HandlerRequest {
     @Override
     public String getSessionId() {
         for(HttpCookie cookie:getCookies()){
-            if (Const.NETCATID.equals(cookie.name())){
+            if (Const.NETPETID.equals(cookie.name())){
                 return cookie.value();
             }
         }
@@ -227,7 +227,7 @@ public class HttpHandlerRequest implements HandlerRequest {
     public HttpSession getSession() {
         String sessionId = "";
         for(HttpCookie cookie:getCookies()){
-            if (Const.NETCATID.equals(cookie.name())){
+            if (Const.NETPETID.equals(cookie.name())){
                 sessionId = cookie.value();
                 break;
             }

@@ -40,9 +40,8 @@ public class Kits {
         if (HandlerContext.WEB_INF.equals(prefix)) {
             return false;
         }
-        InputStream stream = Kits.class.getResourceAsStream(
-                context.getViewPrefix()+uri);
-
+        InputStream stream = Kits.class.getResourceAsStream(uri);
+        System.out.println("Kits getResourceAsStream("+uri+"):"+stream);
         if (stream == null&&!FileKits.exists(resourcePath.toString())
                 ||FileKits.isDir(resourcePath.toString())){
             return false;
