@@ -1,11 +1,7 @@
 package org.easyarch.netcat.test;
 
-import org.easyarch.netcat.test.handler.IndexHandler;
-import org.easyarch.netcat.test.handler.LoginHandler;
 import org.easyarch.netcat.test.handler.LoginPageHandler;
-import org.easyarch.netpet.web.http.request.impl.HttpHandlerRequest;
-import org.easyarch.netpet.web.http.response.impl.HttpHandlerResponse;
-import org.easyarch.netpet.web.mvc.action.filter.HttpFilter;
+import org.easyarch.netcat.test.handler.UpLoadHandler;
 import org.easyarch.netpet.web.server.App;
 
 /**
@@ -31,20 +27,8 @@ public class Application {
 //        });
         App app = new App();
 //        app.config().contextPath("/shopping");
-        app.get("/user/login.html", new LoginPageHandler())
-                .get("/user/{username}",new IndexHandler())
-                .post("/user/*",new LoginHandler())
-                .filter("/user/*", new HttpFilter() {
-                    @Override
-                    public boolean before(HttpHandlerRequest request, HttpHandlerResponse response) throws Exception {
-                        return true;
-                    }
-
-                    @Override
-                    public void after(HttpHandlerRequest request, HttpHandlerResponse response) throws Exception {
-
-                    }
-                })
+        app.get("/user/login", new LoginPageHandler())
+                .post("/upload",new UpLoadHandler())
         .start(7001);
     }
 }
