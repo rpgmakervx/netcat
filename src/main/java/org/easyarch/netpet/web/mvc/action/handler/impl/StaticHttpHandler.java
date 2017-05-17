@@ -12,7 +12,6 @@ import org.easyarch.netpet.web.http.request.HandlerRequest;
 import org.easyarch.netpet.web.http.response.HandlerResponse;
 import org.easyarch.netpet.web.mvc.action.handler.HttpHandler;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.regex.Pattern;
 
@@ -39,9 +38,9 @@ public class StaticHttpHandler implements HttpHandler {
         String filename = "";
         if (point != -1) {
             suffix = uri.substring(point, uri.length());
-            filename = uri.substring(uri.lastIndexOf(File.separator), point);
+            filename = uri.substring(uri.lastIndexOf("/"), point);
         } else {
-            filename = uri.substring(uri.lastIndexOf(File.separator), uri.length());
+            filename = uri.substring(uri.lastIndexOf("/"), uri.length());
         }
         InputStream stream = this.getClass().getResourceAsStream(uri);
         byte[]content = null;

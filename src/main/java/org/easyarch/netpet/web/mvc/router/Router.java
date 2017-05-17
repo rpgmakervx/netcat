@@ -76,10 +76,11 @@ public class Router {
         }else{
             path = url;
         }
-        int index = url.lastIndexOf(QUESTION);
+        int index = path.lastIndexOf(QUESTION);
         if (index == -1){
             return path;
         }
+        System.out.println("path:"+path.substring(0,index));
         return path.substring(0,index);
     }
 

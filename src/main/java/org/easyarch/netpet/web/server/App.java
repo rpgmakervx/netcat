@@ -10,6 +10,8 @@ import org.easyarch.netpet.web.mvc.action.filter.HttpFilter;
 import org.easyarch.netpet.web.mvc.action.handler.HttpHandler;
 import org.easyarch.netpet.web.mvc.router.Router;
 
+import java.io.File;
+
 /**
  * Description :
  * Created by xingtianyu on 17-2-23
@@ -27,54 +29,58 @@ final public class App {
 
     private HandlerConfig handlerConfig;
 
-    public App(){
+    public App() {
         context = new HandlerContext();
         holder = new ActionHolder();
         this.handlerConfig = new HandlerConfig(context);
-        launcher = new Launcher(context,holder);
+        launcher = new Launcher(context, holder);
     }
 
-    public void start(){
+    public void start() {
         launcher.start();
     }
-    public void start(int port){
+
+    public void start(int port) {
         launcher.start(port);
     }
 
-    public App filter(String path,HttpFilter filter){
-        if (filter == null){
+    public App filter(String path, HttpFilter filter) {
+        if (filter == null) {
             return this;
         }
-        holder.addFilter(new Router(path, ActionType.FILTER),filter);
+        holder.addFilter(new Router(path, ActionType.FILTER), filter);
         return this;
     }
 
-    public App get(String path, HttpHandler httpHandler){
-        return receive(path,httpHandler,HttpMethod.GET);
+    public App get(String path, HttpHandler httpHandler) {
+        return receive(path, httpHandler, HttpMethod.GET);
     }
 
-    public App post(String path,HttpHandler httpHandler){
-        return receive(path,httpHandler,HttpMethod.POST);
+    public App post(String path, HttpHandler httpHandler) {
+        return receive(path, httpHandler, HttpMethod.POST);
     }
-    public App put(String path,HttpHandler httpHandler){
-        return receive(path,httpHandler,HttpMethod.PUT);
+
+    public App put(String path, HttpHandler httpHandler) {
+        return receive(path, httpHandler, HttpMethod.PUT);
     }
-    public App delete(String path,HttpHandler httpHandler){
-        return receive(path,httpHandler,HttpMethod.DELETE);
+
+    public App delete(String path, HttpHandler httpHandler) {
+        return receive(path, httpHandler, HttpMethod.DELETE);
     }
-    public App receive(String path,HttpHandler httpHandler,HttpMethod method){
+
+    public App receive(String path, HttpHandler httpHandler, HttpMethod method) {
         //"/shopping/user/login"
-        if (StringKits.isEmpty(path)||httpHandler == null){
+        if (StringKits.isEmpty(path) || httpHandler == null) {
             return this;
         }
-        if (path.startsWith("/")){
-            path = path.substring(1,path.length());
+        if (path.startsWith(File.separator)) {
+            path = path.substring(1, path.length());
         }
-        holder.addAction(new Router(context.getContextPath() + path,ActionType.HANDLER, method),httpHandler);
+        holder.addAction(new Router(context.getContextPath() + path, ActionType.HANDLER, method), httpHandler);
         return this;
     }
 
-    public HandlerConfig config(){
+    public HandlerConfig config() {
         return this.handlerConfig;
     }
 
