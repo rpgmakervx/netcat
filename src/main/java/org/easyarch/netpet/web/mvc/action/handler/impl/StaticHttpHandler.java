@@ -28,11 +28,12 @@ public class StaticHttpHandler implements HttpHandler {
     public void handle(HandlerRequest request, HandlerResponse response) throws Exception {
         HandlerContext context = request.getContext();
         String webView = context.getWebView();
+        String prefix = context.getViewPrefix();
         String uri = request.getRequestURI();
         Pattern cachedPattern = Pattern.compile(FileFilter.CACHEPATTERN);
 
         StringBuffer resourcePath = new StringBuffer();
-        resourcePath.append(webView).append(uri);
+        resourcePath.append(webView).append(prefix).append(uri);
         int point = uri.lastIndexOf(".");
         String suffix = "";
         String filename = "";
@@ -42,7 +43,7 @@ public class StaticHttpHandler implements HttpHandler {
         } else {
             filename = uri.substring(uri.lastIndexOf("/"), uri.length());
         }
-        InputStream stream = this.getClass().getResourceAsStream(uri);
+        InputStream stream = this.getClass().getResourceAsStream(prefix+uri);
         byte[]content = null;
         if (stream == null){
             content = FileKits.readx(resourcePath.toString());

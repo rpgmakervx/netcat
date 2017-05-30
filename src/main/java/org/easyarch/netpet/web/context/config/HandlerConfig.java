@@ -25,10 +25,10 @@ public class HandlerConfig {
                 &&!webView.startsWith(File.separator)){
             webView = "/" + webView;
         }
-        if (StringKits.isNotEmpty(webView)
-                &&!webView.endsWith(File.separator)){
-            webView = webView + "/";
-        }
+//        if (StringKits.isNotEmpty(webView)
+//                &&!webView.endsWith(File.separator)){
+//            webView = webView + "/";
+//        }
         context.setWebView(webView);
         return this;
     }
@@ -38,10 +38,10 @@ public class HandlerConfig {
                 &&!viewPrefix.startsWith(File.separator)){
             viewPrefix = "/" + viewPrefix;
         }
-        if (StringKits.isNotEmpty(viewPrefix)
-                &&!viewPrefix.endsWith(File.separator)){
-            viewPrefix = viewPrefix + "/";
-        }
+//        if (StringKits.isNotEmpty(viewPrefix)
+//                &&!viewPrefix.endsWith(File.separator)){
+//            viewPrefix = viewPrefix + "/";
+//        }
         context.setViewPrefix(viewPrefix);
         return this;
     }
@@ -55,9 +55,9 @@ public class HandlerConfig {
         if (!contextPath.startsWith("/")){
             contextPath = "/" + contextPath;
         }
-        if (!contextPath.endsWith("/")){
-            contextPath = contextPath + "/";
-        }
+//        if (!contextPath.endsWith("/")){
+//            contextPath = contextPath + "/";
+//        }
         context.setContextPath(contextPath);
         return this;
     }

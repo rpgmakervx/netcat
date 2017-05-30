@@ -43,32 +43,32 @@ public class HandlerContext {
 
     private int sessionAge = Integer.MAX_VALUE;
 
-    public boolean negoCache = false;
-    public boolean strongCache = true;
+    private boolean negoCache = false;
+    private boolean strongCache = true;
 
 
-    public String contextPath = "/";
+    private String contextPath = "/";
 
-    public String errorPage = "error";
+    private String errorPage = "error";
 
-    public String notFound = "error";
+    private String notFound = "error";
 
-    public String serverError = "error";
+    private String serverError = "error";
 
     /**
      * web资源路径
      */
-    public String webView;
+    private String webView;
     /**
      * 视图资源路径前缀
      */
-    public String viewPrefix = WEB_INF;
+    private String viewPrefix = WEB_INF;
     /**
      * 视图资源文件后缀（默认html）
      */
-    public String viewSuffix = DEFAULT_SUFFIX;
+    private String viewSuffix = DEFAULT_SUFFIX;
 
-    public SessionHolder sessionHolder;
+    private SessionHolder sessionHolder;
 
     public HandlerContext(){
         URL resourceUrl = HandlerContext.class.getResource("/");

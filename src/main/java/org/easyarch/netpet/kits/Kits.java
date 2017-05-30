@@ -30,17 +30,18 @@ public class Kits {
 
     public static boolean hasResource(HandlerContext context,String uri){
         StringBuffer resourcePath = new StringBuffer();
-        resourcePath.append(context.getWebView()).append(uri);
+        resourcePath.append(context.getWebView()).append(context.getViewPrefix()).append(uri);
         String prefix = "";
         if (!uri.equals("/")) {
             String[] segement = uri.split("/");
             prefix = "/" + segement[1] + "/";
         }
         System.out.println("resourcePath.toString():"+resourcePath.toString());
+        System.out.println("resourcePath prefix:"+context.getViewPrefix());
         if (HandlerContext.WEB_INF.equals(prefix)) {
             return false;
         }
-        InputStream stream = Kits.class.getResourceAsStream(uri);
+        InputStream stream = Kits.class.getResourceAsStream(context.getViewPrefix()+uri);
         System.out.println("Kits getResourceAsStream("+uri+"):"+stream);
         if (stream == null&&!FileKits.exists(resourcePath.toString())
                 ||FileKits.isDir(resourcePath.toString())){

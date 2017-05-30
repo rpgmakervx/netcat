@@ -253,7 +253,7 @@ public class HttpHandlerResponse implements HandlerResponse {
      */
     private void html(String view, int statusCode) throws Exception {
         StringBuffer pathBuffer = new StringBuffer();
-        pathBuffer.append(view).append(Const.POINT)
+        pathBuffer.append("/").append(view).append(Const.POINT)
                 .append(context.getViewSuffix());
         String wholePath = context.getWebView() + context.getViewPrefix() + pathBuffer.toString();
         tmpParser.addParam(models);
