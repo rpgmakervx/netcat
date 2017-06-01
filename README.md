@@ -69,7 +69,22 @@ public class Application {
 ```
 自上而下，分别返回json,图片，重定向请求（302），文件下载
 
-还有其他api不详细列举
+`HandlerResponse` 类也包含几个便捷的操作：
+```java
+    public String getParam(String name);
+
+    public Integer getIntParam(String name);
+    
+    public UploadFile file(String name);
+    
+    public List<UploadFile> files();
+
+    public<T> T body(Class<T> cls) throws Exception;
+
+    public Json getJson();
+```
+自上而下，分别是获取字符串参数，获取整型参数，获取上传文件，获取多个上传文件，获取一个表单实体（字段必须要和bean匹配）
+
 
 ### rest架构风格
 我们看到第一个例子中的`get`方法第一个参数填写的是rest接口名，对应`post`,`put`.`delete`方法使用一样，不做过多说明。
