@@ -6,9 +6,10 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
-import org.easyarch.netpet.web.context.ActionHolder;
-import org.easyarch.netpet.web.context.HandlerContext;
 import org.easyarch.netpet.kits.ByteKits;
+import org.easyarch.netpet.web.context.ActionHolder;
+import org.easyarch.netpet.web.context.CookieSessionManager;
+import org.easyarch.netpet.web.context.HandlerContext;
 
 /**
  * Created by xingtianyu on 17-3-14
@@ -20,6 +21,7 @@ public class BaseDispatcherHandler extends ChannelInboundHandlerAdapter {
 
     protected HandlerContext context;
     protected ActionHolder holder;
+    protected CookieSessionManager manager;
 
     public BaseDispatcherHandler(HandlerContext context, ActionHolder holder) {
         this.context = context;

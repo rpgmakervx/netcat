@@ -6,6 +6,7 @@ import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
 import org.easyarch.netpet.kits.ByteKits;
 import org.easyarch.netpet.kits.StringKits;
 import org.easyarch.netpet.kits.file.FileKits;
+import org.easyarch.netpet.web.context.CookieSessionManager;
 import org.easyarch.netpet.web.context.HandlerContext;
 import org.easyarch.netpet.web.http.Const;
 import org.easyarch.netpet.web.http.cookie.HttpCookie;
@@ -35,6 +36,9 @@ import static org.easyarch.netpet.web.http.protocol.HttpHeaderName.SET_COOKIE;
 public class HttpHandlerResponse implements HandlerResponse {
 
     private FullHttpResponse response;
+
+    private CookieSessionManager manager;
+
     private Channel channel;
     private HttpHeaders headers;
     private String charset;
@@ -48,12 +52,13 @@ public class HttpHandlerResponse implements HandlerResponse {
     private ServerCookieEncoder encoder;
 
 
-    public HttpHandlerResponse(FullHttpResponse response,String sessionId, HandlerContext context, Channel channel) throws IOException {
-        init(response, context, channel);
+    public HttpHandlerResponse(CookieSessionManager manager,FullHttpResponse response,String sessionId, HandlerContext context, Channel channel) throws IOException {
+        init(manager,response, context, channel);
         initTemplate(sessionId);
     }
 
-    private void init(FullHttpResponse response, HandlerContext context, Channel channel) throws IOException {
+    private void init(CookieSessionManager manager,FullHttpResponse response, HandlerContext context, Channel channel) throws IOException {
+        this.manager = manager;
         this.context = context;
         this.response = response;
 

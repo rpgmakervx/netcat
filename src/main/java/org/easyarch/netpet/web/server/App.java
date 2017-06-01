@@ -1,16 +1,14 @@
 package org.easyarch.netpet.web.server;
 
-import org.easyarch.netpet.web.context.ActionHolder;
-import org.easyarch.netpet.web.context.config.HandlerConfig;
-import org.easyarch.netpet.web.context.HandlerContext;
-import org.easyarch.netpet.web.http.protocol.HttpMethod;
 import org.easyarch.netpet.kits.StringKits;
+import org.easyarch.netpet.web.context.ActionHolder;
+import org.easyarch.netpet.web.context.HandlerContext;
+import org.easyarch.netpet.web.context.config.HandlerConfig;
+import org.easyarch.netpet.web.http.protocol.HttpMethod;
 import org.easyarch.netpet.web.mvc.action.ActionType;
 import org.easyarch.netpet.web.mvc.action.filter.HttpFilter;
 import org.easyarch.netpet.web.mvc.action.handler.HttpHandler;
 import org.easyarch.netpet.web.mvc.router.Router;
-
-import java.io.File;
 
 /**
  * Description :
@@ -73,7 +71,7 @@ final public class App {
         if (StringKits.isEmpty(path) || httpHandler == null) {
             return this;
         }
-        if (path.startsWith(File.separator)) {
+        if (path.startsWith("/")) {
             path = path.substring(1, path.length());
         }
         holder.addAction(new Router(context.getContextPath() + path, ActionType.HANDLER, method), httpHandler);

@@ -258,7 +258,7 @@ public class FileKits {
      */
     public static File getBottomDir(File file){
         String filePath = file.getPath();
-        int lastSeparatorIndex = filePath.lastIndexOf(File.separator) + 1;
+        int lastSeparatorIndex = filePath.lastIndexOf("/") + 1;
         String configFileName = filePath.substring(
                 lastSeparatorIndex,filePath.length());
         int fileNameIndex = filePath.lastIndexOf(configFileName);

@@ -3,8 +3,6 @@ package org.easyarch.netpet.web.context.config;
 import org.easyarch.netpet.kits.StringKits;
 import org.easyarch.netpet.web.context.HandlerContext;
 
-import java.io.File;
-
 /**
  * Created by xingtianyu on 17-3-14
  * 下午4:32
@@ -22,7 +20,7 @@ public class HandlerConfig {
 
     public HandlerConfig webView(String webView){
         if (StringKits.isNotEmpty(webView)
-                &&!webView.startsWith(File.separator)){
+                &&!webView.startsWith("/")){
             webView = "/" + webView;
         }
 //        if (StringKits.isNotEmpty(webView)
@@ -35,7 +33,7 @@ public class HandlerConfig {
 
     public HandlerConfig viewPrefix(String viewPrefix){
         if (StringKits.isNotEmpty(viewPrefix)
-                &&!viewPrefix.startsWith(File.separator)){
+                &&!viewPrefix.startsWith("/")){
             viewPrefix = "/" + viewPrefix;
         }
 //        if (StringKits.isNotEmpty(viewPrefix)

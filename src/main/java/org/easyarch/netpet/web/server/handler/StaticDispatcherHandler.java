@@ -2,11 +2,12 @@ package org.easyarch.netpet.web.server.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
+import org.easyarch.netpet.kits.Kits;
 import org.easyarch.netpet.web.context.ActionHolder;
+import org.easyarch.netpet.web.context.CookieSessionManager;
 import org.easyarch.netpet.web.context.HandlerContext;
 import org.easyarch.netpet.web.http.request.impl.HttpHandlerRequest;
 import org.easyarch.netpet.web.http.response.impl.HttpHandlerResponse;
-import org.easyarch.netpet.kits.Kits;
 import org.easyarch.netpet.web.mvc.action.ActionType;
 import org.easyarch.netpet.web.mvc.action.filter.HttpFilter;
 import org.easyarch.netpet.web.mvc.action.handler.impl.StaticHttpHandler;
@@ -44,8 +45,9 @@ public class StaticDispatcherHandler extends BaseDispatcherHandler {
             ctx.fireChannelRead(msg);
             return;
         }
-        HttpHandlerRequest req = new HttpHandlerRequest(request, router, context, ctx.channel());
-        HttpHandlerResponse resp = new HttpHandlerResponse(response,req.getSessionId(), context, ctx.channel());
+        manager = new CookieSessionManager(context,request,response);
+        HttpHandlerRequest req = new HttpHandlerRequest(manager,request, router, context, ctx.channel());
+        HttpHandlerResponse resp = new HttpHandlerResponse(manager,response,req.getSessionId(), context, ctx.channel());
         if (!filters.isEmpty()) {
             for (HttpFilter filter : filters) {
                 if (!filter.before(req, resp)) {

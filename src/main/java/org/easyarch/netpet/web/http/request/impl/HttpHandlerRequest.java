@@ -10,6 +10,7 @@ import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import org.easyarch.netpet.kits.HashKits;
 import org.easyarch.netpet.kits.StringKits;
+import org.easyarch.netpet.web.context.CookieSessionManager;
 import org.easyarch.netpet.web.context.HandlerContext;
 import org.easyarch.netpet.web.http.Const;
 import org.easyarch.netpet.web.http.cookie.HttpCookie;
@@ -18,12 +19,12 @@ import org.easyarch.netpet.web.http.request.BodyWrapper;
 import org.easyarch.netpet.web.http.request.HandlerRequest;
 import org.easyarch.netpet.web.http.request.ParamParser;
 import org.easyarch.netpet.web.http.session.HttpSession;
-import org.easyarch.netpet.web.http.session.impl.DefaultHttpSession;
 import org.easyarch.netpet.web.mvc.entity.Json;
 import org.easyarch.netpet.web.mvc.entity.UploadFile;
 import org.easyarch.netpet.web.mvc.router.Router;
 
 import java.io.UnsupportedEncodingException;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.charset.Charset;
 import java.util.*;
@@ -40,6 +41,8 @@ public class HttpHandlerRequest implements HandlerRequest {
     private FullHttpRequest request;
     private HttpHeaders headers;
 
+    private CookieSessionManager manager;
+
     private ByteBuf buf;
     private Channel channel;
 
@@ -53,7 +56,8 @@ public class HttpHandlerRequest implements HandlerRequest {
     private ServerCookieDecoder decoder;
     private static final String QUESTION = "?";
 
-    public HttpHandlerRequest(FullHttpRequest request,Router router, HandlerContext context, Channel channel){
+    public HttpHandlerRequest(CookieSessionManager manager,FullHttpRequest request,Router router, HandlerContext context, Channel channel){
+        this.manager = manager;
         this.request = request;
         this.context = context;
         this.router = router;
@@ -239,10 +243,9 @@ public class HttpHandlerRequest implements HandlerRequest {
                 sessionId = HashKits
                         .sha1(channel.id().asLongText());
             }
-            session = new DefaultHttpSession();
-            session.setSessionId(sessionId);
-            session.setMaxAge(context.getSessionAge());
-            context.addSession(sessionId,session);
+            InetSocketAddress hostAddress =
+                    (InetSocketAddress)channel.remoteAddress();
+            session = manager.createSession(sessionId,hostAddress.getHostName());
             System.out.println("add 了一个session："+sessionId+":"+session);
         }
         return session;

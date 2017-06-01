@@ -7,15 +7,13 @@ import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import org.easyarch.netpet.kits.HashKits;
 import org.easyarch.netpet.kits.StringKits;
 import org.easyarch.netpet.web.context.ActionHolder;
+import org.easyarch.netpet.web.context.CookieSessionManager;
 import org.easyarch.netpet.web.context.HandlerContext;
 import org.easyarch.netpet.web.http.Const;
-import org.easyarch.netpet.web.http.cookie.HttpCookie;
 import org.easyarch.netpet.web.http.protocol.HttpHeaderName;
 import org.easyarch.netpet.web.http.protocol.HttpStatus;
 import org.easyarch.netpet.web.http.request.impl.HttpHandlerRequest;
 import org.easyarch.netpet.web.http.response.impl.HttpHandlerResponse;
-import org.easyarch.netpet.web.http.session.HttpSession;
-import org.easyarch.netpet.web.http.session.impl.DefaultHttpSession;
 import org.easyarch.netpet.web.mvc.action.Action;
 import org.easyarch.netpet.web.mvc.action.ActionType;
 import org.easyarch.netpet.web.mvc.action.ActionWrapper;
@@ -28,9 +26,6 @@ import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
-import static org.easyarch.netpet.web.http.protocol.HttpHeaderName.COOKIE;
-import static org.easyarch.netpet.web.http.protocol.HttpHeaderName.SET_COOKIE;
 
 
 /**
@@ -46,6 +41,8 @@ import static org.easyarch.netpet.web.http.protocol.HttpHeaderName.SET_COOKIE;
 public class HttpDispatcherHandler extends BaseDispatcherHandler {
 
     private ErrorHandler errorHandler;
+
+
 
     public HttpDispatcherHandler(HandlerContext context, ActionHolder holder) {
         super(context, holder);
@@ -75,9 +72,10 @@ public class HttpDispatcherHandler extends BaseDispatcherHandler {
         if (wrapper != null) {
             action = wrapper.getAction();
         }
-        checkCookie(ctx,request,response);
-        HttpHandlerRequest req = new HttpHandlerRequest(request, router, context, ctx.channel());
-        HttpHandlerResponse resp = new HttpHandlerResponse(response,req.getSessionId(), context, ctx.channel());
+        manager = new CookieSessionManager(context,request,response);
+        manager.checkCookie(ctx,request);
+        HttpHandlerRequest req = new HttpHandlerRequest(manager,request, router, context, ctx.channel());
+        HttpHandlerResponse resp = new HttpHandlerResponse(manager,response,req.getSessionId(), context, ctx.channel());
 //        SessionHandler sessionHandler = new SessionHandler(ctx);
 //        sessionHandler.handle(req,resp);
         System.out.println("404 ? :"+(filters == null || filters.isEmpty() && action == null));
@@ -108,53 +106,5 @@ public class HttpDispatcherHandler extends BaseDispatcherHandler {
         }
     }
 
-    /**
-     * 初始化链接时创建cookie和session
-     * @param ctx
-     * @param request
-     * @param response
-     */
-    private void checkCookie(ChannelHandlerContext ctx,FullHttpRequest request,FullHttpResponse response){
-        String cookieValue = request.headers().get(HttpHeaderName.COOKIE);
-        Set<Cookie> cookies;
-        if (StringKits.isEmpty(cookieValue)){
-            cookies = Collections.emptySet(); ;
-        }else {
-            ServerCookieDecoder decoder = ServerCookieDecoder.LAX;
-            cookies = decoder.decode(cookieValue);
-        }
-        String sessionId = HashKits
-                .sha1(ctx.channel().id().asLongText());
-        boolean flag = true;
-        for(Cookie cookie:cookies){
-            if (Const.NETPETID.equals(cookie.name())){
-                flag = false;
-                sessionId = cookie.value();
-                break;
-            }
-        }
-        if (flag){
-            createCookieSession(sessionId,ctx,request,response);
-        }
-        for (Cookie cookie:cookies){
-            if (cookie.name().equals(Const.NETPETID)
-                    &&!sessionId.equals(cookie.value())){
-                createCookieSession(sessionId,ctx,request,response);
-            }
-        }
-    }
-    private void createCookieSession(String sessionId,ChannelHandlerContext ctx,FullHttpRequest request, FullHttpResponse response){
-        HttpCookie cookie = new HttpCookie(Const.NETPETID,sessionId);
-        InetSocketAddress hostAddress =
-                (InetSocketAddress) ctx.channel().remoteAddress();
-        cookie.setDomain(hostAddress.getHostName());
-        cookie.setPath(context.getContextPath());
-        response.headers().add(SET_COOKIE,cookie.getWrapper());
-        request.headers().add(COOKIE,cookie.getWrapper());
-        HttpSession session = new DefaultHttpSession();
-        session.setSessionId(sessionId);
-        session.setMaxAge(context.getSessionAge());
-        context.addSession(sessionId,session);
-    }
 
 }
