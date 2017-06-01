@@ -37,6 +37,10 @@ public class SessionHolder {
         return sessionMap.remove(sessionId);
     }
 
+    public Map<String,HttpSession> getAll(){
+        return sessionMap;
+    }
+
     class Monitor implements Runnable{
 
         @Override

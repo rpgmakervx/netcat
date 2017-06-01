@@ -1,7 +1,6 @@
 package org.easyarch.netcat.test;
 
-import org.easyarch.netcat.test.handler.LoginPageHandler;
-import org.easyarch.netcat.test.handler.UpLoadHandler;
+import org.easyarch.netcat.test.handler.IndexHandler;
 import org.easyarch.netpet.web.server.App;
 
 /**
@@ -27,8 +26,7 @@ public class Application {
 //        });
         App app = new App();
 //        app.config().contextPath("/shopping");
-        app.get("/user/login", new LoginPageHandler())
-                .post("/upload",new UpLoadHandler())
-        .start(7001);
+        app.get("/user/{username}", new IndexHandler());
+        app.start(6789);
     }
 }

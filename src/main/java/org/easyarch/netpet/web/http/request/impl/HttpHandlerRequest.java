@@ -232,14 +232,18 @@ public class HttpHandlerRequest implements HandlerRequest {
                 break;
             }
         }
+        System.out.println("getSession时 cookie"+getCookies());
         HttpSession session = context.getSession(sessionId);
         if (StringKits.isEmpty(sessionId) ||session == null){
-            sessionId = HashKits
-                    .sha1(channel.id().asLongText());
+            if (StringKits.isEmpty(sessionId)){
+                sessionId = HashKits
+                        .sha1(channel.id().asLongText());
+            }
             session = new DefaultHttpSession();
             session.setSessionId(sessionId);
             session.setMaxAge(context.getSessionAge());
             context.addSession(sessionId,session);
+            System.out.println("add 了一个session："+sessionId+":"+session);
         }
         return session;
     }

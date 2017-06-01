@@ -1,6 +1,7 @@
 package org.easyarch.netpet.web.http.session;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Description :
@@ -20,4 +21,5 @@ public interface HttpSession extends Serializable{
     public int getMaxAge();
     public void setMaxAge(int maxAge);
     public boolean isExpire();
+    public Map<String,Object> getAll();
 }

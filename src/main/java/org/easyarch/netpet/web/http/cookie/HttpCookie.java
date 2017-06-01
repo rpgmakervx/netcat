@@ -81,4 +81,11 @@ public class HttpCookie {
     public Cookie getWrapper(){
         return this.cookie;
     }
+
+    @Override
+    public String toString() {
+        return "HttpCookie{" +
+                "cookie=" + cookie +
+                '}';
+    }
 }

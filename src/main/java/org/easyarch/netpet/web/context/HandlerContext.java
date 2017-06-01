@@ -127,6 +127,10 @@ public class HandlerContext {
         return sessionHolder.getSession(sessionId);
     }
 
+    public Map<String,HttpSession> getSessions(){
+        return sessionHolder.getAll();
+    }
+
     public void addSession(String sessionId, HttpSession session){
         sessionHolder.addSession(sessionId,session);
     }

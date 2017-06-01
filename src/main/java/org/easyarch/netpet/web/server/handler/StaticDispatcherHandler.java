@@ -45,7 +45,7 @@ public class StaticDispatcherHandler extends BaseDispatcherHandler {
             return;
         }
         HttpHandlerRequest req = new HttpHandlerRequest(request, router, context, ctx.channel());
-        HttpHandlerResponse resp = new HttpHandlerResponse(response, context, ctx.channel());
+        HttpHandlerResponse resp = new HttpHandlerResponse(response,req.getSessionId(), context, ctx.channel());
         if (!filters.isEmpty()) {
             for (HttpFilter filter : filters) {
                 if (!filter.before(req, resp)) {

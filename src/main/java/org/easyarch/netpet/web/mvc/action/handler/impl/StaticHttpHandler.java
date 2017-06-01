@@ -33,7 +33,7 @@ public class StaticHttpHandler implements HttpHandler {
         Pattern cachedPattern = Pattern.compile(FileFilter.CACHEPATTERN);
 
         StringBuffer resourcePath = new StringBuffer();
-        resourcePath.append(webView).append(prefix).append(uri);
+        resourcePath.append(webView).append(uri);
         int point = uri.lastIndexOf(".");
         String suffix = "";
         String filename = "";
@@ -43,56 +43,56 @@ public class StaticHttpHandler implements HttpHandler {
         } else {
             filename = uri.substring(uri.lastIndexOf("/"), uri.length());
         }
-        InputStream stream = this.getClass().getResourceAsStream(prefix+uri);
-        byte[]content = null;
-        if (stream == null){
+        InputStream stream = this.getClass().getResourceAsStream(prefix + uri);
+        byte[] content = null;
+        if (stream == null) {
             content = FileKits.readx(resourcePath.toString());
-        }else{
+        } else {
             content = IOKits.toByteArray(stream);
         }
-        if (cachedPattern.matcher(suffix).matches()){
-            checkStrongCache(request,response);
-            boolean cached = checkNagoCache(request,response,resourcePath.toString());
-            if (cached){
+        if (cachedPattern.matcher(suffix).matches()) {
+            checkStrongCache(request, response);
+            boolean cached = checkNagoCache(request, response, resourcePath.toString());
+            if (cached) {
                 response.write();
                 return;
             }
             response.write(content, HttpHeaderValue.getContentType(suffix));
-        }else if (suffix.endsWith(FileFilter.DOCX)||suffix.endsWith(FileFilter.DOC)){
-            response.download(content,filename,HttpHeaderValue.DOC);
-        }else if (suffix.endsWith(FileFilter.XLS)||suffix.endsWith(FileFilter.XLSX)){
-            response.download(content,filename,HttpHeaderValue.XLS);
-        }else if (suffix.endsWith(FileFilter.PDF)){
-            response.download(content,filename,HttpHeaderValue.PDF);
-        }else{
+        } else if (suffix.endsWith(FileFilter.DOCX) || suffix.endsWith(FileFilter.DOC)) {
+            response.download(content, filename, HttpHeaderValue.DOC);
+        } else if (suffix.endsWith(FileFilter.XLS) || suffix.endsWith(FileFilter.XLSX)) {
+            response.download(content, filename, HttpHeaderValue.XLS);
+        } else if (suffix.endsWith(FileFilter.PDF)) {
+            response.download(content, filename, HttpHeaderValue.PDF);
+        } else {
             response.write(content);
         }
     }
 
-    private void checkStrongCache(HandlerRequest request, HandlerResponse response){
-        if (!request.getContext().isStrongCache()){
-            return ;
+    private void checkStrongCache(HandlerRequest request, HandlerResponse response) {
+        if (!request.getContext().isStrongCache()) {
+            return;
         }
         response.setHeader(HttpHeaderName.CACHE_CONTROL,
-                HttpHeaderValue.MAXAGE+String.valueOf(request.getContext().getMaxAge()));
+                HttpHeaderValue.MAXAGE + String.valueOf(request.getContext().getMaxAge()));
     }
 
-    private boolean checkNagoCache(HandlerRequest request, HandlerResponse response,String resourcePath) throws Exception {
-        if (!request.getContext().isNegoCache()){
+    private boolean checkNagoCache(HandlerRequest request, HandlerResponse response, String resourcePath) throws Exception {
+        if (!request.getContext().isNegoCache()) {
             return false;
         }
         String ifNoneMatch = request.getHeader(HttpHeaderName.IF_NONE_MATCH);
         String etag = FileKits.md5(resourcePath);
         String lastModify = TimeKits.getGMTTime(FileKits.getLastModifyTime(resourcePath));
         String lastModifySince = request.getHeader(HttpHeaderName.IF_MODIFIED_SINCE);
-        if (etag.equals(ifNoneMatch)){
-            if (lastModify.equals(lastModifySince)){
+        if (etag.equals(ifNoneMatch)) {
+            if (lastModify.equals(lastModifySince)) {
                 response.setStatus(HttpStatus.NOT_MODIFIED);
                 return true;
             }
         }
-        response.setHeader(HttpHeaderName.LAST_MODIFIED,lastModify);
-        response.setHeader(HttpHeaderName.ETAG,etag);
+        response.setHeader(HttpHeaderName.LAST_MODIFIED, lastModify);
+        response.setHeader(HttpHeaderName.ETAG, etag);
         return false;
     }
 

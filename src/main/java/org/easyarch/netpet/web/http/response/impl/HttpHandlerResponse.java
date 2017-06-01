@@ -48,14 +48,15 @@ public class HttpHandlerResponse implements HandlerResponse {
     private ServerCookieEncoder encoder;
 
 
-    public HttpHandlerResponse(FullHttpResponse response, HandlerContext context, Channel channel) throws IOException {
+    public HttpHandlerResponse(FullHttpResponse response,String sessionId, HandlerContext context, Channel channel) throws IOException {
         init(response, context, channel);
+        initTemplate(sessionId);
     }
 
     private void init(FullHttpResponse response, HandlerContext context, Channel channel) throws IOException {
         this.context = context;
         this.response = response;
-        this.tmpParser = new TemplateParser(context);
+
         if (response == null) {
             this.headers = new DefaultHttpHeaders();
         } else {
@@ -64,6 +65,10 @@ public class HttpHandlerResponse implements HandlerResponse {
         this.charset = "UTF-8";
         this.channel = channel;
         this.encoder = ServerCookieEncoder.LAX;
+    }
+
+    private void initTemplate(String sessionId) throws IOException {
+        this.tmpParser = new TemplateParser(context,sessionId);
     }
 
     @Override
@@ -78,7 +83,7 @@ public class HttpHandlerResponse implements HandlerResponse {
 
     @Override
     public void addCookie(HttpCookie cookie) {
-        this.headers.add(SET_COOKIE, encoder.encode(cookie.getWrapper()));
+        this.response.headers().add(SET_COOKIE, encoder.encode(cookie.getWrapper()));
     }
 
     @Override

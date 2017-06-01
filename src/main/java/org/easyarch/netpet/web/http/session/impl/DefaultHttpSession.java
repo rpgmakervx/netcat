@@ -63,9 +63,20 @@ public class DefaultHttpSession implements HttpSession {
         this.sessionId = sessionId;
     }
 
+    public Map<String,Object> getAll(){
+        return sessionMap;
+    }
+
     @Override
     public boolean isExpire() {
         Date current = new Date();
         return current.before(TimeKits.plusSeconds(maxAge,createAt));
+    }
+
+    @Override
+    public String toString() {
+        return "DefaultHttpSession{" +
+                "sessionMap=" + sessionMap +
+                '}';
     }
 }
