@@ -22,7 +22,7 @@ netpet 是基于开源nio框架netty开发的一个web服务器，支持基本ht
 <dependency>
     <groupId>org.easyarch</groupId>
     <artifactId>netpet</artifactId>
-    <version>1.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 然后在你的resource目录放入几个写好的html文件，用来做测试。

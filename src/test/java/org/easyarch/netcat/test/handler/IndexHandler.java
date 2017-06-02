@@ -23,5 +23,6 @@ public class IndexHandler implements HttpHandler{
 //        response.addModel("username",username);
         session.setAttr("username",username);
         response.html("hello");
+
     }
 }

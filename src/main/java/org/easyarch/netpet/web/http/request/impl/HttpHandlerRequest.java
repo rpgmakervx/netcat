@@ -236,7 +236,6 @@ public class HttpHandlerRequest implements HandlerRequest {
                 break;
             }
         }
-        System.out.println("getSession时 cookie"+getCookies());
         HttpSession session = context.getSession(sessionId);
         if (StringKits.isEmpty(sessionId) ||session == null){
             if (StringKits.isEmpty(sessionId)){
@@ -246,8 +245,9 @@ public class HttpHandlerRequest implements HandlerRequest {
             InetSocketAddress hostAddress =
                     (InetSocketAddress)channel.remoteAddress();
             session = manager.createSession(sessionId,hostAddress.getHostName());
-            System.out.println("add 了一个session："+sessionId+":"+session);
+            System.out.println("add 了一个session："+sessionId);
         }
+        System.out.println("getSession时 sessionId"+sessionId);
         return session;
     }
 

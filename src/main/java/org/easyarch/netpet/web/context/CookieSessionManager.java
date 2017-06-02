@@ -43,8 +43,8 @@ public class CookieSessionManager {
     public HttpSession createSession(String sessionId, String hostName){
 
         HttpCookie cookie = new HttpCookie(Const.NETPETID,sessionId);
-        cookie.setDomain(hostName);
-        cookie.setPath(context.getContextPath());
+//        cookie.setDomain(hostName);
+//        cookie.setPath(context.getContextPath());
         response.headers().set(SET_COOKIE,cookie.getWrapper());
         request.headers().set(COOKIE,cookie.getWrapper());
 

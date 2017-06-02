@@ -1,6 +1,10 @@
 package org.easyarch.netcat.test;
 
-import org.easyarch.netcat.test.handler.IndexHandler;
+import org.easyarch.netpet.web.http.request.HandlerRequest;
+import org.easyarch.netpet.web.http.response.HandlerResponse;
+import org.easyarch.netpet.web.http.session.HttpSession;
+import org.easyarch.netpet.web.mvc.action.handler.HttpHandler;
+import org.easyarch.netpet.web.mvc.entity.Json;
 import org.easyarch.netpet.web.server.App;
 
 /**
@@ -10,6 +14,8 @@ import org.easyarch.netpet.web.server.App;
  */
 
 public class Application {
+
+    static String id = "";
 
     public static void main(String[] args) throws Exception {
 //        AsyncHttpClient client = new AsyncHttpClient("http://localhost:8080");
@@ -26,7 +32,25 @@ public class Application {
 //        });
         App app = new App();
 //        app.config().contextPath("/shopping");
-        app.get("/user/{username}", new IndexHandler());
+        app.get("/index", new HttpHandler() {
+            @Override
+            public void handle(HandlerRequest request, HandlerResponse response) throws Exception {
+                HttpSession session = request.getSession();
+                session.setAttr("username","xingtianyu");
+                System.out.println("index session:"+session);
+                id = session.getSessionId();
+                response.json(new Json("username","xingtianyu"));
+            }
+        });
+        app.get("/session", new HttpHandler() {
+            @Override
+            public void handle(HandlerRequest request, HandlerResponse response) throws Exception {
+                HttpSession session = request.getSession();
+                String obj = (String) session.getAttr("username");
+                System.out.println("session sessionId:"+session.getSessionId()+", static id:"+id);
+                response.json(new Json("msg",obj));
+            }
+        });
         app.start(6789);
     }
 }
